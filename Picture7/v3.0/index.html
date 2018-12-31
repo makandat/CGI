@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>Pictures v3.10</title>
+ <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
+ </script>
+ <script>
+function clearAll() {
+  $('#id').val('');
+  $('#title').val('');
+  $('#path').val('');
+  $('#creator').val('');
+  $('#info').val('');
+};
+ </script>
+ <style>
+    h1 {
+      text-align:center;
+      color:midnightblue;
+      padding:15px;
+      border:solid 20px silver;;
+      border-radius: 0.5em;
+      background-color:#f0f0f0;
+    }
+
+    h2 {
+      color: darkcyan;
+      padding:4px;
+    }
+
+    a:link, a:visited {
+      color:blue;
+      text-decoration:none;
+    }
+
+    table {
+      border:solid thin silver;
+      border-collapse: collapse;
+    }
+
+    td {
+      padding: 3px;
+      font-size:small;
+      border-collapse: collapse;
+    }
+
+    .bdr {
+        border: solid thin silver;
+    }
+
+    pre {
+      word-break:break-all;
+    }
+
+ </style>
+</head>
+
+
+
+<body style="margin-left:4%;margin-right:4%;">
+<h1>画像一覧 3.10</h1>
+<p><a href="/">[HOME]</a>&nbsp;/&nbsp;<a href="listCreators.php">[作者一覧]</a>&nbsp;/&nbsp;<a href="index.php">[表示リセット]</a></p>
+<br />
+<!-- 追加フォーム -->
+<form method="POST" action="addNew.php">
+ <table>
+  <tr><td>ID</td><td><input type="text" size="10" name="id" id="id" /></td></tr>
+  <tr><td>タイトル (TITLE)</td><td><input type="text" size="80" name="title" id="title" /></td></tr>
+  <tr><td>パス (PATH)</td><td><input type="text" size="120" name="path" id="path" /></td></tr>
+  <tr><td>作者 (CREATOR)</td><td><input type="text" size="50" name="creator" id="creator" /></td></tr>
+  <tr><td>識別マーク (MARK)</td><td><select name="mark" id="mark">
+    <option>MANGA</option>
+    <option>HCG</option>
+    <option>PHOTO</option>
+    <option>OTHER</option>
+  </td></tr>
+  <tr><td>備考 (INFO)</td><td><input type="text" size="80" name="info" id="info" /></td></tr>
+  <tr><td>お気に入り (FAV)</td><td><input type="checkbox" name="fav" id="fav" value="1" /></td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td></td><td><input type="submit" value=" 追加 (更新) " />&nbsp;<input type="button" id="btnClear" value="すべて消去" onclick="clearAll()" /></td></tr>
+ </table>
+</form>
+<p>（注意）ID を指定すると更新になります。更新の場合、空欄とマークは更新されません。</p>
+<p style="maegin-left:5%;margin-top:20px;color:brown;">(*message*)</p>
+
+<br />
+<p><a href="index.php">すべて</a>　</a><a href="index.php?FAV=1">お気に入り</a>　<a href="index.php?mark=MANGA">まんが</a>　
+<a href="index.php?mark=HCG">HCG</a>　<a href="index.php?mark=PHOTO">写真</a>　<a href="index.php?mark=OTHER">その他</a></p>
+<!-- 画像ディレクトリ一覧 -->
+(*table*)
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

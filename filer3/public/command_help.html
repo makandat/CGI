@@ -1,0 +1,61 @@
+<h3>command help</h3>
+
+<h4>シェルコマンド</h4>
+　シェルのコマンドを実行するときは、現在の作業ディレクトリを確認すること。作業ディレクトリと現在の一覧表示は同じではない。<br />
+　作業ディレクトリは、"pwd: ..."のところに表示されている。作業ディレクトリと表示ディレクトリを一致させるには、この"pwd"のところをクリックするか、"\."コマンドを実行する。<br />
+<br />
+　シェルコマンドでパス名を入力するときは、パス名を実際に入力する代わりに、一覧表示の項目番号を代わりに使用できる。ただし番号には"#"を前に付ける必要がある。<br />
+<br />
+（例)<br />
+<blockquote>
+cat #15
+</blockquote>
+
+<p>&nbsp;</p>
+
+
+<h4>内蔵コマンド</h4>
+<ul>
+<li><span style="color:green;font-weight:bold;">? または \?</span> このコマンドヘルプを表示する。</li>
+<li><span style="color:green;font-weight:bold;">!n</span> ファイル一覧表示で指定した番号のファイルをコマンドとして実行する。</li>
+<li><span style="color:green;font-weight:bold;">\.</span> 作業ディレクトリを表示ディレクトリと一致させる。</li>
+<li><span style="color:green;font-weight:bold;">\n</span> キャッシュに指定項目のフルパスを追加する。nはリストの番号。</li>
+<li><span style="color:green;font-weight:bold;">\ab</span> 現在表示されているディレクトリをブックマークに追加する。</li>
+<li><span style="color:green;font-weight:bold;">\ab n</span> 一覧表示のとき、指定した番号(n)のパスをブックマークに追加する。</li>
+<li><span style="color:green;font-weight:bold;">\bk</span> 現在の場所へ移動する前に表示していた場所へ戻る。(トグル動作)</li>
+<li><span style="color:green;font-weight:bold;">\cb</span> ブックマークをすべてクリアする。</li>
+<li><span style="color:green;font-weight:bold;">\cc</span> キャッシュリストをクリアする。</li>
+<li><span style="color:green;font-weight:bold;">\cd path</span> 指定したパスの項目一覧を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\cp</span> 直前にキャッシュしたファイルを現在の表示ディレクトリへコピーする。</li>
+<li><span style="color:green;font-weight:bold;">\dir</span> 現在の表示ディレクトリの一覧をフルパスで表示する。</li>
+<li><span style="color:green;font-weight:bold;">\dir path</span> pathで指定したディレクトリの一覧をフルパスで表示する。</li>
+<li><span style="color:green;font-weight:bold;">\ed path</span> 指定したパス(UTF-8エンコードされたテキストファイルとする) を編集モードで開く。</li>
+<li><span style="color:green;font-weight:bold;">\h</span> コマンド履歴を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\hc</span> コマンド履歴をクリアする。</li>
+<li><span style="color:green;font-weight:bold;">\mv</span> 直前にキャッシュしたファイルを現在の表示ディレクトリへ移動する。</li>
+<li><span style="color:green;font-weight:bold;">\rl</span> "locations"セレクタに表示されている場所を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\rm</span> 直前にキャッシュしたファイルを削除する。</li>
+</ul>
+<br />
+<br />
+<h4>ファイル管理DB関連コマンド</h4>
+<ul>
+<li><span style="color:green;font-weight:bold;">\id n</span> 一覧表示の項目番号nのファイルやディレクトリをファイル管理DBから削除する。</li>
+<li><span style="color:green;font-weight:bold;">\id path</span> pathで指定したファイルやディレクトリをファイル管理DBから削除する。</li>
+<li><span style="color:green;font-weight:bold;">\if n</span> 一覧表示の項目番号nのファイルやディレクトリの情報(infoフィールド)を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\ig n</span> 一覧表示の項目番号nのファイルやディレクトリの縮小画像(iconフィールド)を埋め込みデータとして設定する。</li>
+<li><span style="color:green;font-weight:bold;">\ii n</span> 一覧表示の項目番号nのファイルやディレクトリをファイル管理DBに追加する。</li>
+<li><span style="color:green;font-weight:bold;">\ii path</span> pathで指定したファイルやディレクトリをファイル管理DBに追加する。</li>
+<li><span style="color:green;font-weight:bold;">\im n</span> 一覧表示の項目番号nのファイルやディレクトリのメソッド(methodフィールド)を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\ip n</span> 一覧表示の項目番号nで指定したファイルやディレクトリの縮小画像を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\iq n</span> 一覧表示の項目番号nのファイルやディレクトリをファイル管理DBに問い合わせを行い登録内容を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\iq path</span> pathで指定したファイルやディレクトリをファイル管理DBに問い合わせを行い登録内容を表示する。</li>
+<li><span style="color:green;font-weight:bold;">\is</span> ファイル管理DBに問い合わせを行うためのフォームを表示する。</li>
+<li><span style="color:green;font-weight:bold;">\iu n</span> 一覧表示の項目番号nのファイルやディレクトリ情報をファイル管理DBで更新する。</li>
+<li><span style="color:green;font-weight:bold;">\iu path</span> pathで指定したファイルやディレクトリ情報をファイル管理DBで更新する。</li>
+<li><span style="color:green;font-weight:bold;">\iv</span> ファイル管理DBに登録されている項目を一覧表示で表示する。</li>
+<li><span style="color:green;font-weight:bold;">\ix n</span> 一覧表示の項目番号nのファイルやディレクトリに対し、methodフィールドに登録されているメソッドを実行する。</li>
+<li><span style="color:green;font-weight:bold;">\ix path</span> pathで指定したファイルやディレクトリに対し、methodフィールドに登録されているメソッドを実行する。</li>
+<li><span style="color:green;font-weight:bold;">\iz n</span> 一覧表示の項目番号nで指定したスクリプトを実行する。(注意) postメソッドでパラメータを受け取るタイプのスクリプトは実行できない。</li>
+</ul>
+<p>&nbsp;</p>

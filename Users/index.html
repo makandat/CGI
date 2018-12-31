@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Users モジュール仕様書</title>
+ <style>
+  body {
+    background-color: white;
+    color: dimgray;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+ </style>
+ <link rel="stylesheet" href="/css/default.css" />
+ <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/vs.min.css">
+ <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+ <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<body>
+ <h1>Users モジュール仕様書</h1>
+ <div><a href="/">HOME</a>&nbsp;/&nbsp;<a href="../index.html">上へ</a></div>
+
+ <h2>はじめに</h2>
+ <p>Users モジュールは MySQL user.Users テーブルを使うユーザ管理ライブラリである。</p>
+ <br />
+ <h3>user.Users テーブルの定義</h3>
+ <pre class="code"><code>CREATE TABLE `user`.`Users` (
+  `id` int not null primary key auto_increment,
+  `userid` varchar(16) unique not null,
+  `password` varchar(100) not null,
+  `priv` char(1) not null default 1,
+  `info` varchar(100),
+  `registered` char(10),
+  `expired` char(1) default 0
+) CHARACTER SET UTF8; </code></pre>
+ <br />
+ <ul>
+  <li><span>id</span> 主キー</li>
+  <li><span>userid</span> ユーザID</li>
+  <li><span>password</span> パスワード</li>
+  <li><span>priv</span> 特権レベル ゲスト 0, 一般 1, 管理者 2</li>
+  <li><span>info</span> 情報</li>
+  <li><span>registered</span> 登録日</li>
+  <li><span>expired</span> 期限切れフラグ 0 有効, 1 無効（期限切れ）</li>
+ </ul>
+ <br />
+
+
+ <h2>機能</h2>
+ <p>Users クラスは以下の機能を有する。</p>
+ <ul>
+  <li>新規ユーザの登録</li>
+  <li>ユーザ情報の修正</li>
+  <li>パスワードの変更</li>
+  <li>パスワードの暗号化</li>
+  <li>期限切れ設定（ユーザの無効化）</li>
+  <li>ユーザ一覧の作成 (HTML テーブル)</li>
+ </ul>
+ <br />
+
+ <h2>構成</h2>
+ <p>このモジュールは次のような構成を持つ。</p>
+ <ul>
+  <li><span>モジュール名</span> Users.py</li>
+  <li><span>クラス名</span> Users</li>
+  <li><span>基底クラス</span> MySQL</li>
+  <li><span>インポート</span> MySQL</li>
+ </ul>
+ <br />
+
+ <h3>Users クラス</h3>
+ <h4>コンストラクタ</h4>
+ <p>AppConf.ini から MySQL 接続情報を読み込んで MySQL に接続する。下に AppConf.ini の例を示す。</p>
+ <pre>
+ uid=user
+ pwd=???????
+ db=db1
+ host=localhost
+ </pre>
+ <br />
+
+ <h4>add_new(userid: str, password: str, info="")</h4>
+ <p>新規ユーザを登録する。userid はユーザID, password はパスワードで、半角12文字以内とする。info はユーザ情報である。</p>
+ <p>特権レベルは 1 となる。登録日は当日の日付、期限切れフラグは 0 とする。</p>
+ <br />
+
+ <h4>modify_info(userid: str, info: str)</h4>
+ <p>ユーザID userid のユーザ情報を修正する。</p>
+ <br />
+
+ <h4>update_passwords(userid: str, password: str)</h4>
+ <p>ユーザID userid のパスワードを更新する。</p>
+ <br />
+
+ <h4>encrypt_password()</h4>
+ <p>暗号化されてないパスワードがあれば暗号化する。</p>
+ <br />
+
+ <h4>set_expired(userid: str)</h4>
+ <p>ユーザID userid のユーザを無効化する。</p>
+ <br />
+
+ <h4>userlist(all=False, csv=False) -> str</h4>
+ <p>ユーザ一覧を作成する。<br />
+ all=True の場合は、期限切れユーザも含む。デフォルト(csv=False)では結果は HTML テーブルとして返される。<br />
+ csv=Trueの場合は、CSVとして返される。(1行目は表題)</p>
+ <br />
+
+ <h4>authorize(userid: str, password: str) -> bool</h4>
+ <p>userid ユーザのパスワードを照合する。正しい場合は、True を返す。</p>
+ <br />
+
+ <h4>getPriv(userid: str) -> int</h4>
+ <p>userid ユーザの特権レベルを返す。</p>
+ <br />
+
+
+ <h4>static get_sha256(password:str)->str</h4>
+ <p>生パスワードの sha256 を得る。このメソッドは static である。</p>
+ <br />
+
+
+ <p>&nbsp;</p>
+ <p style="text-align: center;"><a href="#top">TOP</a></p>
+ <p>&nbsp;</p>
+ <p>&nbsp;</p>
+</body>
+</html>

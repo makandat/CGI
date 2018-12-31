@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>(*path*)</title>
+        <style>
+            a.LinkButton {
+                border-style: solid;
+                border-width : 1px 1px 1px 1px;
+                text-decoration : none;
+                padding : 4px;
+                border-color : #000000;
+                background-color:gainsboro;
+                border-radius:2px;
+            }
+            div.message {
+                margin-left:5%;
+                margin-top:10px;
+                padding:10px;
+                color:indigo;
+            }
+            a:link, a:visited {
+                text-decoration:none;
+                color:blue;
+            }
+            a:active {
+                text-decoration:none;
+                color:green;
+            }
+     </style>
+    </head>
+
+    <body>
+        <h3 style="margin-left:20px;color:darkgray;">(*path*)</h3>
+        <div style="padding:6px;margin-bottom:5px;">
+            <a href="move_image.php?path=(*first*)" class="LinkButton">First</a>&nbsp;
+            <a href="move_image.php?path=(*previous*)" class="LinkButton">Previous</a>&nbsp;
+            <a href="move_image.php?path=(*next*)" class="LinkButton">Next</a>
+            <a href="listImages.php?dirname=(*dirname*)" class="LinkButton">ListView</a>
+            <a href="showImages.php?dirname=(*dirname*)" class="LinkButton">Show All</a>
+            <a href="javascript:window.close();" class="LinkButton">Close</a>
+            &nbsp;(*message*)
+        </div>
+        <div>
+            <a href="move_image.php?path=(*next*)">
+                <img src="get_image.php?path=(*path*)" />
+            </a>
+        </div>
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#top">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+    </body>
+</html>

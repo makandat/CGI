@@ -1,0 +1,50 @@
+/* style.css */
+
+body {
+  margin-left: 5%;
+  margin-right: 5%;
+  background-color: beige;
+}
+
+h1 {
+  color: maroon;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+h2 {
+  color: darkviolet;
+  padding: 10px;
+  border-left: solid 15px indigo;
+}
+
+ul {
+  margin-left:5%;
+}
+
+a:link, a:visited {
+  text-decoration: none;
+  color: blue;
+}
+
+table, th, td {
+  border: solid thin gray;
+  border-collapse: collapse;
+}
+
+td {
+  background-color: white;
+  padding: 4px;
+}
+
+th {
+  background-color: #f0f0f0;
+  padding: 4px;
+}
+
+pre {
+  border: dotted thin gray;
+  padding: 5px;
+  background-color: white;
+}

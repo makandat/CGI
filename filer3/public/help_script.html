@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Sinatra filer 2.0 (Nadeko)</title>
+<link rel="stylesheet" href="greentea.css" />
+</head>
+
+<body>
+<h1 style="text-align:center;border-bottom-style:dotted;border-bottom-color:green;border-bottom-width:1px;padding:8px;text-shadow:1px 1px 2px #224222;">Sinatra filer 2.0 (Nadeko) スクリプト詳細</h1>
+<p><a href="javascript:window.close();">[close]</a> <a href="help.html">[もどる]</a> <a href="help_command.html">[コマンド詳細]</a> <a href="help_method.html">[メソッド詳細]</a> 
+ <a href="help_API.html">[APIの詳細]</a>
+</p>
+
+
+
+<h2>スクリプトとは</h2>
+<div class="doc">
+　ここで言うスクリプトとはシェルスクリプトまたはrubyスクリプトのことです。シェルスクリプトは、1行ならrubyの``メソッドを使って実行されます。例えば、'cat ~/doc/text1.txt'という1行のみのスクリプトは、<br />
+<blockquote>
+  `cat ~/doc/text1.txt`
+</blockquote>
+の結果(文字列)を&lt;pre&gt;タグで囲んでクライアントへ送ります。これは、"command"ボックスでコマンドを実行するのと同じことです。<br />
+複数行の場合は、'tmpdir/sf_tmp_script.sh' (tmpdirはDir.tmpdirが返すディレクトリ。'/tmp'など) という作業用ファイルに保存した後、systemメソッドで実行します。この場合は、終了コードのみが結果として返されます。<br />
+　rubyのスクリプトは、eval関数によって評価され、その関数地として返された文字列をHTMLとしてブラウザに表示します。したがって、スクリプトはHTMLを返す必要があります。
+</div>
+<p>&nbsp;</p>
+
+
+
+
+<h2>scriptフォームの操作</h2>
+<div class="doc">
+　scriptメニューをクリックすると、下のようなフォームが表示されます。<br />
+<img src="/img/script_form.png" alt="script_form" style="margin-left:15%;margin-top:10px;margin-bottom:15px;" />
+<br />
+"<span class="emp">ruby</span>"チェックボックスをチェックすると、ソースはrubyコードとみなされます。<br />
+"<span class="emp">open window</span>"チェックボックスをチェックすると、新しいタブが開いてその中に結果が表示されます。これは、必ずスクリプトをファイル保存するか、既存のスクリプトファイルを"<span class="emp">save path(option)</span>"に指定しておく必要があります。<br />
+"<span class="emp">params (JSON)</span>"テキストボックスはスクリプトのパラメータをJSON形式で与えるとき使用します(rubyのみ)。<br />
+(例)<br />
+"product":"CPU","price":5000<br />
+<br />
+"<span class="emp">script gallery</span>"リンクは"public/script_gallery.html"を表示します。これは以前作成したスクリプトを簡単に実行するためのページでユーザが作成・管理します。<br />
+既存のスクリプトをロードするときは、"<span class="emp">Load</span>"ボタンを使用します。このとき、"<span class="emp">save path(option)</span>"に正しいスクリプトファイルを指定する必要がありますが、事前にキャッシュやブックマークに登録しておき、コピー＆貼り付けしておくと便利です。<br />
+スクリプトの実行は、"<span class="emp">Save &amp; Run</span>"ボタンをクリックします。"<span class="emp">save path(option)</span>"が空欄の場合は、実行のみが行われます。また、コード欄が空欄で"<span class="emp">save path(option)</span>"に有効なパス名が設定されている場合は、このパスがスクリプトファイルであるとして実行されます。<br />
+両方とも設定されている場合は、コード欄のスクリプトでパス欄のファイルが上書きされ実行されます。このとき、デフォルトではバックアップファイルが作成されます。バックアップファイルが不要の場合は、config.iniにて設定を行います。<br />
+"<span class="emp">Reset</span>"ボタンは、コード、パス名をクリアし、"ruby"と"open window"チェックボックスをチェック状態にします。
+</div>
+<p>&nbsp;</p>
+
+
+<h2>コマンドによるスクリプトの実行</h2>
+　commandボックスで\izコマンドを実行すると、スクリプトを実行できます。ただし、フォームを持つスクリプトやPOSTメソッドで実行する必要があるスクリプトは実行されません。結果を新しいタブを開いて表示することはできません。<br />
+　\izコマンドは、ファイル一覧表示でスクリプトの番号を指定して実行します。<br />
+例
+<blockquote>
+\iz 10
+</blockquote>
+<br />
+<br />
+パラメータは、;の後に指定します。
+例
+<blockquote>
+\iz 10;p={:a=&lt;100,:s=&lt;'ABC'}
+</blockquote>
+<p>&nbsp;</p>
+
+
+
+<h2>rubyスクリプトの作り方</h2>
+<h3>シンプルなスクリプト</h3>
+　以下のスクリプトは、単純に実行するだけで結果を表示するスクリプトの例です。<br />
+結果をputs関数などで表示する代わりに、文字列として作成し最後にその文字列をスクリプトの結果とします。<br />
+<br />
+<h4>VectorクラスとComplexクラスの使用例</h4>
+<pre class="code">
+# coding: utf-8
+require "matrix"
+require "complex"
+
+$result = "&lt;pre&gt;"
+
+def put(v)
+  $result += v.to_s
+  $result += "\n" 
+end
+
+a = Vector[Complex(0.0, 1.0), Complex(1.0, 0.0)]
+b = Vector[Complex(-1.0, 1.0), Complex(1.0, -1.0)]
+
+put a.r
+put a.inner_product(b)
+
+th = 30.0 * Math::PI / 180.0
+m = Matrix[[Complex(Math.cos(th), -Math.sin(th)), Complex(Math.sin(th), Math.cos(th))], 
+           [Complex(1.0, 0.0), Complex(0.0, 1.0)]]
+
+c = m * b
+put c
+$result + "&lt;/pre&gt;"
+
+</pre>
+<p>&nbsp;</p>
+
+
+<h3>パラメータを受け取るスクリプト</h3>
+　パラメータを受け取るスクリプトも作成できます。パラメータは"params (JSON)"テキストボックスでJSON形式(ハッシュ)で与える必要があります。JSON形式のハッシュでは { }で中身を囲みますが、これはなくてもかまいません。<br />
+　下の例は受け取ったパラメータを単純に表示するだけのスクリプトです。パラメータはハッシュ params に格納されます。<br />
+<br />
+<pre class="code">
+buff = "&lt;pre&gt;"
+buff &lt;&lt; "a=" &lt;&lt; params["a"].to_s &lt;&lt; "\n"
+buff &lt;&lt; "a=" &lt;&lt; params["b"].to_s &lt;&lt; "\n"
+buff += "&lt;/pre&gt;"
+buff
+
+</pre>
+<br />
+この例で、パラメータは例えば次のように入力します。
+<blockquote>
+"a":100,"b":-9
+</blockquote>
+<p>&nbsp;</p>
+
+
+
+
+<h3>画像やオブジェクトを表示スクリプト</h3>
+　画像やオブジェクト(Flashなど)を表示するためには、imgタグやobjectタグにソースのアドレスを指定すればよいのですが、パスはpublicフォルダをルートとして指定するので、publicフォルダ内の画像やオブジェクトしか表示できません。<br />
+　これでは不便なので、get '/Image/:path'サービスや get '/Flash/:path'サービスなどを使うと、任意の場所の画像やオブジェクトも表示できます。<br />
+
+<h4>publicフォルダの画像を表示する</h4>
+次のサンプルは"public/img/folder.png"という画像を表示します。<br />
+<pre class="code">
+&lt;&lt;HTML
+&lt;img src="/img/folder.png" alt="img" /&gt;&lt;br /&gt;
+/img/folder.png
+HTML
+</pre>
+<br />
+<br />
+
+<h4>任意フォルダの画像を表示する</h4>
+　任意のフォルダに格納された画像やオブジェクトは、マッピングされてないので'/Image/*'サーいすなどを使って取得する必要があります。(詳細は後述する<a href="#API">API参照</a>)
+　次のサンプルは、パラメータで指定した画像とそのプロパティを表示します。パラメータは、JSON形式で次の例のように入力します。<br />
+<blockquote>
+"path":"/home/user/Pictures/sample.jpg"
+</blockquote>
+<br />
+<pre class="code">
+# 画像を表示する。
+if params['path'].nil? then
+  return %!&lt;p style="color:red;"&gt;no parameter.&lt;/p&gt;!
+end
+
+require "image_size"
+
+html = ""
+begin
+  path = params['path']
+  img = ImageSize.new(open(path))
+  html = %!&lt;img src="/Image/#{path}" alt="img" /&gt;&lt;br /&gt;\n!
+  html += "#{path}&lt;br /&gt;\n"
+  html += "type=" + img.get_type()
+  html += " width=" + img.get_width().to_s
+  html += " height=" + img.get_height().to_s
+  html += "&lt;br /&gt;\n"
+rescue
+  return %!&lt;p style="color:red;"&gt;fatal error.&lt;/p&gt;!
+end
+
+html
+
+</pre>
+<p>&nbsp;</p>
+
+
+
+
+<h3>図形を描画するスクリプト</h3>
+<h4>Canvasを使用する</h4>
+
+<pre class="code">
+f = 2.0
+array = "["
+720.times do |i|
+  x = Math::PI * i / 180.0
+  y = Math.sin(f * x)
+#  printf("%f, %f\n", x, y)
+  array &lt;&lt; y.to_s &lt;&lt; ","
+end
+array.chop!
+array &lt;&lt; "]\n"
+#puts array
+
+&lt;&lt;HTML
+&lt;script&gt;
+window.onload = function() {
+  var canvas1 = document.getElementById('canvas1');
+  var g = canvas1.getContext('2d');
+  var data = #{array};
+  var x, y;
+
+  g.strokeStyle = "#004040";
+  g.lineWidth = 2;
+  g.beginPath();
+  for (x = 0; x &lt; 720; x++) {
+    y = -data[x] * 200 + 200;
+    if (x == 0)
+      g.moveTo(x, y);
+    else
+      g.lineTo(x, y);
+  }
+  g.stroke();
+}
+&lt;/script&gt;
+&lt;p&gt;
+&lt;canvas id="canvas1" width="720" height="400" style="border:solid 1px black"&gt;canvas&lt;/canvas&gt;
+&lt;/p&gt;
+HTML
+</pre>
+<p>&nbsp;</p>
+
+
+<h4>SVGを使用する</h4>
+この例では、SvgMakerという外部ライブラリを使用しています。
+<pre class="code">
+require "svg_maker"
+
+Path = '/home/user/svg/circle.svg'
+svg = SVGMaker.new(500, 500)
+svg.circle(250, 250, 100)
+svg.save(Path)
+
+result = &lt;&lt;EOS
+&lt;object type="image/svg+xml" data="/svg/circle.svg" width="500" height="500"&gt;
+circle
+&lt;/object&gt;
+EOS
+result &lt;&lt; "&lt;h4&gt;" &lt;&lt; Path  &lt;&lt; "&lt;/h4&gt;"
+result
+
+</pre>
+<p>&nbsp;</p>
+
+
+
+
+<h3>フォームを持つスクリプト</h3>
+　フォームからパラメータを入力することも可能です。その場合、２つのスクリプトが必要になります。まず、フォームを表示するスクリプトで、これはgetメソッドで開きます。フォームからのパラメータを受け取って処理するスクリプトは、postメソッドで開きます(結果を表示します)。<br />
+<br />
+フォームを表示するスクリプト
+<blockquote>
+フォームを処理させるため、actionで"/script_window/"をコールします。hiddenコントロールでフォームを受け取り処理をするためのスクリプトを指定します。
+</blockquote>
+<pre class="code">
+&lt;&lt;EOS
+&lt;form name="form1" method="post" action="/script_window/"&gt;
+&lt;input type="hidden" name="path" value="/home/user/workspace/sinatra/filer/scripts/post.rb" /&gt;
+shape: &lt;select name="shape"&gt;
+&lt;option&gt;Line&lt;/option&gt;
+&lt;option&gt;Rect&lt;/option&gt;
+&lt;option&gt;Circle&lt;/option&gt;
+&lt;/select&gt;&lt;br /&gt;
+&lt;input type="submit" value="draw" /&gt;&lt;br /&gt;
+&lt;/form&gt;
+EOS
+</pre>
+<br />
+<br />
+postメソッドによるフォームの処理
+<blockquote>
+フォームのパラメータはinputコントロールなどのname属性で与えれた名前と同じ変数で受け取ることができます。この例ではselectコントロールのname属性が"shape"なので、変数"shape"でフォームのパラメータが渡されます。
+</blockquote>
+<pre class="code">
+html = &lt;&lt;EOS
+&lt;script&gt;
+window.onload = function() {
+  var canvas = document.getElementById('canvas1');
+  var g = canvas.getContext('2d');
+
+  var shape = "#{shape}";
+
+  g.strokeStyle = "#000000";
+  g.lineWidth = 2;
+  g.beginPath();
+
+  if (shape == "Line") {
+    g.moveTo(100, 100);
+    g.lineTo(300, 100);
+    g.moveTo(150, 50);
+    g.lineTo(150, 250);
+  }
+  else if (shape == "Rect")
+    g.rect(50, 60, 260, 150);
+  else if (shape == "Circle")
+    g.arc(250, 250, 100, 0.0, 2.0 * Math.PI, false);
+  else
+    g.strokeText("error!", 200, 100);
+
+  g.stroke();
+}
+&lt;/script&gt;
+
+&lt;canvas id="canvas1" width="500" height="500" style="border: solid 1px black;"&gt;
+canvas
+&lt;/canvas&gt;
+EOS
+</pre>
+
+<p>&nbsp;</p>
+
+
+
+
+
+<h3>スクリプト・ギャラリー</h3>
+public/script_gallery.htmlというファイルを作ると、scriptメニューで表示されるフォームの中のリンクから開くことができます。下の例のように、JavaScriptの関数runRubyによりスクリプトファイルを実行します。<br />
+<pre class="code">
+&lt;!-- script gallery --&gt;
+&lt;h3&gt;Script Gallery&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/swf1.rb');"&gt;Flash SWEETS&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/svgmk1.rb');"&gt;SVG Circle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/post_form.rb');"&gt;Post Form (HTML5 Canvas)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/canvasmaker.rb');"&gt;HTML5 Canvas (CanvasMaker)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/graphmaker.rb');"&gt;Graph (GraphMaker)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/scripts/graph_sin.rb');"&gt;sin graph (GraphMaker)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</pre>
+<p>&nbsp;</p>
+
+
+
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

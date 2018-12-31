@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= @title %></title>
+<link rel="stylesheet" type="text/css" href="<%= @stylesheet %>" />
+<script type="text/javascript" src="/js/jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="/js/base64.js"></script>
+<script type="text/javascript">
+//
+//  内部コマンド
+//
+function internal_command(cmd) {
+  var n, p, dir, file, bm, path, cs, p1, p2;
+  var abspath;
+  if (cmd.match(/^\\\d+$/)) {   //  \n  (cache path name)
+    n = cmd.substr(1, cmd.length - 1);
+    cs = get_path(n);
+    if (sessionStorage.cache == null)
+      sessionStorage.cache = "";
+    if (cs != "") {
+      sessionStorage.last_cache = cs
+      sessionStorage.cache += cs + "\n";
+      $("#message").html('cached ' + cs);
+    }
+  }
+  else if (cmd == "\\rl") {
+    path = $("#locations option:selected").text();
+    getContent(path);
+  }
+  else if (cmd == "\\r") {
+    path = $('#location').text();
+    getContent(path);
+  }
+  else if (cmd == "\\rs") {
+    getContent("~");
+  }
+  else if (cmd == "\\ab") {  // add bookmark current dir
+    bm = localStorage.bookmarks;
+    if (bm == null)
+      bm = "";
+    bm += $("#location").text() + "\n";
+    localStorage.bookmarks = bm;
+    $("#message").html('bookmark ' + $("#location").text());
+  }
+  else if (cmd.match(/^\\ab\s\d+$/)) {  // \ab n  (add bookmark)
+    // save localStorage
+    n = cmd.substr(4, cmd.length - 4);
+    bm = localStorage.bookmarks;
+    if (bm == null)
+      bm = "";
+    bm += (get_path(n) + "\n");
+    if (bm != "\n") {
+      localStorage.bookmarks = bm;
+      $("#message").html('bookmark ' + $("#li" + n).text());
+    }
+  }
+  else if (cmd == "\\cb") {  //  \cb  (clear bookmark)
+    localStorage.bookmarks = "";
+    $("#message").html("bookmarks was cleared.");
+  }
+  else if (cmd.match(/^\\cd\s.+/)) {  // \cd .. (chdir ..)
+    path = cmd.substr(4, cmd.length - 4);
+    getContent(path);
+  }
+  else if (cmd == "\\dir") {
+    dir = $("#location").text();
+    url = "/get_abspath/" + base64.encode(dir);
+    $("#message").html("fetching ..");
+    $.get(url, function(data) {
+      abspath = data
+    });
+    url = "/get_fullpath/" + base64.encode(dir);
+    $.get(url, function(data) {
+      $("#content").html(data);
+      $("#message").html("get_fullpath " + dir);
+      $("#location").html(abspath);
+    });
+  }
+  else if (cmd.match(/^\\dir\s.+/)) {  // \dir .. (dir ..)
+    dir = cmd.substr(5, cmd.length - 5);
+    abspath = dir
+    url = "/get_abspath/" + base64.encode(dir);
+    $("#message").html("fetching ..");
+    $.get(url, function(data) {
+      abspath = data
+    });
+    url = "/get_fullpath/" + base64.encode(dir);
+    $.get(url, function(data) {
+      $("#content").html(data);
+      $("#message").html("get_fullpath " + dir);
+      $("#location").html(abspath);
+    });
+    $.get('/pwd/', function(pwd) {
+      $("#pwd").text(pwd)
+    });
+  }
+  else if (cmd == "\\h") {  // \h - history
+    showHistory();
+  }
+  else if (cmd == "\\hc") {  // \hc - clear history
+    sessionStorage.history = "";
+    alert("Command history was cleared!");
+    showHistory();
+  }
+  else if (cmd == "\\.") {
+    p = 'cd ' + $('#location').text();
+    execCommand(p);
+    $.get('/pwd/', function(pwd) {
+      $("#pwd").html('<a href="javascript:move_location();">pwd:</a> ' + pwd)
+    });
+  }
+  else if (cmd.match(/^\\ed\s.+/) != null) {  // \ed - edit
+    n = cmd.substr(4, cmd.length - 4);
+    file = get_path(n);
+    path = base64.encode(file);
+    $("#edit_path").val(file);
+    url = "/exists/" + path;
+    $.get(url, function(data) {
+      if (data == "true") {
+        url = "/load_script/" + path;
+        $.get(url, function(data) {
+          $("#editor").css("display", "block");
+          $("#message").css("display", "none");
+          $("#edit_button").css("display", "none");
+          $("#save_button").css("display", "block");
+          $("#editor").val(data);
+        });
+      }
+      else {
+        $("#editor").css("display", "block");
+        $("#message").css("display", "none");
+        $("#edit_button").css("display", "none");
+        $("#save_button").css("display", "block");
+        $("#editor").val("");
+      }
+    });
+  }
+  else if (cmd == "\\cp") {
+    if (sessionStorage.last_cache != null)
+      $("#command").val("cp -v " + sessionStorage.last_cache + " " + $("#location").text());
+  }
+  else if (cmd == "\\mv") {
+    if (sessionStorage.last_cache != null)
+      $("#command").val("mv -v " + sessionStorage.last_cache + " " + $("#location").text());
+  }
+  else if (cmd == "\\rm") {
+    if (sessionStorage.last_cache != null)
+      $("#command").val("rm -v " + sessionStorage.last_cache);
+  }
+  else if (cmd == "\\bk" && sessionStorage.prev_location != null) {
+    getContent(sessionStorage.prev_location);
+  }
+  else if (cmd == "\\cc") {
+    sessionStorage.cache = "";
+    alert("Path cache was cleared!");
+  }
+  else if (cmd.match(/\\ii\s.+/) != null) {  // insert info
+    n = cmd.substr(4, cmd.length - 4);
+    url = '/insert_info/' + base64.encode(get_path(n));
+    $.get(url, function(data) {
+     $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\id\s.+/) != null) {  // delete info
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/\d+/) != null) {
+      url = '/delete_info/' + base64.encode(get_path(n));
+    }
+    else {
+      url = '/delete_info/' + base64.encode(n);
+    }
+    $.get(url, function(data) {
+     $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\iu\s.+/) != null) {  // update info
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/\d+/) != null) {
+      url = '/update_info/' + base64.encode(get_path(n));
+    }
+    else {
+      url = '/update_info/' + base64.encode(n);
+    }
+    $.get(url, function(data) {
+     $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\iq\s.+/) != null) {  // query info
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/\d+/) != null) {
+      url = '/select_path/' + base64.encode(get_path(n));
+    }
+    else {
+      url = '/select_path/' + base64.encode(n);
+    }
+    $.get(url, function(data) {
+     $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\is/) != null) {  // select info
+    url = '/select_info/'
+    $.get(url, function(data) {
+     $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\iv/) != null) {  // registered info view
+    dir = base64.encode($("#location").text());
+    url = '/detail_icon/' + dir
+    $.get(url, function(data) {
+     $("#content").html(data);
+    });
+  }
+  else if (cmd.match(/\\ix\s.+/) != null) {  // execute method
+    p = cmd.indexOf(';', 0);
+    if (p < 0) {
+      n = cmd.substr(4, cmd.length - 4);
+      p2 = "";
+    }
+    else {
+      p1 = cmd.split(';');
+      p2 = p1[1];
+      n = p1[0].substr(4, p1[0].length - 4);
+    }
+    cs = get_path(n) + "&" + p2;
+    url = '/method/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\iz\s.+/) != null) {  // execute script
+    p = cmd.indexOf(';', 0);
+    if (p < 0) {
+      n = cmd.substr(4, cmd.length - 4);
+      p2 = "";
+    }
+    else {
+      p1 = cmd.split(';');
+      p2 = p1[1];
+      n = p1[0].substr(4, p1[0].length - 4);
+    }
+    cs = get_path(n) + "&" + p2;
+    url = '/script/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\if\s.+/) != null) {  // file info detail (HTML view)
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/^\d+$/) != null)
+      cs = get_path(n)
+    else
+      cs = n
+    url = '/info_detail/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\im\s.+/) != null) {  // file method detail
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/^\d+$/) != null)
+      cs = get_path(n)
+    else
+      cs = n
+    url = '/method_detail/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\ip\s.+/) != null) {  // file icon view
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/^\d+$/) != null)
+      cs = get_path(n)
+    else
+      cs = n
+    url = '/view_thumb/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd.match(/\\ig\s.+/) != null) {  // file icon update
+    n = cmd.substr(4, cmd.length - 4);
+    if (n.match(/^\d+$/) != null)
+      cs = get_path(n)
+    else
+      cs = n
+    url = '/update_thumb/' + base64.encode(cs);
+    $.get(url, function(data) {
+      $("#message").html(data);
+    });
+  }
+  else if (cmd == "\\?") {
+    $("#message").load("command_help.html");
+  }
+  else {
+    $("#message").html('<span style="color:red;">' + cmd + " is not a command!</span>");
+  }
+}
+
+
+//
+//  番号からフルパスを得る。
+//
+function get_path(n) {
+  var p1, p2;
+  var p = $("#li" + n).text();
+  if (p == null)
+    return "";
+  p = p.split('|');
+  var dir = $('#location').text();
+  if (p[0].match(/\[.+\]/)) {
+    p1 = p[0].indexOf('[', 0);
+    p2 = p[0].indexOf(']', 0);
+    cs = dir + "/" + p[0].substring(p1+1, p2);
+  }
+  else {
+    cs = dir + "/" + p[0].replace(/^\s+|\s+$/g, "");
+  }
+  return cs;
+}
+
+//
+//  ディレクトリの内容一覧を取得する(表示の更新)。
+//
+function getContent() {
+  var dir = $('#location').text();
+  location.replace('/get_content/' + dir);
+}
+
+
+//
+//  メッセージ領域にURLの内容を表示する。
+//
+function getMessage(url) {
+  var p;
+
+  $("#message").css('display', 'block');
+  $("#editor").css('display', 'none');
+  $("#edit_button").css('display', 'none');
+  $("#save_button").css('display', 'none');
+
+  if (url.match(/image\//) != null) {
+    $("#message").html('<img src="' + url + '" alt="url" border="0" />');
+  }
+  else if (url.match(/svg\//) != null) {
+    $("#message").html('<object type="image/svg+xml" data="' + url + '">svg</object>');
+  }
+  else if(url.match(/flash\//) != null) {
+    $("#message").html('<object type="application/x-shockwave-flash" data="' + url + 
+     '" width="300" height="300"><param name="movie" value="' + url + '" />flash</object>');
+  }
+  else if (url.match(/pdf\//) != null) {
+    $("#message").html('<iframe src="' + url + '" width="800" height="500">pdf</ifrmae>');
+  }
+  else if (url.match(/markup\//) != null) {
+    $("#message").html("fetching ..");
+    $.get(url, function(htm) {
+      s = '<iframe src="' + url + '" width="800" height="500">html</iframe>'
+      $("#message").html(s);
+    });
+  }
+  else if (url.match(/audio\//) != null) {
+    $("#message").html('<audio src="' + url + '" controls="controls">audio</audio>');
+  }
+  else if (url.match(/video\//) != null) {
+    $("#message").html('<video src="' + url + '" controls="controls">video</video>');
+  }
+  else if (url.match(/zip\//) != null) {
+    window.location = url;
+  }
+  else {
+    $("#message").html("fetching ..");
+    $.get(url, function(htm) {
+      $("#message").html(htm);
+      $("#message").css('display', 'block');
+      // $("#editor").css('display', 'none');
+      $("#edit_button").css('display', 'block');
+      // $("#save_button").css('display', 'none');
+      p = base64.decode(url.substring(6, url.length));
+      $("#edit_path").val(p);
+    });
+  }
+  location.href = "#message";
+}
+
+
+//
+//  スクリプト実行用フォームを取得して表示する。
+//
+function getScript() {
+  var url = '/form_script/'
+  $("#message").html('opening ..')
+  $.get(url, function(form) {
+    $("#content").html(form);
+    $("#message").html('OK')
+  });
+}
+
+
+
+//
+// キャッシュ一覧を表示する。
+// 
+function showCache() {
+  if (sessionStorage.cache) {
+    cs = sessionStorage.cache;
+  }
+  else {
+    cs = "no caches";
+  }
+
+  var list = cs.split("\n");
+  var s = "<div id=\"cache\" style=\"background-color:#f0f8e0;\">"
+  for (i = 0; i < list.length; i++) {
+    s += list[i] + "<br />\n";
+  }
+  s += "</div>\n";
+  $("#content").html(s);
+}
+
+//
+//  コマンドを実行する。
+//
+function execCommand(cmd) {
+  if (cmd.match(/^\\.+/) != null)
+    internal_command(cmd);
+  else {
+    var url = '/command/' + cmd
+    $.get(url, function(msg) {
+      $('#message').html(msg);
+    });
+  }
+}
+
+//
+//  アップロードフォームを表示する。
+//
+function showUploadForm() {
+  $('#upload_dir').val($('#location').text());
+  $('#upload_dir2').html("Will be uploaded to '" + $('#location').text() + "'");
+  $('#upload_form').css('display', 'block');
+}
+
+
+//
+//  参照ウィンドウを表示する。
+//
+function showReferenceWindow() {
+  var dir = $('#location').text();
+  var url = '/reference/' + dir;
+  window.open(url, 'reference', 'width=800,height=600,location=no,scrollbars=yes');
+}
+
+
+//
+// ファイル情報を表示する。
+//
+function show_file_info(path) {
+  url = '/select_path/' + base64.encode(path);
+  $.get(url, function(data) {
+    $("#message").html(data);
+  });
+}
+
+//
+// ファイル情報の挿入動作
+//
+function insert_info() {
+  var url = '/insert_info/'
+  params = $("#form_insert_info").serialize();
+  $("#message").html('running ..')
+  $.post(url, params, function(data, status) {
+    if (status == "success") {
+      $("#message").html(data);
+    }
+    else {
+      $("#message").html('<span style="color:red;">error!</span>');
+    }
+  });
+}
+
+
+//
+// ファイル情報検索動作
+//
+function select_info() {
+  var url = '/select_info/'
+  params = $("#form_select_info").serialize();
+  $("#message").html('running ..')
+  $.post(url, params, function(data, status) {
+    if (status == "success") {
+      $("#message").html(data);
+    }
+    else {
+      $("#message").html('<span style="color:red;">error!</span>');
+    }
+  });
+}
+
+
+//
+// ファイル情報更新動作
+//
+function update_info() {
+  var url = '/update_info/'
+  params = $("#form_update_info").serialize();
+  $("#message").html('running ..')
+  $.post(url, params, function(data, status) {
+    if (status == "success") {
+      $("#message").html(data);
+    }
+    else {
+      $("#message").html('<span style="color:red;">error!</span>');
+    }
+  });
+}
+
+//
+// 縮小画像(icon)更新動作
+//
+function update_thumb() {
+  var url = "/update_thumb/";
+  params = $('#form_update_thumb').serialize();
+  $("#message").html('fetching ..')
+  $.post(url, params, function(data, status) {
+    if (status == "success") {
+      $("#message").html(data);
+    }
+    else {
+      $("#message").html('<span style="color:red;">error!</span>');
+    }
+  });
+}
+
+
+
+// =========================================
+//   ドキュメントがロードされたとき
+// =========================================
+$(document).ready(function() {
+
+  // locationセレクタが変化したとき
+  $("#locations").bind('change', function() {
+    dir = $("#locations option:selected").text();
+    location.replace('/get_content/' + dir);
+  });
+
+  // execボタンがクリックされたとき
+  $("#exec").click(function() {
+    execCommand($("#command").val());
+  });
+
+});
+
+</script>
+</head>
+
+<body>
+<a name="top"></a>
+<div class="body">
+
+<table width="100%">
+<!-- row 1 -->
+<tr>
+<td colspan="2">
+<form id="upload_form" name="upload_form" method="post" action="/file_upload/" enctype="multipart/form-data" style="display:none;">
+  upload file: <br />
+  <input id="file" name="file" type="file"  size="80" />
+  <input type="hidden" name="upload_dir" id="upload_dir" value="/home/user/temp" />
+  <button type="submit">upload</button>
+  <button type="button" onclick='$("#upload_form").css("display", "none");'>hide</button>
+  <div id="upload_dir2"></div>
+</form>
+<h2 class="top" id="location" style="margin-left:7%;margin-right:10%;"><%= @location %></h2>
+<div id="pwd" style="margin-left:10%;">pwd: <%= @pwd %></div>
+</td>
+</tr>
+<!-- row 2 -->
+<tr>
+<td colspan="2">
+ <a href="/"><img src="/img/home.png" alt="reload" /></a> <a href="#message"><img src="/img/arrow_down.png" alt="" border="0" /></a> 
+ locations: <select id="locations">
+<%= @locations %>
+</select>
+ command: <input id="command" type="text" size="50" /><button id="exec" type="button">exec</button>
+<button type="reset" onclick="javascript:$('#command').val('');">clear</button>
+</td>
+</tr>
+<!-- row 3 -->
+<tr>
+<!-- row 3 , col 1 -->
+<td style="width:140px;vertical-align:top;">
+<br />
+<img src="/img/window.png" alt="menu" /> menu<br />
+<ul>
+<li><a href="javascript:getContent();">list</a></li>
+<li><a href="javascript:getScript();">script</a></li>
+<li><a href="javascript:showCache();">cache</a></li>
+<li><a href="javascript:showUploadForm();">file upload</a></li>
+<li><a href="javascript:showReferenceWindow();">refer ..</a></li>
+<li><a href="/help.html" target="_blank">help</a></li>
+</ul>
+<%= @usermenu %>
+</td>
+<!-- row 3, col 2 -->
+<td  style="vertical-align:top;"><div id="content">
+<%= @content %>
+<div></td>
+</tr>
+<!-- row 4 -->
+<tr>
+<td colspan="2">
+
+<form id="form_save_text" name="form_save_text" method="post" action='javascript: saveText();'>
+<a href="#top"><img id="top_button" src="/img/arrow_up.png" alt="top" /></a>&nbsp;
+<a href="javascript:editText();"><img id="edit_button" src="/img/mini_edit.png" style="display:none;" /></a>&nbsp;
+<a href="javascript:document.form_save_text.submit();"><img id="save_button" src="/img/save.png" style="display:none;" /></a>
+<input type="hidden" name="edit_path" id="edit_path" value="" />
+<textarea id="editor" name="editor" cols="100" rows="25" style="display:none;font-size:small;"></textarea>
+</form>
+
+<div id="message" style="font-size:9pt;">
+<a name="message"></a>
+<%= @message %>
+</div></td>
+</tr>
+</table>
+
+</div>
+<%
+ if @title then
+%>
+<p style="margin-left:10px;padding:5px;"><a href="/"><img src="/img/home.png" alt="reload" /></a> <a href="#top"><img src="/img/arrow_up.png" alt="top" /></a> <%= @title + ", Sinatra " + VERSION + ", ruby " + RUBY_VERSION %></p>
+<%
+ end
+%>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

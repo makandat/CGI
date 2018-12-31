@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<!-- HTML ヘッダー部 -->
+<head>
+<meta charset="utf-8" />
+<title>(*title*)</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+
+<!-- HTML 本体 -->
+<body>
+<h1 style="font-size:32pt;">(*title*)</h1>
+<p class="menu"><a href="/">[Home]</a> | <a href="(*back*)">[Back]</a> | <a href="(*top*)">[Top]</a></p>
+<br />
+<!-- ファイル一覧 -->
+<p style="font-weight:bold;text-align:center;">(*folder*)</p>
+<ul>
+(*files*)
+</ul>
+
+<p>&nbsp;</p>
+<p style="text-align:center"><a href="HelpV2.html" target="_blank">[Help]</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</hml>

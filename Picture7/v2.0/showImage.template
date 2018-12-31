@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<!-- HTML ヘッダー部 -->
+<head>
+<meta charset="utf-8" />
+<title>(*title*)</title>
+<link rel="stylesheet" href="style.css" />
+<script>
+//
+//  "Adjust Size" がクリックされたとき
+//
+function adjustSize() {
+  var ck = document.cookie;
+  var pict = document.getElementById('pict');
+  var wv = eval(ck);
+  if (wv) {
+    pict.style.width = null;
+    document.cookie = "width100=false;";
+  }
+  else {
+    pict.style.width = "100%";
+    document.cookie = "width100=true;";
+  }
+}
+
+//
+//  ページがロードしたとき
+//
+function pageLoad() {
+  var ck = document.cookie;
+  var wv = eval(ck);
+  if (wv) {
+    pict.style.width = "100%";
+  }
+}
+
+//
+//  画像がクリックされたとき
+//
+function pictClick() {
+  location.href = "(*next*)";
+}
+
+</script>
+</head>
+
+<!-- HTML 本体 -->
+<body onload="javascript:pageLoad();">
+<h1 style="font-size:24pt;">(*title*)</h1>
+<p class="menu"><a href="/">[Home]</a> | <a href="(*back*)">[Back]</a> | <a href="(*top*)">[Top]</a> | <a href="(*prev*)">[Previous]</a> | <a href="(*next*)">[Next]</a> | <a href="javascript:adjustSize();">Adjust Size</a></p>
+<br />
+<!-- 画像表示 -->
+<p style="text-align:center;">(*message*)</p>
+<img src="(*image*)" alt="(*image*)" id="pict"  onclick="javascript:pictClick();" />
+
+<p>&nbsp;</p>
+<p class="menu"><a href="/">[Home]</a> | <a href="(*back*)">[Back]</a> | <a href="(*top*)">[Top]</a> | <a href="(*prev*)">[Previous]</a> | <a href="(*next*)">[Next]</a> | <a href="javascript:adjustSize();">Adjust Size</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</hml>

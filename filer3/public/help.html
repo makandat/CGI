@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Sinatra filer 2.0 (Nadeko)</title>
+<link rel="stylesheet" href="greentea.css" />
+</head>
+
+<body>
+<h1 style="text-align:center;border-bottom-style:dotted;border-bottom-color:green;border-bottom-width:1px;padding:8px;text-shadow:1px 1px 2px #224222;">Sinatra filer 2.0 (Nadeko) Help</h1>
+<p><a href="javascript:window.close();">[close]</a> <a href="help_command.html">[コマンド詳細]</a> <a href="help_script.html">[スクリプト詳細]</a> <a href="help_method.html">[メソッド詳細]</a> <a href="help_API.html">[APIの詳細]</a>
+</p>
+
+
+<h2>画面の説明</h2>
+<p style="text-align:center;"><img src="img/sinatra_filer.png" alt="filer" width="80%" /></p>
+<div  style="background-color:snow;font-size:larger;padding:8px;margin-left:10%;">
+<ol>
+<li>現在表示されている場所(ディレクトリ)</li>
+<li>移動場所の候補(よく使う場所)</li>
+<li>コマンド入力ボックス</li>
+<li>メニュー領域 (ユーザメニューはオプション)</li>
+<li>ディレクトリの内容などを表示する領域(メイン表示領域)</li>
+<li>メッセージ領域。ファイル内容やコマンド実行結果なども表示される。</li>
+<li>メッセージ領域 へのジャンプ・アイコン</li>
+<li>pwdの部分をクリックするとカレントディレクトリと表示内容を一致させる。</li>
+<li>画面トップへのジャンプ・アイコン</li>
+<li>ルート(/)のリロード</li>
+</ol>
+</div>
+<p>&nbsp;</p>
+
+<h2>インストール</h2>
+<h3>動作条件</h3>
+以下の環境が必要です。
+<ul>
+<li>Linux (Ubuntu 11 など)</li>
+<li>Ruby 1.9.x 以上</li>
+<li>Sinatra 1.3.x 以上</li>
+<li>Firefox, Chrome などHTML5対応ブラウザ (JavaScriptが有効になっていること)</li>
+</ul>
+<br />
+<h3>インストール方法</h3>
+sinatra-filer.zipを適当なディレクトリへコピーし解凍する。<br />
+"locations.ini"を編集し、よく使うディレクトリを設定する。これは、画面の②のSELECTボックスに表示される。<br />
+実行は、
+<blockquote>
+$ ruby main.rb
+</blockquote>
+とする。<br />
+ブラウザで、"http://localhost:4567/"を開いて、上のような画面が表示されればOK。<br />
+<br />
+<h3>インストールされるファイル一覧</h3>
+<table style="width:90%;;margin-left:20px;">
+<tr><th>ファイル</th><th>機能・内容</th></tr>
+<tr><td>main.rb</td><td>Sinatra filerのrubyソース</td></tr>
+<tr><td>config.ini</td><td>設定ファイル。項目は、title, stylesheet, html (HTML内容の表示方法. 'text'または'frame'), backup ('yes'ならファイル保存やアップロードの時、バックアップファイルを作成する)<br />
+(Ver.2以上) sqlite3 に有効なSQLite3 データベース指定すると、ファイル情報を記録したり表示したりできる。<br />
+(Ver.2以上) ip に接続を許すIPアドレスを正規表現で設定する。ただし、127.0.0.1は常に許可する。省略したときは、192.168.0.0が許可される。<br />
+(Ver.2以上) start にスタートアップ時に表示するHTMLを設定すると、ディレクトリの内容一覧の代わりにそのHTMLの内容が表示される。このファイルはmain.rbと同じ場所に置いておくこと。
+<br />
+例
+<blockquote>
+# config.ini<br />
+title=Sinatra-Filer<br />
+stylesheet=greentea.css<br />
+html=text<br />
+sqlite3=/home/user/data/files.db
+ip=^192\.168\.\d+\.\d+$
+start=start.html
+</blockquote>
+</td></tr>
+<tr><td>locations.ini</td><td>よく使う場所(フォルダ)を登録しておくファイル。ユーザが編集する。</td></tr>
+<tr><td>usermenu.html</td><td>ユーザ定義メニュー(option)。ユーザが編集する。HTML形式で定義する。</td></tr>
+<tr><td>(views/layout.erb)</td><td>(Ver 2.0では使用されません) 画面のテンプレート(共通部分)、JavaScriptのソースを含む。</td></tr>
+<tr><td>(views/index.erb)</td><td>(Ver 2.0では使用されません) メイン画面のテンプレート</td></tr>
+<tr><td>public/favicon.ico</td><td>ブラウザのブックマークなどに表示されるアイコン</td></tr>
+<tr><td>public/greentea.css</td><td>スタイルシート</td></tr>
+<tr><td>public/help.html</td><td>このオンラインヘルプ・ファイル</td></tr>
+<tr><td>public/command_help.html</td><td>コマンドヘルプ・ファイル</td></tr>
+<tr><td>public/script_gallery.html</td><td>よく使うスクリプトを登録しておくHTMLファイル</td></tr>
+<tr><td>public/img/</td><td>画像ファイル用フォルダ</td></tr>
+<tr><td>public/js/jquery-1.6.1.min.js</td><td>Ajax JavaScriptライブラリファイル</td></tr>
+<tr><td>public/js/base64.js</td><td>Base64 JavaScriptライブラリファイル</td></tr>
+</table>
+<br />
+<br />
+ファイル管理情報データベースについて<br />
+　Ver.2からファイル管理情報データベースが使用できるようになりました。config.iniでsqlite3にファイル管理用データベースを指定すると有効になります。<br />
+　このデータベースには次のようなテーブル(info)が必要です。<br />
+<pre class="code">
+create table info (
+  n integer not null primary key autoincrement,
+  path text not null,
+  info text not null,
+  method text,
+  icon text,
+  dir integer not null default 0,
+  bin integer not null default 0,
+  `group` text,
+  tstamp text
+);
+
+</pre>
+<br />
+ユーザメニュー(umsermenu.html)のサンプル
+<pre class="code">
+&lt;img src="img/window.png" alt="window"/&gt; user menu
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="javascript:getContent('~');"&gt;Start Page&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.sinatrarb.com/" target="_blank"&gt;Sinatra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://ruby-doc.org/" target="_blank"&gt;ruby document&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+<br />
+<table style="margin-left:10%;">
+<caption>infoテーブルのフィールド</caption>
+<tbody>
+<tr><td>1</td><td>n</td><td>主キー</td></tr>
+<tr><td>2</td><td>path</td><td>ファイルやディレクトリのフルパス名</td></tr>
+<tr><td>3</td><td>info</td><td>ファイルやディレクトリの情報</td></tr>
+<tr><td>4</td><td>method</td><td>ファイルやディレクトリに対する標準的な処理を行うrubyコード</td></tr>
+<tr><td>5</td><td>icon</td><td>ファイルやディレクトリに対するアイコンや縮小画像のパス名またはデータ(Base64)</td></tr>
+<tr><td>6</td><td>dir</td><td>ディレクトリ(1)かファイル(0)か？</td></tr>
+<tr><td>7</td><td>bin</td><td>バイナリーファイル(1)かテキストファイル(0)か？</td></tr>
+<tr><td>8</td><td>group</td><td>ファイルやディレクトリをグループ化するときのタグ</td></tr>
+<tr><td>9</td><td>tstamp</td><td>登録日時</td></tr>
+</table>
+<p>&nbsp;</p>
+
+
+<h2>操作方法</h2>
+<h3>起動と終了</h3>
+　起動はコンソールを開き、次のようにコマンドを入力します。<br />
+<blockquote>
+$ ruby main.rb
+</blockquote>
+<br />
+終了はCTRL+Cを押します。再起動は、一度終了させてからもう一度起動を行います。
+<p>&nbsp;</p>
+
+<h3>メニュー</h3>
+<div  style="background-color:snow;font-size:larger;padding:8px;margin-left:10%;">
+<ol>
+<li>list<br />
+現在のディレクトリのコンテンツを表示する(最新状態に更新する)。
+</li>
+<li>list all<br />
+現在のディレクトリのコンテンツを隠しファイルを含めて表示する(最新状態に更新する)。
+</li>
+<li>tree<br />
+現在のディレクトリのコンテンツをツリー表示する(最新状態に更新する)。<br />
+(注意) treeコマンドがインストールされていること。
+</li>
+<li>script<br />
+スクリプト編集・実行フォームを表示する。
+</li>
+<li>bookamrk<br />
+ブックマーク一覧・編集フォームを表示する。
+</li>
+<li>cache<br />
+パス・キャッシュ一覧を表示する。
+</li>
+<li>file upload<br />
+ファイルアップロードフォームを表示する。
+</li>
+<li>refer ..<br />
+ディレクトリ内容一覧を新しいウィンドウで表示する。
+</li>
+<li>help<br />
+ヘルプを表示する。
+</li>
+</ol>
+</div>
+<p>&nbsp;</p>
+
+
+<h3>ファイルシステムの表示</h3>
+listメニュー(デフォルトで表示される)を実行すると、ディレクトリの内容が表示されます。ページを開いた直後は、ホームディレクトリが表示されます。<br />
+list allメニューは、隠しファイルや隠しディレクトリも表示されます。<br />
+treeメニューは、ツリー表示を行います (treeコマンドがインストールされていること)。<br />
+表示された内容で、ディレクトリをクリックするとそのディレクトリへ移動できます。<br />
+locationsセレクタでよく使うディレクトリへ直接移動できます。<br />
+\cdコマンド (「コマンドの実行」参照) を使うと、直接、指定した場所へ移動できます。<br />
+一覧表示に置いて、表示項目の左にあるアイコンをクリックすると、テキストファイルや画像ファイルの場合、その内容や画像を表示できます。<br />
+\dirコマンドを使うと、フルパスでファイル一覧の表示ができます。これは、クリップボードにコピーして使用するのに便利です。
+<p>&nbsp;</p>
+
+<h3>コマンドの実行</h3>
+command入力ボックスにbashコマンドを入力すると、そのコマンドを実行できます。また、\で始まる内部コマンドもあります。<br />
+コマンドの実行結果は、画面下のメッセージ領域に表示されます。<br /><br />
+
+(注意) コマンドの実行をするときは、<span style="font-weight:bold;">必ず、カレントディレクトリの確認を行ってください。</span>画面に表示されている内容とカレントディレクトリが一致しているとは限りません。カレントディレクトリは、"pwd"コマンドを実行すると確認できます。
+<br />
+コマンド入力でパス名を指定するとき、'#n'(nは整数)のような指定ができる場合があります。例えば、ファイル一覧を表示しているとき、catコマンドでパス名を入力する代わりにファイル一覧の番号を指定することができます。
+<br />
+例
+<blockquote>
+cat #5
+</blockquote>
+<br />
+<br />
+<table style="width:90%;margin-left:20px;">
+<caption>内部コマンド</cation>
+<tbody>
+<tr><th>内部コマンド</th><th>例</th><th>機能</th></tr>
+<tr><td>?</td><td>?</td><td>ヘルプを表示する。</td></tr>
+<tr><td>!番号</td><td>!10</td><td>ファイル一覧で指定した番号のファイルをコマンドとして実行する。</td></tr>
+<tr><td>\.</td><td>\.</td><td>表示されている場所をカレントディレクトリとする。</td></tr>
+<tr><td>\番号</td><td>\10</td><td>ファイル一覧の番号を指定すると、パス・キャッシュ (HTML5のSession Storage) へそのパス名が追加される。</td></tr>
+<tr><td>\cc</td><td>\cc</td><td>すべてのキャッシュをクリアする。</td></tr>
+<tr><td>\ab 番号</td><td>\ab 14</td><td>\ab の後にファイル一覧の番号を指定すると、そのパス名がブックマーク (HTML5のLocal Storage) に追加される。</td></tr>
+<tr><td>\cb</td><td>\cb</td><td>ブックマークをすべて削除する。</td></tr>
+<tr><td>\cd ディレクトリ</td><td>\cd /var/www/html</td><td>指定したディレクトリの内容を表示する。</td></tr>
+<tr><td>\dir full_path</td><td>\dir /var/www/html</td><td>指定したディレクトリの一覧をフルパスで表示する。</td></tr>
+<tr><td>\h</td><td>\h</td><td>コマンド履歴を表示する。</td></tr>
+<tr><td>\hc</td><td>\hc</td><td>コマンド履歴をクリアする。</td></tr>
+<tr><td>\ed</td><td>\ed test1.txt</td><td>ファイルを編集モードで開く。存在しないパスを指定したときは、そのファイルが新規作成される。</td></tr>
+<tr><td>\cp</td><td>\cp</td><td>最後にキャッシュされたファイルで現在表示されているディレクトリへコピーするための cp コマンドに置換する。</td></tr>
+<tr><td>\mv</td><td>\mv</td><td>最後にキャッシュされたファイルで現在表示されているディレクトリへ移動するための mv コマンドに置換する。</td></tr>
+<tr><td>\rm</td><td>\rl</td><td>"locations"セレクタに表示されている場所の内容一覧を表示する。</td></tr>
+<tr><td>\rm</td><td>\rm</td><td>最後にキャッシュされたファイルで削除するための rm コマンドに置換する。</td></tr>
+<tr><td>\bk</td><td>\bk</td><td>直前の表示場所へもどる。</td></tr>
+<tr><td>\ii 番号</td><td>\ii 11</td><td>(Ver.2以上) ファイル情報を追加する。</td></tr>
+<tr><td>\id 番号 またはフルパス</td><td>\id 5<br />\id /home/user/temp/temp.txt</td><td>(Ver.2以上) ファイル情報を削除する。</td></tr>
+<tr><td>\iu 番号 またはフルパス</td><td>\iu 18<br />\iu /home/user/temp/temp.txt</td><td>(Ver.2以上) ファイル情報を更新する。</td></tr>
+<tr><td>\iq 番号 またはフルパス</td><td>\iq 6<br />\iq /home/user/temp/temp.txt</td><td>(Ver.2以上) ファイル情報を表示する。</td></tr>
+<tr><td>\is</td><td>\is</td><td>(Ver.2以上) ファイル情報を検索する。</td></tr>
+<tr><td>\if 番号</td><td>\if 3</td><td>(Ver.2以上) ファイル情報のうちinfoフィールドのみを表示する。</td></tr>
+<tr><td>\im 番号</td><td>\im 3</td><td>(Ver.2以上) ファイル情報のうちmethodフィールドのみを表示する。</td></tr>
+<tr><td>\iv</td><td>\iv</td><td>(Ver.2以上) ファイル一覧表示にファイル情報がある場合、当該パスに詳細表示アイコンを追加して表示する。</td></tr>
+<tr><td>\ip 番号またはフルパス</td><td>\ip 4</td><td>(Ver.2以上) ファイル情報にアイコンまたは縮小画像情報が登録されていればそれを表示する。</td></tr>
+<tr><td>\ig 番号またはフルパス</td><td>\ig 4</td><td>(Ver.2以上) ファイル情報のアイコンまたは縮小画像情報を直接埋め込みで更新する。</td></tr>
+<tr><td>\ix 番号</td><td>\ix 4</td><td>(Ver.2以上) 番号で指定したファイルやディレクトリに関連付けられたメソッドを実行する。</td></tr>
+<tr><td>\iz 番号</td><td>\iz 4;n=10</td><td>(Ver.2以上) 番号で指定したファイルがスクリプトの場合、それを実行する。(注意) POSTメソッドでパラメータを渡すタイプのスクリプトは実行できない。</td></tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+
+<h3>パスのブックマークとキャッシュの操作</h3>
+　パスのブックマークやキャッシュを使うと、コマンド入力の際のパス名入力で、コピー＆ペーストを行うことで長いパス名を入力するのを回避できます。<br />
+　ブックマークは、HTML5のLocal Storageに保存されるので、ブラウザを閉じて再びページを開いた時も有効です。一方、キャッシュはSession Storageに保存されるので、ブラウザを閉じると自動的に消去されます。<br />
+　ブックマークやキャッシュの作成は前述の内部コマンドで行います。<br />
+ブックマークの一覧や編集は、bookmarkメニューで行うことができます。<br />
+キャッシュの一覧表示は、cacheメニューで行います。<br />
+<p>&nbsp;</p>
+
+<h3>スクリプトの実行</h3>
+　scriptメニューを実行すると下のような画面が表示されます。
+<p style="text-align:center;"><img src="img/filer-script.png" alt="filer" width="60%" /></p>
+　デフォルトでは、入力されたスクリプトはbashのものとみなされますが、"ruby"チェックボックスをチェックするとrubyのものとみなされます。<br />
+"open window" チェックボックスをチェックすると、別ウィンドウで実行されます。<br />
+<span style="font-weight:bold;">(注意) この場合、"Save &amp; Run"ボタンをクリックしても実行だけ行われ保存は行われません。</span><br />
+　"save path (option)"が空欄の場合は、実行のみでスクリプトは保存されません。有効なパス名が指定されていると、そのファイルにスクリプトが保存されて実行されます。<br />
+　保存しておいたスクリプトはLoadボタンで"save path (option)"で指定したファイルから読み込むことができます。一方、"save path (option)"でファイルを指定しておけば、"Load"で読み込まなくてもスクリプトの実行ができます。<br />
+　スクリプトの実行結果は、画面下のメッセージ領域に表示されます。bashの場合は、コマンドが表示する文字列がそのまま表示されますが、rubyの場合は、putsやpメソッドで表示しても無視されて表示されません。実行結果はHTML文字列として作成し、スクリプトの最後にメソッドの値として返します。<br />
+　\izコマンドを使ってスクリプトを実行することもできますが、POSTメソッドでパラメータを受け取るタイプのスクリプトは実行できません。<br />
+よく使うスクリプトを <span style="font-weight:bold;">script gallery</span> に登録しておくと簡単に実行できます。script_gallery は public/script_gallery.html として作成します。JavaScript関数 runRuby(path) を実行するrubyスクリプトのフルパス名で呼び出す必要があります。<br />
+<br />
+(例)<pre class="code">
+&lt;!-- script gallery --&gt;
+&lt;h3&gt;Script Gallery&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/sinatra/filer/scripts/swf1.rb');"&gt;Flash SWEETS&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="javascript:runRuby('/home/user/workspace/sinatra/filer/scripts/svgmk1.rb');"&gt;SVG Circle&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+<br />
+<br />
+<h4>bash スクリプトの例</h4>
+<p style="text-align:center;"><img src="img/bash-run.png" alt="filer" width="60%" /></p>
+<br />
+<h4>rubyスクリプトの例</h4>
+<p style="text-align:center;"><img src="img/ruby-run.png" alt="filer" width="60%" /></p>
+<br />
+<h4>パラメータ入力用フォームが必要なスクリプトの例</h4>
+フォーム用スクリプト
+<pre class="code">
+&lt;&lt;EOS
+&lt;form method="post" action="/script_window/"&gt;
+n1 &lt;input type="text" name="n1" /&gt;&lt;br /&gt;
+n2 &lt;input type="text" name="n2" /&gt;&lt;br /&gt;
+&lt;input type="submit" value="exec" /&gt;&lt;br /&gt;
+&lt;input type="hidden" name="path" value="/home/user/workspace/sinatra/filer/tmp/post.rb" /&gt;
+&lt;/form&gt;
+EOS
+
+</pre>
+上の例のようにformタグのmethod属性を"post"、action属性を"/script_window/"とする必要があります。<br />
+<br />
+POSTされたパラメータを処理して表示するスクリプト。事前にファイル保存しておく必要があります。上の例では"/home/user/workspace/sinatra/filer/tmp/post.rb"という名前で保存されているものとしています。
+<pre class="code">
+n = n1.to_i + n2.to_i
+n.to_s
+</pre>
+パラメータは、formタグのname属性の名前になります。パラメータの型はすべて文字列型です。<br />
+<p>&nbsp;</p>
+
+<h3>メソッドの登録と実行 (ver.2以上)</h3>
+<h4>メソッドの登録</h4>
+　メソッドとは、オブジェクト(ファイルやディレクトリ)に関連付けられたrubyスクリプトです。メソッドは、sqlite3データベース (config.iniで設定) に保存されます。<br />
+　メソッドを登録するには、"\ii"コマンドを使います。このコマンドを実行すると、ファイル情報入力フォームが表示されるので、method欄にrubyコードを入力します。<br />
+　このコードで、対象のオブジェクトのパス名は、変数"path"で受け取ることができます。その他のパラメータは、メソッド実行コマンド("\ix")で";"に続いて入力したとおりに受け取ることができます。<br />
+　例えば、
+<blockquote>
+\ix 10;param={:x=>5, :y=>11}
+</blockquote>
+などとすれば、パラメータはpathも含めて
+<blockquote>
+path = "/home/user/...."<br />
+param=param={:x=>5, :y=>11}<br />
+<br />
+以下、method欄に入力した通り。<br />
+</blockquote>
+などとなります。<br />
+<br />
+
+<h4>メソッドの実行</h4>
+　メソッドが登録されているかは、"\iv"コマンドあるいは"list all"メニューでファイル情報表示アイコンを表示させて、それをクリックするとメッセージ欄に登録情報が表示されます。さらに詳しい内容が見たい場合は、"\im"コマンドを使用するとメソッド全体を見ることができます。メソッドの使い方などをinfoフィールドに書いておくと便利ですが、infoフィールド全体は、"\if"コマンドで表示できます。<br />
+　メソッドの実行は、"\ix"コマンドを使用します。対象ファイルあるいはディレクトリの番号の後に";任意の文字列"を付けると、その文字列がそのままメソッドの先頭に追加されます。実際にどのようなコードが実行されるかを確認するには、この文字列を"echo"にすると、実際に実行されるコードがメッセージ欄に表示されます。<br />
+<blockquote>
+\ix 10;echo
+</blockquote>
+<p>&nbsp;</p>
+<hr />
+<a href="help_command.html">コマンド詳細</a>, 
+<a href="help_script.html">スクリプト詳細</a>, 
+<a href="help_method.html">メソッド詳細</a>, 
+<a href="help_API.html">API詳細</a>, 
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
