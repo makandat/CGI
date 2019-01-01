@@ -1,9 +1,9 @@
 USE user
 CREATE TABLE `Pictures` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `TITLE` varchar(50) NOT NULL,
+  `TITLE` varchar(100) NOT NULL,
   `CREATOR` varchar(50) NOT NULL,
-  `PATH` varchar(500) NOT NULL,
+  `PATH` varchar(500) NOT NULL UNIQUE,
   `MARK` varchar(10) DEFAULT NULL,
   `INFO` varchar(100) DEFAULT NULL,
   `FAV` char(1) DEFAULT '0',
