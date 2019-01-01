@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>Pictures v3.50</title>
+ <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
+ </script>
+ <style>
+   h1 {
+      text-align:center;
+      color:midnightblue;
+      padding:15px;
+      border:solid 20px silver;;
+      border-radius: 0.5em;
+      background-color:#f0f0f0;
+    }
+
+    h2 {
+      color: darkcyan;
+      padding:4px;
+    }
+
+    a:link, a:visited {
+      color:blue;
+      text-decoration:none;
+    }
+
+  .form_row {
+     padding:5px;
+     margin-bottom:6px;
+  }
+  form {
+     margin-left:8%;
+  }
+
+  input[type="submit"] {
+    border-radius:3px 3px;
+    background-color:lightgreen;
+    height:32px;
+  }
+
+ </style>
+ </head>
+
+ <body style="margin-left:4%;margin-right:4%;">
+<h1>画像一覧 3.50 パスフィルタ</h1>
+<p><a href="index.php">[Back]</a></p>
+<br />
+<form method="GET" action="index.php">
+<div class="form_row"><label>パスの指定　</label><input type="text" name="filterPath" size="80" /></div>
+<div class="form_row" style="margin-left:10%;"><input type="submit" value="設定する" /></div>
+</form>
+
+</body>
+</html>

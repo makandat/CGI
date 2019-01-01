@@ -2,7 +2,7 @@
 <html>
 <head>
  <meta charset="utf-8" />
- <title>Pictures v3.10</title>
+ <title>Pictures v3.50</title>
  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
  </script>
  <script>
@@ -13,6 +13,13 @@ function clearAll() {
   $('#creator').val('');
   $('#info').val('');
 };
+
+function queryInfo() {
+  if ($('#textinfo').val() == "")
+     return;
+  var criteria = "info=" + $('#textinfo').val();
+  location.href = "index.php?" + criteria;
+}
  </script>
  <style>
     h1 {
@@ -53,23 +60,58 @@ function clearAll() {
       word-break:break-all;
     }
 
+    input[type="text"] {
+        border-radius:3px 3px;
+        height:16px;
+    }
+    input[type="button"] {
+        border-radius:3px 3px;
+        background-color:lightgreen;
+        height:32px;
+    }
+
+    input[type="submit"] {
+        border-radius:3px 3px;
+        background-color:lightgreen;
+        height:32px;
+    }
+
+    input[type="checkbox"] {
+        background-color:lightgreen;
+        height:16px;
+        width:16px;
+    }
+
+    select {
+        border-radius:3px 3px;
+        background-color:lavender;
+        height:32px;
+        width:200px;
+    }
+    
+    form {
+       background-color:whitesmoke;
+    }
  </style>
 </head>
 
 
 
 <body style="margin-left:4%;margin-right:4%;">
-<h1>画像一覧 3.10</h1>
-<p><a href="/">[HOME]</a>&nbsp;/&nbsp;<a href="listCreators.php">[作者一覧]</a>&nbsp;/&nbsp;<a href="index.php">[表示リセット]</a></p>
+<h1>画像一覧 3.50</h1>
+<p><a href="/">[HOME]</a>&nbsp;/&nbsp;<a href="listCreators.php">[作者一覧]</a>
+&nbsp;/&nbsp;<a href="filterPath.html">[パスフィルタ]</a>
+&nbsp;/&nbsp;<a href="index.php">[表示リセット]</a></p>
 <br />
 <!-- 追加フォーム -->
 <form method="POST" action="addNew.php">
- <table>
+ <table style="width:100%">
   <tr><td>ID</td><td><input type="text" size="10" name="id" id="id" /></td></tr>
   <tr><td>タイトル (TITLE)</td><td><input type="text" size="80" name="title" id="title" /></td></tr>
   <tr><td>パス (PATH)</td><td><input type="text" size="120" name="path" id="path" /></td></tr>
   <tr><td>作者 (CREATOR)</td><td><input type="text" size="50" name="creator" id="creator" /></td></tr>
   <tr><td>識別マーク (MARK)</td><td><select name="mark" id="mark">
+    <option value="0">指定なし(更新時は変更なし)</option>
     <option>MANGA</option>
     <option>HCG</option>
     <option>PHOTO</option>
@@ -81,12 +123,14 @@ function clearAll() {
   <tr><td></td><td><input type="submit" value=" 追加 (更新) " />&nbsp;<input type="button" id="btnClear" value="すべて消去" onclick="clearAll()" /></td></tr>
  </table>
 </form>
-<p>（注意）ID を指定すると更新になります。更新の場合、空欄とマークは更新されません。</p>
+<p>（注意）ID を指定すると更新になります。更新の場合、空欄は更新されません。</p>
 <p style="maegin-left:5%;margin-top:20px;color:brown;">(*message*)</p>
 
 <br />
-<p><a href="index.php">すべて</a>　</a><a href="index.php?FAV=1">お気に入り</a>　<a href="index.php?mark=MANGA">まんが</a>　
-<a href="index.php?mark=HCG">HCG</a>　<a href="index.php?mark=PHOTO">写真</a>　<a href="index.php?mark=OTHER">その他</a></p>
+<p><a href="index.php"><b>すべて(表示リセット)</b></a>　</a><a href="index.php?FAV=1">お気に入り</a>　<a href="index.php?mark=MANGA">まんが</a>　
+<a href="index.php?mark=HCG">HCG</a>　<a href="index.php?mark=PHOTO">写真</a>　<a href="index.php?mark=OTHER">その他</a>　
+<input type="text" id="textinfo" size="20" />&nbsp;<input type="button" id="btninfo" value=" 備考検索 " class="btninfo" onclick="queryInfo();" />
+</p>
 <!-- 画像ディレクトリ一覧 -->
 (*table*)
 
