@@ -16,12 +16,6 @@ Ruby/Sinatra による 画像データベース for SQLite3
 ## Picture7
 PHP7 による画像管理・ビューア
 
-## Python36/2to3
-Python2 から Python3 への変換サンプル
-
-## Python36/HttpServer
-Python3 http.server サンプル
-
 # Users
 Python3 によるユーザ管理 CGI
 
