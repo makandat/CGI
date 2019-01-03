@@ -23,6 +23,9 @@ else {
   $filename = OOPHPLib\File::getFileName($path);
 }
 
+// ハッシュ
+$hash = md5(OOPHPLib\File::getDirectory($path));
+
 // tmp フォルダの内容をクリアする。
 //   tmp フォルダは Public Write であること！
 $tmpdir = OOPHPLib\Directory::getCurrentDirectory() . "/tmp";
@@ -34,16 +37,16 @@ array_map('unlink', glob($tmpdir . "/*"));
 
 // 画像ファイルのシンボリックリンク作成
 if (OOPHPLib\File::exists($path)) {
-  OOPHPLib\File::createSymlink($path, "tmp/$filename");
+  OOPHPLib\File::createSymlink($path, "tmp/".$hash.$filename);
 }
 else {
-  OOPHPLib\File::createSymlink($path . "/" . $filename, "tmp/$filename");
+  OOPHPLib\File::createSymlink($path . "/" . $filename, "tmp/".$hash.$filename);
 }
 
 // パラメータ設定
 $p->v['filename'] = urlencode($filename);
 $p->v['title'] = 'showImage.php';
-$p->v['getimage'] = "tmp/" . $filename;
+$p->v['getimage'] = "tmp/" . $hash.$filename;
 $p->v['previous'] = (string)($index - 1);
 $p->v['next'] = (string)($index + 1);
 $dir = $path;

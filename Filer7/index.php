@@ -1,6 +1,6 @@
 <?php
 require "OOLib1.php";
-define('TITL', 'PHP7-filer v1.11');
+define('TITL', 'PHP7-filer v1.20');
 $pss = array();
 $maxCount = 10000;
 $iniFile = "";
