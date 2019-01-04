@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <head>
 <meta charset="utf-8" />
-<title>MySQL Music テーブル</title>
+<title>MySQL Videos テーブル</title>
 <link rel="stylesheet" href="/css/default.css" />
 <style>
  table, td, th {
@@ -33,8 +33,8 @@ $(document).ready(function() {
     $('input[name="id"]').val("");
     $('input[name="title"]').val("");
     $('input[name="path"]').val("");
-    $('input[name="artist"]').val("");
-    $('input[name="album"]').val("");
+    $('input[name="creator"]').val("");
+    $('input[name="series"]').val("");
     $('input[name="mark"]').val("");
     $('input[name="info"]').val("");
     $('input[name="fav"]').val("0");
@@ -45,7 +45,7 @@ $(document).ready(function() {
 </head>
 
 <body style="margin-left:5%;margin-right:5%">
-<h1 style="text-align:center;color:crimson;padding:10px;">MySQL Music テーブル</h1>
+<h1 style="text-align:center;color:mediumvioletred;padding:10px;">MySQL Videos テーブル</h1>
 <p style="margin-left:10%;"><a href="/cgi">CGI Index</a>&nbsp;/&nbsp;<a href="index.cgi">データの一覧表示</a></p>
 <br />
 <p style="text-align:center;"><u>使用方法</u></p>
@@ -64,8 +64,8 @@ $(document).ready(function() {
 <tr><td>番号 (id) </td><td><input type="text" name="id"  value='(*id*)' /></td></tr>
 <tr><td>曲名 (title)</td><td><input type="text" name="title" size="80" value='(*title*)' /></td></tr>
 <tr><td>場所 (path)</td><td><input type="text" name="path" size="120"  value='(*path*)' /></td></tr>
-<tr><td>歌手・演奏者 (artist)</td><td><input type="text" name="artist" size="50" value='(*artist*)' /></td></tr>
-<tr><td>アルバム (album)</td><td><input type="text" name="album" size="50" value='(*album*)' /></td></tr>
+<tr><td>作者 (creator)</td><td><input type="text" name="creator" size="50" value='(*creator*)' /></td></tr>
+<tr><td>シリーズ (series)</td><td><input type="text" name="series" size="50" value='(*series*)' /></td></tr>
 <tr><td>分類マーク (mark)</td><td><input type="text" name="mark" size="10" value='(*mark*)' /></td></tr>
 <tr><td>情報 (info)</td><td><input type="text" name="info" size="120" value='(*info*)' /></td></tr>
 <tr><td>お気に入り (fav)</td><td><input type="text" name="fav" size="4" value='(*fav*)' /></td></tr>

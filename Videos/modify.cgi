@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- code=utf-8 -*-
-# Music テーブルのデータ追加・修正
+# Videos テーブルのデータ追加・修正
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -9,9 +9,9 @@ import Common
 import Text
 from syslog import syslog
 
-SELECT = "SELECT title, path, artist, album, mark, info, fav, count FROM Music WHERE id = {0}"
-INSERT = "INSERT INTO Music(title, path, artist, album, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7})"
-UPDATE = "UPDATE Music SET title='{1}', path='{2}', artist='{3}', album='{4}', mark='{5}', info='{6}', fav='{7}', count={8} WHERE id={0};"
+SELECT = "SELECT title, path, creator, series, mark, info, fav, count FROM Videos WHERE id = {0}"
+INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7})"
+UPDATE = "UPDATE Videos SET title='{1}', path='{2}', creator='{3}', series='{4}', mark='{5}', info='{6}', fav='{7}', count={8} WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(page.WebPage) :
@@ -51,26 +51,26 @@ class MainPage(page.WebPage) :
         self.vars['id'] = ""
         self.vars['title'] = title
         self.vars['path'] = path
-        self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-        self.vars['album'] = MainPage.setNoneToEmpty(album)
+        self.vars['creator'] = MainPage.setNoneToEmpty(creator)
+        self.vars['series'] = MainPage.setNoneToEmpty(series)
         self.vars['mark'] = MainPage.setNoneToEmpty(mark)
         self.vars['info'] = MainPage.setNoneToEmpty(info)
         self.vars['fav'] = fav
         self.vars['count'] = str(count)
         return
-      artist = MainPage.setNoneToEmpty(self.params['artist'].value  if 'artist' in self.params else "")
-      album = MainPage.setNoneToEmpty(self.params['album'].value  if 'album' in self.params else "")
+      creator = MainPage.setNoneToEmpty(self.params['creator'].value  if 'creator' in self.params else "")
+      series = MainPage.setNoneToEmpty(self.params['series'].value  if 'series' in self.params else "")
       mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
       info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
       fav = self.params['fav'].value  if 'fav' in self.params else ""
       count = self.params['count'].value  if 'count' in self.params else ""
-      sql = Text.format(UPDATE, id, title, path, artist, album, mark, info, fav, count)
+      sql = Text.format(UPDATE, id, title, path, creator, series, mark, info, fav, count)
       self.client.execute(sql)
       self.vars['id'] = id
       self.vars['title'] = title
       self.vars['path'] = path
-      self.vars['artist'] = artist
-      self.vars['album'] = album
+      self.vars['creator'] = creator
+      self.vars['series'] = series
       self.vars['mark'] = mark
       self.vars['info'] = info
       self.vars['fav'] = fav
@@ -91,26 +91,26 @@ class MainPage(page.WebPage) :
         self.vars['id'] = ""
         self.vars['title'] = title
         self.vars['path'] = path
-        self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-        self.vars['album'] = MainPage.setNoneToEmpty(album)
+        self.vars['creator'] = MainPage.setNoneToEmpty(creator)
+        self.vars['series'] = MainPage.setNoneToEmpty(series)
         self.vars['mark'] = MainPage.setNoneToEmpty(mark)
         self.vars['info'] = MainPage.setNoneToEmpty(info)
         self.vars['fav'] = fav
         self.vars['count'] = str(count)
         return
-      artist = MainPage.setNoneToEmpty(self.params['artist'].value  if 'artist' in self.params else "")
-      album = MainPage.setNoneToEmpty(self.params['album'].value  if 'album' in self.params else "")
+      creator = MainPage.setNoneToEmpty(self.params['creator'].value  if 'creator' in self.params else "")
+      series = MainPage.setNoneToEmpty(self.params['series'].value  if 'series' in self.params else "")
       mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
       info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
       fav = self.params['fav'].value  if 'fav' in self.params else ""
       count = self.params['count'].value  if 'count' in self.params else ""
-      sql = INSERT.format(title, path, artist, album, mark, info, fav, count)
+      sql = INSERT.format(title, path, creator, series, mark, info, fav, count)
       self.client.execute(sql)
       self.vars['id'] = ""
       self.vars['title'] = title
       self.vars['path'] = path
-      self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-      self.vars['album'] = MainPage.setNoneToEmpty(album)
+      self.vars['creator'] = MainPage.setNoneToEmpty(creator)
+      self.vars['series'] = MainPage.setNoneToEmpty(series)
       self.vars['mark'] = MainPage.setNoneToEmpty(mark)
       self.vars['info'] = MainPage.setNoneToEmpty(info)
       self.vars['fav'] = fav
@@ -130,8 +130,8 @@ class MainPage(page.WebPage) :
         self.vars['id'] = self.params['id'].value
         self.vars['title'] = row[0]
         self.vars['path'] = row[1]
-        self.vars['artist'] = MainPage.setNoneToEmpty(row[2])
-        self.vars['album'] = MainPage.setNoneToEmpty(row[3])
+        self.vars['creator'] = MainPage.setNoneToEmpty(row[2])
+        self.vars['series'] = MainPage.setNoneToEmpty(row[3])
         self.vars['mark'] = MainPage.setNoneToEmpty(row[4])
         self.vars['info'] = MainPage.setNoneToEmpty(row[5])
         self.vars['fav'] = row[6]
@@ -153,8 +153,8 @@ class MainPage(page.WebPage) :
       self.vars['id'] = str(id)
     self.vars['title'] = ""
     self.vars['path'] = ""
-    self.vars['artist'] = ""
-    self.vars['album'] = ""
+    self.vars['creator'] = ""
+    self.vars['series'] = ""
     self.vars['mark'] = ""
     self.vars['info'] = ""
     self.vars['fav'] = "0"
