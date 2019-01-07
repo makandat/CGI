@@ -4,7 +4,7 @@ import WebPage as page
 import MySQL
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count FROM Pictures'
-LIMIT = 100
+LIMIT = 500
 
 # CGI WebPage クラス
 class MainPage(page.WebPage) :
@@ -12,8 +12,10 @@ class MainPage(page.WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
+    self.vars['result'] = ""
     try :
       rows = []
+      self.cookie('reverse', '0')
       self.vars['filter'] = ""
       self.vars['reverse'] = 'yes'
       self.__mysql = MySQL.MySQL()
@@ -21,60 +23,83 @@ class MainPage(page.WebPage) :
         # フィルタ指定がある場合
         filter = self.params['filter'].value
         self.vars['filter'] = "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>'
-        self.vars["start"] = self.getStartId()
-        self.vars["end"] = self.getEndId()
         sql = self.makeFilterSql(filter)
         rows = self.__mysql.query(sql)
       elif 'fav' in self.params :
         # fav 指定がある場合
         sql = SELECT + " WHERE fav = '1' or fav = '2'"
-        self.vars["start"] = self.getStartId()
-        self.vars["end"] = self.getEndId()
         rows = self.__mysql.query(sql)
       elif 'mark' in self.params :
         # mark 指定がある場合
         mark = self.params['mark'].value
         sql = SELECT + f" WHERE mark = '{mark}'"
-        self.vars["start"] = self.getStartId()
-        self.vars["end"] = self.getEndId()
         rows = self.__mysql.query(sql)
       elif 'reverse' in self.params :
         # reverse 指定がある場合
         reverse = self.params['reverse'].value
         if reverse == 'yes' :
           self.vars['reverse'] = 'no'
+          self.cookie('reverse', '1')
           sql = SELECT + f" ORDER BY id DESC LIMIT {LIMIT}"
         else :
+          self.cookie('reverse', '0')
           self.vars['reverse'] = 'yes'
           sql = SELECT + f" ORDER BY id ASC LIMIT {LIMIT}"
         rows = self.__mysql.query(sql)
-      elif 'idstart' in self.params :
-        # idstart 指定がある場合
-        start = self.params['idstart'].value
-        self.vars["start"] = self.getStartId(start)
-        self.vars["end"] = start
-        sql = SELECT + f" WHERE id > {start} LIMIT {LIMIT}"
-        rows = self.__mysql.query(sql)
-      elif 'idend' in self.params :
-        # idend 指定がある場合
-        end = self.params['idend'].value
-        self.vars["start"] = end
-        self.vars["end"] = self.getEndId(end)
-        sql = SELECT + f" WHERE id BETWEEN {start} AND {end} LIMIT {LIMIT}"
-        rows = self.__mysql.query(sql)
+      elif 'page' in self.params :
+        # page 指定がある場合
+        page = self.params['page'].value
+        if page == "first" :
+          # 先頭のページ
+          sql = SELECT + f" LIMIT {LIMIT}"
+          rows = self.__mysql.query(sql)
+          self.cookie('start_id', str(rows[0][0]))
+          n = len(rows) - 1
+          self.cookie('end_id', str(rows[n][0]))
+        elif page == "prev" :
+          # 前のページ
+          start = 0
+          if 'start_id' in self.cookies :
+            start = self.cookies['start_id'].value
+          sql = SELECT + f" WHERE id < {start} ORDER BY id DESC LIMIT {LIMIT}"
+          rows = self.__mysql.query(sql)
+          self.cookie('start_id', str(rows[0][0]))
+          n = len(rows) - 1
+          self.cookie('end_id', str(rows[n][0]))
+        elif page == "next" :
+          # 次のページ
+          end = 0
+          if 'end_id' in self.cookies :
+            end = self.cookies['end_id'].value
+          sql = SELECT + f" WHERE id > {end} LIMIT {LIMIT}"
+          rows = self.__mysql.query(sql)
+          self.cookie('start_id', str(rows[0][0]))
+          n = len(rows) - 1
+          self.cookie('end_id', str(rows[n][0]))
+        else : # page == last 
+          # 最後のページ
+          sql = SELECT + f" ORDER BY id DESC LIMIT {LIMIT}"
+          rows = self.__mysql.query(sql)
+          self.cookie('start_id', str(rows[0][0]))
+          n = len(rows) - 1
+          self.cookie('end_id', str(rows[n][0]))
       else :
         # フィルタ指定がない(通常の)場合
         rows = self.__mysql.query(SELECT + f" LIMIT {LIMIT};")
-        self.vars["start"] = self.getStartId()
-        self.vars["end"] = self.getEndId()
-      self.vars['result'] = ""
-      # クエリー
+        self.cookie('start_id', str(rows[0][0]))
+        n = len(rows) - 1
+        self.cookie('end_id', str(rows[n][0]))
+        self.vars['result'] = ""
+      # クエリー結果を表示する。
       self.vars['result'] = self.getResult(rows)
       self.vars['message'] = "クエリー OK"
       if len(rows) == 0 :
         self.vars['message'] = "０件のデータが検出されました。"
     except Exception as e:
       self.vars['message'] = "致命的エラーを検出。" + str(e)
+    return
+
+
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
@@ -100,21 +125,8 @@ class MainPage(page.WebPage) :
     sql += SELECT + f" WHERE `info` LIKE '%{filter}%'"
     return sql
 
-  # 先頭の id を得る。
-  def getStartId(self, endid=0) :
-    if endid == 0 :
-      startid = self.__mysql.getValue(f"SELECT MIN(id) FROM Pictures")
-    else :
-      startid = self.__mysql.getValue(f"SELECT MIN(id) FROM Pictures WHERE id <= {endid} LIMIT {LIMIT}")
-    return startid
 
-  # 最終の id を得る。
-  def getEndId(self, startid=0) :
-    if startid == 0 :
-      endid = self.__mysql.getValue(f"SELECT MAX(id) FROM Pictures LIMIT {LIMIT}")
-    else :
-      endid = self.__mysql.getValue(f"SELECT MAX(id) FROM Pictures WHERE id >= {startid} LIMIT {LIMIT}")
-    return endid
+
 
 # メイン開始位置
 wp = MainPage('templates/index.html')
