@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf8" />
+ <title>YJFX</title>
+ <link rel="stylesheet" href="/css/default.css" />
+ <style>
+   form {
+     margin-left:10%;
+     margin-bottom:20px;
+     padding:10px;
+   }
+   button {
+     height:32px;
+     background-color:lime;
+     border-radius:4px;
+   }
+   input[type="text"] {
+     border-radius:4px;
+     height:25px;
+   }
+ </style>
+</head>
+
+<body>
+ <h1>YJFX</h1>
+ <div style="text-align:center;"><a href="/cgi/index.html">CGI Index</a>&nbsp;/&nbsp;<a href="#YJFX_Settlement">取引管理</a>&nbsp;/&nbsp;<a href="asset_plot.cgi">資産グラフ</a>&nbsp;/&nbsp;<a href="insert.cgi">資産入力・修正</a></div>
+ <br />
+ <h2>資産管理 (YJFX_Asset)</h2>
+ <table style="width:60%;">
+  <tr><th>ID</th><th>日付</th><th>資産</th><th>損益</th><th>資産+損益</th></tr>
+  (*asset*)
+ </table>
+ <br />
+
+ <h2><a id="YJFX_Settlement"></a>取引管理 (YJFX_Settlement)</h2>
+ <div style="color:magenta;margin-left:10%;padding:10px;">この期間の成績　\(*sum*)</div>
+ <form>
+   <div><label>期間指定(yymmdd-yymmdd) <input type="text" name="span" size="20" /></label>&nbsp;<button type="submit">設定</button></div>
+ </form>
+ <table>
+  <tr><th>管理番号</th><th>外貨</th><th>売</th><th>取得金額</th><th>取得日時</th><th>決済金額</th><th>決済日時</th><th>損益</th></tr>
+  (*settle*)
+ </table>
+ <p>&nbsp;</p>
+ <p>&nbsp;</p>
+ <p>&nbsp;</p>
+</body>
+</html>

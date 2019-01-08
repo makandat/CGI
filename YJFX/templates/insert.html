@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf8" />
+ <title>YJFX</title>
+ <link rel="stylesheet" href="/css/default.css" />
+ <style>
+   form {
+     margin-left:10%;
+     margin-bottom:20px;
+     padding:10px;
+   }
+   button {
+     height:32px;
+     background-color:lime;
+     border-radius:4px;
+   }
+   input[type="text"] {
+     border-radius:4px;
+     height:25px;
+   }
+
+   table, td {
+     border-width:0px;
+   }
+   .msg {
+     color:magenta;
+     padding:10px;
+     margin-left:15%;
+   }
+ </style>
+</head>
+
+<body>
+ <h1>YJFX 資産入力・修正</h1>
+ <div style="text-align:center;"><a href="index.cgi">もどる</a></div>
+ <p style="text-align:center;">ID を指定するとその ID のデータを修正します。ID が空欄の場合は追加になります。</p>
+ <br />
+ <form method="POST">
+  <table>
+   <tr><td>ID</td><td><input type="text" name="id" size="6" /></td></tr>
+   <tr><td>日付 (yyyy-mm-dd)</td><td><input type="text" name="date" size="15" /></td></tr>
+   <tr><td>資産</td><td><input type="text" name="asset" size="10" /></td></tr>
+   <tr><td>損益</td><td><input type="text" name="profit" size="10" /></td></tr>
+   <tr><td></td><td><button type="submit">入力・修正</button>&nbsp;<button type="button">クリア</button></td></tr>
+  </table>
+ </form>
+ <p class="msg">(*message*)</p>
+</body>
+</html>
