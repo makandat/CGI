@@ -1,5 +1,5 @@
 # coding:utf-8
-# Version 1.00  2018-12-12 bug fix
+# Version 1.10  2019-01-12 bug fix
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
@@ -65,8 +65,30 @@ class WebPage :
 
   # クッキーを登録する。
   def cookie(self, key, value) :
-      self.cookies[key] =value
-  
+    self.cookies[key] =value
+
+  # cookie() のシノニム  v1.1 で追加
+  def setCookie(self, key, value) :
+    self.cookie(key, value)
+
+  # クッキーの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+  def getCookie(self, key) :
+    if key in self.cookies :
+      return self.cookies[key].value
+    else:
+      return ''
+
+  # パラメータが存在するかどうかを返す。v1.1 で追加
+  def isParam(self, key) :
+    return key in self.params
+
+  # パラメータの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+  def getParam(self, key) :
+    if self.isParam(key) :
+      return self.params[key].value
+    else :
+      return ''
+
   # AppConf.ini を読む。
   def readConf(self) :
     self.conf = {}

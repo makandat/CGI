@@ -1,6 +1,5 @@
 # coding:utf-8
-# Version 0.70  2018-10-06
-# Version 0.71  2018-10-10 redirect
+# Version 1.10  2019-01-12 bug fix
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
@@ -66,19 +65,44 @@ class WebPage :
 
   # クッキーを登録する。
   def cookie(self, key, value) :
-      self.cookies[key] =value
-  
+    self.cookies[key] =value
+
+  # cookie() のシノニム  v1.1 で追加
+  def setCookie(self, key, value) :
+    self.cookie(key, value)
+
+  # クッキーの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+  def getCookie(self, key) :
+    if key in self.cookies :
+      return self.cookies[key].value
+    else:
+      return ''
+
+  # パラメータが存在するかどうかを返す。v1.1 で追加
+  def isParam(self, key) :
+    return key in self.params
+
+  # パラメータの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+  def getParam(self, key) :
+    if self.isParam(key) :
+      return self.params[key].value
+    else :
+      return ''
+
   # AppConf.ini を読む。
   def readConf(self) :
-    if not os.path.isfile(WebPage.APPCONF) :
+    self.conf = {}
+    if not os.path.exists(WebPage.APPCONF) :
       return
     with open(WebPage.APPCONF) as f :
-      for s in f :
-        l = s.strip()
-        if not l.startswith("#") :
-          pair = l.split("=")
-          if len(pair) == 2 :
-            self.conf[pair[0]] = pair[1]
+      for line in f :
+        if line[0] =='#' or line[0] == '[' or len(line) == 0:
+          continue
+        kv = line.split('=')
+        if len(kv) == 2 :
+          key = kv[0].strip()
+          value = kv[1].strip()
+          self.conf[key] = value
     return
 
   # アップロードされたファイルを保存する。
@@ -91,6 +115,7 @@ class WebPage :
   def redirect(self, url, wait=1) :
     html = '''<html>
 <head>
+<meta charset="utf-8" />
 <title>redirect</title>
 <meta http-equiv="refresh" content="{1};{0}" />
 </head>

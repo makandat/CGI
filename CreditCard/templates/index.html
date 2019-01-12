@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>クレジットカード管理</title>
+ <link rel="stylesheet" href="/css/default.css" />
+ <style>
+  input[type="text"] {
+    border-radius:4px;
+    height:25px;
+  }
+  button {
+    border-radius:5px;
+    background-color:lime;
+    height:32px;
+  }
+ </style>
+</head>
+
+<body>
+<h1>クレジットカード管理</h1>
+<div style="text-align:center;padding:8px;"><a href="/cgi/index.html">CGI Index</a>&nbsp;/&nbsp;<a href="input.cgi">データ入力(修正)</a>&nbsp;/&nbsp;<a href="chart.cgi">グラフ</a></div>
+<br />
+<p style="text-align:center;color:blue;">(*sum*)</p>
+<br />
+<form method="GET" style="margin-left:20%;margin-top:20px;">
+<div><label>期間指定　<input type="text" name="span" size="30" placeholder="yymm-yymm" /></label>&nbsp;
+<button type="submit">指定する</button></div>
+</form>
+<br />
+
+<table style="width:50%">
+<tr><th>引き落とし日付</th><th>支払金額</th><th>備考</th></hr>
+(*result*)
+</table>
+<br />
+<p style="text-align:center;color:magenta;">(*message*)</p>
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

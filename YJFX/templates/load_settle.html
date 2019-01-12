@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf8" />
+ <title>YJFX</title>
+ <link rel="stylesheet" href="/css/default.css" />
+ <style>
+   form {
+     margin-left:10%;
+     margin-bottom:20px;
+     padding:10px;
+   }
+   button {
+     height:32px;
+     background-color:lime;
+     border-radius:4px;
+   }
+   textarea {
+     border-radius:4px;
+     height:25px;
+   }
+   table, td {
+     border-width:0px;
+   }
+   .msg {
+     color:magenta;
+     padding:10px;
+     margin-left:15%;
+   }
+ </style>
+</head>
+
+<body>
+ <h1>YJFX 決済データ読み込み</h1>
+ <div style="text-align:center;"><a href="index.cgi">もどる</a></div>
+ <p style="text-align:center;">CSV ファイルの内容をそのままコピーして、下のテキストエリアに貼り付けてください。<br />CSV ファイルの内容は「決済」のみとします。<br />取引単位は常に 10000 とする。</p>
+ <br />
+ <form method="POST">
+   <div>ここに CSV ファイルの内容を貼り付ける。</div>
+   <div><textarea name="data" style="width:800px;height:350px;border-raidus:4px;"></textarea></div>
+   <div><button type="submit">読み込む</button></div>
+ </form>
+ <p class="msg">(*message*)</p>
+</body>
+</html>
