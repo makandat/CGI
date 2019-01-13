@@ -6,7 +6,7 @@ import Text
 from syslog import syslog
 
 SELECT = "SELECT id, day, bank, deposit, balance, info FROM BANKS"
-
+SELECT2 = "SELECT day, balance FROM vw_balance ORDER BY day"
 
 
 # ページクラス
@@ -27,6 +27,8 @@ class IndexPage(CGI.WebPage) :
         rawspan = self.params['span'].value
       # クエリー結果を得る。
       self.vars['content'] = self.getContent(bank, rawspan)
+      # 預金総額を求める。
+      self.vars['content2'] = self.getSummary()
     except Exception as e:
       self.vars['message'] = "エラー " + str(e)
     return
@@ -75,6 +77,23 @@ class IndexPage(CGI.WebPage) :
       buff += s + "\n"
     return buff
 
+  # 預金総額を得る。
+  def getSummary(self) :
+    buff = ""
+    a = -1
+    row2 = ['', 0, 0]
+    rows = self.__mysql.query(SELECT2)
+    for row in rows :
+      row2[0] = row[0]
+      row2[1] = Text.money(row[1])
+      if a > 0 :
+        row2[2] = Text.money(row[1] - a)
+      else :
+        pass
+      a = row[1]
+      buff += IndexPage.table_row(row2)
+      buff += "\n"
+    return buff
 
   # 銀行名を得る。
   @staticmethod
