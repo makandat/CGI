@@ -4,9 +4,10 @@ import WebPage
 import MySQL, Text
 
 
-INSERT = "INSERT INTO smbcvisa(`date`, payment, info) VALUES('{0}', {1}, '{2}')"
-UPDATE = "UPDATE smbcvisa SET "
+INSERT = "INSERT INTO {3}(`date`, payment, info) VALUES('{0}', {1}, '{2}')"
+UPDATE = "UPDATE {0} SET "
 
+# データ入力ページ
 class InputPage(WebPage.WebPage) :
   # コンストラクタ
   def __init__(self, tepmlate) :
@@ -14,6 +15,14 @@ class InputPage(WebPage.WebPage) :
     self.__mysql = MySQL.MySQL()
     try :
       self.vars['message'] = ""
+      if self.isParam('card') :
+        self.card = "omcjcb"
+        self.vars['card'] = "JCB"
+        self.vars['back'] = "jcbcard.cgi"
+      else :
+        card = 'smbcvisa'
+        self.vars['card'] = "VISA"
+        self.vars['back'] = "index.cgi"
       b = self.isModify()
       if b == 1 :
         # 新規の場合
@@ -35,8 +44,8 @@ class InputPage(WebPage.WebPage) :
 
   # 新規・修正を判別する。新規=1,修正=0,その他=-1
   def isModify(self) :
-    if 'submit' in self.params :
-      operation = self.params['operation'].value
+    if self.isParam('submit') :
+      operation = self.getParam('operation')
       return int(operation)
     else :
       return -1
@@ -44,34 +53,34 @@ class InputPage(WebPage.WebPage) :
   # 入力
   def insert(self) :
     global sql
-    date = self.params['date'].value
-    payment = Text.replace(",", "", self.params['payment'].value)
-    if 'info' in self.params :
-      info = self.params['info'].value
+    date = self.getParam('date')
+    payment = Text.replace(",", "", self.getParam('payment'))
+    if self.isParam('info') :
+      info = self.getParam('info')
     else :
       info = ""
-    sql = Text.format(INSERT, date, payment, info)
+    sql = Text.format(INSERT, date, payment, info, self.card)
     self.__mysql.execute(sql)
     return
 
   # 修正
   def modify(self) :
     global sql
-    sql = UPDATE
+    sql = Text.format(UPDATE, self.card)
     comma = ""
-    if 'date' in self.params :
-      sql += "`date`='" + self.params['date'].value + "'"
+    if self.isParam('date') :
+      sql += "`date`='" + self.getParam('date') + "'"
       comma = ","
-    if 'payment' in self.params :
-      payment = Text.replace(",", "", self.params['payment'].value)
+    if self.isParam('payment') :
+      payment = Text.replace(",", "", self.getParam('payment'))
       sql += comma + f" payment={payment}"
       comma = ","
-    if 'info' in self.params :
-      info = self.params['info'].value
+    if self.isParam('info') :
+      info = self.getParam('info')
       sql += comma + f" info='{info}'"
     if sql == UPDATE :
       return False
-    sql += Text.format(" WHERE `date`= '{0}'", self.params['date'].value)
+    sql += Text.format(" WHERE `date`= '{0}'", self.getParam('date'))
     self.__mysql.execute(sql)
 
     return True

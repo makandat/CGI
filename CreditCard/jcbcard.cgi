@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#  クレジットカード管理
+#  クレジットカード管理 (JCB)
 import WebPage
 import MySQL, Text
 from syslog import syslog
@@ -13,7 +13,7 @@ class MyPage(WebPage.WebPage) :
     self.__mysql = MySQL.MySQL()
     try :
       self.vars['result'] = ""
-      self.vars['card'] = 'SMBC VISA'
+      self.vars['card'] = "OMC JCB"
       if self.isParam('span') :
         # 期間指定がある場合
         span = self.getParam('span')
@@ -35,7 +35,7 @@ class MyPage(WebPage.WebPage) :
   def getResult(self, span_from = '200001', span_to='210001') :
     s1 = span_from[0:4] + "-" + span_from[4:6] + "-01"
     s2 = span_to[0:4] + "-" + span_to[4:6] + "-31"
-    sql = f"SELECT `date`, FORMAT(payment, 0) as pay, info FROM smbcvisa WHERE `date` >= '{s1}' AND `date` < '{s2}'";
+    sql = f"SELECT `date`, FORMAT(payment, 0) as pay, info FROM omcjcb WHERE `date` >= '{s1}' AND `date` < '{s2}'";
     rows = self.__mysql.query(sql)
     buff = ""
     for row in rows :
@@ -46,10 +46,10 @@ class MyPage(WebPage.WebPage) :
   def getSum(self, span_from = '200001', span_to='210001') :
     s1 = span_from[0:4] + "-" + span_from[4:6] + "-01"
     s2 = span_to[0:4] + "-" + span_to[4:6] + "-01"
-    sql = f"SELECT SUM(payment) AS Summation FROM smbcvisa WHERE `date` >= '{s1}' AND `date` < '{s2}'";
+    sql = f"SELECT SUM(payment) AS Summation FROM omcjcb WHERE `date` >= '{s1}' AND `date` < '{s2}'";
     s = self.__mysql.getValue(sql)
     return s
 
 # 応答を返す。
-wp = MyPage('templates/index.html')
+wp = MyPage('templates/jcbcard.html')
 wp.echo()
