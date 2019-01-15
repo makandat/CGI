@@ -1,3 +1,4 @@
+-- 三井住友ビザカード支払い管理
 CREATE TABLE `smbcvisa` (
   `date` char(10) NOT NULL,
   `payment` decimal(10,0) NOT NULL,

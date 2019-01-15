@@ -1,4 +1,4 @@
-USE user
+-- 画像ファイル管理
 CREATE TABLE `Pictures` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `TITLE` varchar(100) NOT NULL,

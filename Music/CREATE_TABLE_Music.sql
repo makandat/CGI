@@ -1,3 +1,4 @@
+-- 音楽フォルダ管理
 CREATE TABLE `Music` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(180) NOT NULL,

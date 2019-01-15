@@ -1,3 +1,4 @@
+-- 銀行預金管理テーブル
 CREATE TABLE `BANKS` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `DAY` char(10) NOT NULL,

@@ -1,3 +1,4 @@
+-- ビデオファイル管理
 CREATE TABLE `Videos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(180) NOT NULL,
