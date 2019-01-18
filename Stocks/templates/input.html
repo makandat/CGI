@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Stocks データ入力</title>
+  <link rel="stylesheet" href="/css/default.css" />
+  <style>
+ .menu {
+    text-align:center;
+    padding:8px;
+  }
+  .msg {
+    text-align:center;
+    color:magenta;
+    padding:10px;
+  }
+  table, td {
+    border-width:0px;
+  }
+  input[type="submit"] {
+    background-color:lime;
+    border-radius:5px;
+    height:32px;
+  }
+  input[type="text"] {
+    border-radius:5px;
+    height:26px;
+  }
+  </style>
+</head>
+
+<body>
+<h1>Stocks データ入力</h1>
+<div class="menu">
+  <a href="index.cgi">もどる</a>
+</div>
+<br />
+
+<form method="POST">
+ <table>
+   <tr><td>日付*　</td><td><input type="text" name="date" placeholder="yyyy-mm-dd" size="10" /></td></tr>
+   <tr><td>企業コード*　</td><td><input type="text" name="stock_code" placeholder="0000" size="5" /></td></tr>
+   <tr><td>株数*　</td><td><input type="text" name="amount" size="15" /></td></tr>
+   <tr><td>現在値*　</td><td><input type="text" name="current_price" size="15" /></td></tr>
+   <tr><td>取得値　</td><td><input type="text" name="purchased_price" size="15" /></td></tr>
+   <tr><td>取得日　</td><td><input type="text" name="purchased_date" placeholder="yyyy-mm-dd" size="10" /></td></tr>
+   <tr><td>証券会社　</td><td><input type="text" name="sec_company" size="15" /></td></tr>
+   <tr><td>情報　</td><td><input type="text" name="info" size="80" /></td></tr>
+   <tr><td></td><td><input type="submit" value=" 新規登録 " /></td></tr>
+ </table>
+</form>
+<p style="text-align:center;">* は必須項目</p>
+<p class="msg">(*message*)</p>
+</body>
+</html>
