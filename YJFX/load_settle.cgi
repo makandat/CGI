@@ -31,6 +31,8 @@ class MainPage(page.WebPage) :
     i = 1
     while i < len(lines) :
       line = lines[i]
+      if Text.trim(line) == "" :
+        break
       pline = Text.split(',', line)
       # id (取引番号)
       id = pline[0]
