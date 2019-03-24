@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>(*dirname0*)</title>
+        <style>
+            a.LinkButton {
+                border-style: solid;
+                border-width : 1px 1px 1px 1px;
+                text-decoration : none;
+                padding : 4px;
+                border-color : #000000;
+                background-color:gainsboro;
+                border-radius:2px;
+            }
+            div.message {
+                margin-left:5%;
+                margin-top:10px;
+                padding:10px;
+                color:indigo;
+            }
+            a:link, a:visited {
+                text-decoration:none;
+                color:blue;
+            }
+            a:active {
+                text-decoration:none;
+                color:green;
+            }
+     </style>
+     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
+     </script>
+     <script>
+       function adjustWidth() {
+         $('img').css("width", "100%");
+       }
+     </script>
+    </head>
+
+    <body>
+        <h3 style="margin-left:20px;color:darkgray;">(*dirname*)</h3>
+        <div style="padding:6px;margin-bottom:5px;">
+            <a href="listImages.php?dirname=(*dirname*)" class="LinkButton">ListView</a>
+            <a href="javascript:window.close();" class="LinkButton">Close</a>
+            <a href="javascript:adjustWidth();" class="LinkButton">width 100%</a>
+            &nbsp;(*message*)
+        </div>
+        <div>
+            (*images*)
+        </div>
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#top">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+    </body>
+</html>

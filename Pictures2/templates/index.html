@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>Pictures v4.0</title>
+ <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
+ </script>
+ <script>
+function clearAll() {
+  $('#id').val('');
+  $('#title').val('');
+  $('#path').val('');
+  $('#creator').val('');
+  $('#info').val('');
+};
+
+function queryInfo() {
+  if ($('#textinfo').val() == "")
+     return;
+  var criteria = "info=" + $('#textinfo').val();
+  location.href = "index.php?" + criteria;
+}
+ </script>
+ <style>
+    h1 {
+      text-align:center;
+      color:midnightblue;
+      padding:15px;
+      border:solid 20px silver;;
+      border-radius: 0.5em;
+      background-color:#f0f0f0;
+    }
+
+    h2 {
+      color: darkcyan;
+      padding:4px;
+    }
+
+    a:link, a:visited {
+      color:blue;
+      text-decoration:none;
+    }
+
+    table {
+      border:solid thin silver;
+      border-collapse: collapse;
+    }
+
+    td {
+      padding: 3px;
+      font-size:small;
+      border-collapse: collapse;
+    }
+
+    .bdr {
+        border: solid thin silver;
+    }
+
+    pre {
+      word-break:break-all;
+    }
+
+    input[type="text"] {
+        border-radius:3px 3px;
+        height:16px;
+    }
+    input[type="button"] {
+        border-radius:3px 3px;
+        background-color:lightgreen;
+        height:32px;
+    }
+
+    input[type="submit"] {
+        border-radius:3px 3px;
+        background-color:lightgreen;
+        height:32px;
+    }
+
+    input[type="checkbox"] {
+        background-color:lightgreen;
+        height:16px;
+        width:16px;
+    }
+
+    select {
+        border-radius:3px 3px;
+        background-color:lavender;
+        height:32px;
+        width:200px;
+    }
+    
+    form {
+       background-color:whitesmoke;
+    }
+ </style>
+</head>
+
+
+
+<body style="margin-left:4%;margin-right:4%;">
+<h1>画像一覧 4.0</h1>
+<p><a href="/">[HOME]</a>&nbsp;/&nbsp;<a href="listCreators.php">[作者一覧]</a>
+&nbsp;/&nbsp;<a href="filterPath.html">[パスフィルタ]</a>
+&nbsp;/&nbsp;<a href="index.php">[表示リセット]</a></p>
+<br />
+<!-- 追加フォーム -->
+<form method="POST" action="addNew.php">
+ <table style="width:100%">
+  <tr><td>ID</td><td><input type="text" size="10" name="id" id="id" /></td></tr>
+  <tr><td>タイトル (TITLE)</td><td><input type="text" size="80" name="title" id="title" /></td></tr>
+  <tr><td>パス (PATH)</td><td><input type="text" size="120" name="path" id="path" /></td></tr>
+  <tr><td>作者 (CREATOR)</td><td><input type="text" size="50" name="creator" id="creator" /></td></tr>
+  <tr><td>識別マーク (MARK)</td><td><select name="mark" id="mark">
+    <option value="0">指定なし(更新時は変更なし)</option>
+    <option>MANGA</option>
+    <option>HCG</option>
+    <option>PHOTO</option>
+    <option>OTHER</option>
+  </td></tr>
+  <tr><td>備考 (INFO)</td><td><input type="text" size="80" name="info" id="info" /></td></tr>
+  <tr><td>お気に入り (FAV)</td><td><input type="checkbox" name="fav" id="fav" value="1" /></td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td></td><td><input type="submit" value=" 追加 (更新) " />&nbsp;<input type="button" id="btnClear" value="すべて消去" onclick="clearAll()" /></td></tr>
+ </table>
+</form>
+<p>（注意）ID を指定すると更新になります。更新の場合、空欄は更新されません。</p>
+<p style="maegin-left:5%;margin-top:20px;color:brown;">(*message*)</p>
+
+<br />
+<p><a href="index.php"><b>すべて(表示リセット)</b></a>　</a><a href="index.php?FAV=1">お気に入り</a>　<a href="index.php?mark=MANGA">まんが</a>　
+<a href="index.php?mark=HCG">HCG</a>　<a href="index.php?mark=PHOTO">写真</a>　<a href="index.php?mark=OTHER">その他</a>　
+<input type="text" id="textinfo" size="20" />&nbsp;<input type="button" id="btninfo" value=" 備考検索 " class="btninfo" onclick="queryInfo();" />
+</p>
+<!-- 画像ディレクトリ一覧 -->
+(*table*)
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
