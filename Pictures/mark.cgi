@@ -18,7 +18,7 @@ class MainPage(page.WebPage) :
 
   # マーク一覧を得る。
   def getMarks(self) :
-    rows = self.__mysql.query("SELECT DISTINCT mark FROM Music")
+    rows = self.__mysql.query("SELECT DISTINCT mark FROM Pictures")
     buff = ""
     for row in rows :
       if row[0] == None :
