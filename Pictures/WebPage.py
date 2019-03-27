@@ -1,5 +1,5 @@
 # coding:utf-8
-# Version 1.10  2019-01-12 bug fix
+# Version 1.10  2019-03-27 added methods.
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
@@ -63,32 +63,40 @@ class WebPage :
       print(s)
     print()
 
-  # クッキーを登録する。
-  def cookie(self, key, value) :
-    self.cookies[key] =value
+  # プレースホルダに値を設定する。
+  def setPlaceHolder(self, key, value) :
+    self.vars[key] = value
 
-  # cookie() のシノニム  v1.1 で追加
-  def setCookie(self, key, value) :
-    self.cookie(key, value)
-
-  # クッキーの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
-  def getCookie(self, key) :
-    if key in self.cookies :
-      return self.cookies[key].value
-    else:
-      return ''
-
-  # パラメータが存在するかどうかを返す。v1.1 で追加
+  # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
-    return key in self.params
-
-  # パラメータの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+    return key in self.params.keys()
+    
+  # 外部から来る引数の値を得る。
   def getParam(self, key) :
     if self.isParam(key) :
       return self.params[key].value
     else :
       return ''
 
+  # クッキー key の有無を返す。
+  def isCookie(self, key) :
+    return key in self.cookies.keys()
+    
+  # クッキーを得る。
+  def getCookie(self, key) :
+    if self.isCookie(key) :
+      return self.cookies[key]
+    else :
+      return ''
+
+  # クッキーを登録する。
+  def setCookie(self, key, value) :
+    self.cookie(key, value)
+
+  # クッキーを登録する。(Alias)
+  def cookie(self, key, value) :
+      self.cookies[key] = value
+  
   # AppConf.ini を読む。
   def readConf(self) :
     self.conf = {}
