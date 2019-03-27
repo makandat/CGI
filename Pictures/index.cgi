@@ -16,13 +16,13 @@ class MainPage(page.WebPage) :
     try :
       rows = []
       self.cookie('reverse', '0')
-      self.vars['filter'] = ""
-      self.vars['reverse'] = 'yes'
+      self.setPlaceHolder('filter', "")
+      self.setPlaceHolder('reverse', 'yes')
       self.__mysql = MySQL.MySQL()
       if 'filter' in self.params :
         # フィルタ指定がある場合
-        filter = self.params['filter'].value
-        self.vars['filter'] = "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>'
+        filter = self.getParam('filter')
+        self.setPlaceHolder('filter', "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>')
         sql = self.makeFilterSql(filter)
         rows = self.__mysql.query(sql)
       elif 'fav' in self.params :
@@ -31,24 +31,24 @@ class MainPage(page.WebPage) :
         rows = self.__mysql.query(sql)
       elif 'mark' in self.params :
         # mark 指定がある場合
-        mark = self.params['mark'].value
+        mark = self.getParam('mark')
         sql = SELECT + f" WHERE mark = '{mark}'"
         rows = self.__mysql.query(sql)
       elif 'reverse' in self.params :
         # reverse 指定がある場合
-        reverse = self.params['reverse'].value
+        reverse = self.getParam('reverse')
         if reverse == 'yes' :
-          self.vars['reverse'] = 'no'
+          self.setPlaceHolder('reverse', 'no')
           self.cookie('reverse', '1')
           sql = SELECT + f" ORDER BY id DESC LIMIT {LIMIT}"
         else :
           self.cookie('reverse', '0')
-          self.vars['reverse'] = 'yes'
+          self.setPlaceHolder('reverse', 'yes')
           sql = SELECT + f" ORDER BY id ASC LIMIT {LIMIT}"
         rows = self.__mysql.query(sql)
       elif 'page' in self.params :
         # page 指定がある場合
-        page = self.params['page'].value
+        page = self.getParam('page')
         if page == "first" :
           # 先頭のページ
           sql = SELECT + f" LIMIT {LIMIT}"
@@ -60,7 +60,7 @@ class MainPage(page.WebPage) :
           # 前のページ
           start = 0
           if 'start_id' in self.cookies :
-            start = self.cookies['start_id'].value
+            start = self.getCookie('start_id')
           sql = SELECT + f" WHERE id < {start} ORDER BY id DESC LIMIT {LIMIT}"
           rows = self.__mysql.query(sql)
           self.cookie('start_id', str(rows[0][0]))
@@ -70,7 +70,7 @@ class MainPage(page.WebPage) :
           # 次のページ
           end = 0
           if 'end_id' in self.cookies :
-            end = self.cookies['end_id'].value
+            end = self.getCookie('end_id')
           sql = SELECT + f" WHERE id > {end} LIMIT {LIMIT}"
           rows = self.__mysql.query(sql)
           self.cookie('start_id', str(rows[0][0]))
@@ -89,14 +89,14 @@ class MainPage(page.WebPage) :
         self.cookie('start_id', str(rows[0][0]))
         n = len(rows) - 1
         self.cookie('end_id', str(rows[n][0]))
-        self.vars['result'] = ""
+        self.setPlaceHolder('result', "")
       # クエリー結果を表示する。
-      self.vars['result'] = self.getResult(rows)
-      self.vars['message'] = "クエリー OK"
+      self.setPlaceHolder('result', self.getResult(rows))
+      self.setPlaceHolder('message', "クエリー OK")
       if len(rows) == 0 :
-        self.vars['message'] = "０件のデータが検出されました。"
+        self.setPlaceHolder('message', "０件のデータが検出されました。")
     except Exception as e:
-      self.vars['message'] = "致命的エラーを検出。" + str(e)
+      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
     return
 
 

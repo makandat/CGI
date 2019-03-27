@@ -85,7 +85,7 @@ class WebPage :
   # クッキーを得る。
   def getCookie(self, key) :
     if self.isCookie(key) :
-      return self.cookies[key]
+      return self.cookies[key].value
     else :
       return ''
 

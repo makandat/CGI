@@ -12,8 +12,8 @@ class MainPage(page.WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL.MySQL()
-    self.vars['message'] = ""
-    self.vars['marks'] = self.getMarks()
+    self.setPlaceHolder('message', "")
+    self.setPlaceHolder('marks', self.getMarks())
     return
 
   # マーク一覧を得る。

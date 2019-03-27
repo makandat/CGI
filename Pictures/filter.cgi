@@ -11,7 +11,7 @@ class MainPage(page.WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.vars['message'] = ""
+    self.setPlaceHolder('message', "")
 
 # メイン開始位置
 wp = MainPage('templates/filter.html')

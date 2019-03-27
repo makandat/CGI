@@ -17,14 +17,14 @@ class MainPage(page.WebPage) :
     super().__init__(template)
     self.__mysql = MySQL.MySQL()
     if 'id' in self.params :
-      id = self.params['id'].value
+      id = self.getParam('id')
       folder = self.getPath(id)
-      self.vars['folder'] = folder
-      self.vars['pictures'] = self.getPictures(folder)
+      self.setPlaceHolder('folder', folder)
+      self.setPlaceHolder('pictures', self.getPictures(folder))
       self.incCount(id)
-      self.vars['message'] = ''
+      self.setPlaceHolder('message', '')
     else :
-      self.vars['message'] = 'id を指定してください。'
+      self.setPlaceHolder('message', 'id を指定してください。')
     return
 
   # id から path を得る。

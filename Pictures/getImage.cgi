@@ -7,7 +7,7 @@ class Page(page.WebPage) :
   def __init__(self) :
     super().__init__(self)
     if 'path' in self.params :
-      path = self.params['path'].value.encode('utf8')
+      path = self.getParam('path').encode('utf8')
       Page.sendImage(path)
     else :
       Page.sendImage('/var/www/html/img/error.png')
