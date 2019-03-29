@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 #  クレジットカード管理 データ入力
+#    Version 1.01  2019-03-30 Bug fix
 import WebPage
 import MySQL, Text
 
@@ -20,7 +21,7 @@ class InputPage(WebPage.WebPage) :
         self.vars['card'] = "JCB"
         self.vars['back'] = "jcbcard.cgi"
       else :
-        card = 'smbcvisa'
+        self.card = 'smbcvisa'
         self.vars['card'] = "VISA"
         self.vars['back'] = "index.cgi"
       b = self.isModify()
@@ -38,7 +39,7 @@ class InputPage(WebPage.WebPage) :
         # その他の場合
         self.vars['message'] = ""
     except Exception as e:
-      self.vars['message'] = Text.format("エラー {0} \"{1}\"", str(e), sql)
+      self.vars['message'] = Text.format("エラー {0}", str(e))
     return
 
 
