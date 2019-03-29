@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <head>
 <meta charset="utf-8" />
-<title>フォルダ内画像一覧</title>
+<title>(*title*)</title>
 <link rel="stylesheet" href="/css/default.css" />
 <style>
 table, th, td {
@@ -15,23 +15,16 @@ table, th, td {
 }
 
 </style>
-<script src="/js/jquery.min.js"></script>
-<script>
-function ajust_width() {
-  $('img').css('width', '100%');
-}
-</script>
 </head>
 
 <body>
-<h1 style="text-align:center;color:darkslateblue;padding:10px;">フォルダ内画像一覧</h1>
+<h1 style="text-align:center;color:darkslateblue;padding:10px;">(*title*)</h1>
 <p style="margin-left:10%;"><a href="/cgi">CGI Index</a>&nbsp;/&nbsp;<a href="index.cgi">もどる</a>&nbsp;/&nbsp;
-<a href="thumbview.cgi?id=(*id*)">サムネール一覧表示</a>&nbsp;/&nbsp;
-<a href="javascript:ajust_width();">画像の幅をウィンドウに合わせる</a></p>
+<a href="listpics.cgi?id=(*id*)">画像一覧表示</a>&nbsp;/&nbsp;
 <br />
 <h3>(*folder*)</h3>
 <p class="message">(*message*)</p>
-<div>
+<div style="margin-left:2%;">
 (*pictures*)
 </div>
 <p>&nbsp;</p>

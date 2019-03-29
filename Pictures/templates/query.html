@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja-jp">
+<head>
+<meta charset="utf-8" />
+<title>Pictures テーブル検索</title>
+<link rel="stylesheet" href="/css/default.css" />
+<style>
+table, th, td {
+  border-width: 0px;
+}
+
+input[type="submit"] {
+   background-color:lime;
+   border-radius:4px;
+   height:32px;
+}
+input[type="button"] {
+   background-color:yellow;
+   border-radius:4px;
+   height:32px;
+}
+
+input[type="text"] {
+   border-radius:4px;
+   height:22px;
+}
+</style>
+<script src="/js/jquery.min.js"></script>
+<script>
+$(function() {
+  $("#select1").click(function() {
+    $("#criteria").val($('#select1').val());
+  });
+  $("#btnClear").click(function() {
+    $("#criteria").val("");
+  });
+});
+</script>
+</head>
+
+<body style="margin-left:5%;margin-right:5%">
+<h1 style="text-align:center;color:darkslateblue;padding:10px;">Pictures テーブル検索</h1>
+<p style="margin-left:10%;"><a href="/cgi">CGI Index</a>&nbsp;/&nbsp;<a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;<a href="index.cgi">もどる</a></p>
+<br />
+<form method="POST" action="index.cgi">
+  <div>Where, Order By 条件</div>
+  <div>
+   <textarea id="criteria" name="criteria" cols="60" rows="5" style="border-radius:5px;"></textarea>
+   &nbsp;
+   <select id="select1" size="7" style="border-radius:5px;">(*listsql*)</select>
+  </div>
+<div style="margin-top:20px;">
+  <input type="submit" value="　検索　" style="margin-left:10%;" />
+  &nbsp;
+  <input type="button" id="btnClear" value="　クリア　" />
+</div>
+</table>
+</form>
+<br />
+<p style="font-size:small;">検索条件は AppConf.ini で設定できます。</p>
+<br />
+<p style="text-align:center;color:blue;">
+(*message*)
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- code=utf-8 -*-
-# Music テーブルのマーク種別
+# Pictures テーブルのマーク種別
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fsys

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Pictures テーブル フォルダ内画像一覧
+# フォルダ内画像のサムネール一覧
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -16,19 +16,20 @@ class MainPage(page.WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL.MySQL()
+    self.setPlaceHolder('title', 'フォルダ内画像のサムネール一覧')
     if self.isParam('id') :
       id = self.getParam('id')
-      folder = self.getPath(id)
-      self.setPlaceHolder('folder', folder)
-      self.setPlaceHolder('pictures', self.getPictures(folder))
-      self.incCount(id)
-      self.setPlaceHolder('message', '')
       self.setPlaceHolder('id', id)
+      folder = self.getPath(id)
+      self.setPlaceHolder('folder', folder);
+      self.setPlaceHolder('message', '')
+      self.setPlaceHolder('pictures', self.getPictures(folder))
     else :
-      self.setPlaceHolder('message', 'id を指定してください。')
       self.setPlaceHolder('id', '')
-    return
-
+      self.setPlaceHolder('folder', '')
+      self.setPlaceHolder('pictures', '')
+      self.setPlaceHolder('message', 'エラー： フォルダの id が指定されていない。')
+    
   # id から path を得る。
   def getPath(self, id) :
     path = self.__mysql.getValue(f"SELECT `path` FROM Pictures WHERE id={id}")
@@ -42,19 +43,10 @@ class MainPage(page.WebPage) :
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
       if MainPage.isPicture(fn) :
-        buff += "<figure>"
-        buff += f"<img src=\"getImage.cgi?path={fn}\" /><figcaption>{fn}</figcaption>"
-        buff += "</figure>\n"
+        buff += f"<a href=\"getImage.cgi?path={fn}\" target=\"_blank\"><img src=\"getImage.cgi?path={fn}\" style='width:15%;padding:10px;' /></a>"
       else :
         pass
     return buff
-
-  # COUNT を増加させる。
-  def incCount(self, id) :
-    n = self.__mysql.getValue(f"SELECT count FROM Pictures WHERE id={id}")
-    n += 1
-    self.__mysql.execute(f"UPDATE Pictures SET count={n} WHERE id={id}")
-    return
 
   # 画像ファイルなら True を返す。
   @staticmethod
@@ -64,8 +56,6 @@ class MainPage(page.WebPage) :
 
 
 
-
 # メイン開始位置
-wp = MainPage('templates/listpics.html')
+wp = MainPage('templates/thumbview.html')
 wp.echo()
-

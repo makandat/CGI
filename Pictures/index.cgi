@@ -19,22 +19,27 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('filter', "")
       self.setPlaceHolder('reverse', 'yes')
       self.__mysql = MySQL.MySQL()
-      if 'filter' in self.params :
+      if self.isParam('filter') :
         # フィルタ指定がある場合
         filter = self.getParam('filter')
         self.setPlaceHolder('filter', "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>')
         sql = self.makeFilterSql(filter)
         rows = self.__mysql.query(sql)
-      elif 'fav' in self.params :
+      elif self.isParam('fav') :
         # fav 指定がある場合
         sql = SELECT + " WHERE fav = '1' or fav = '2'"
         rows = self.__mysql.query(sql)
-      elif 'mark' in self.params :
+      elif self.isParam('mark') :
         # mark 指定がある場合
         mark = self.getParam('mark')
         sql = SELECT + f" WHERE mark = '{mark}'"
         rows = self.__mysql.query(sql)
-      elif 'reverse' in self.params :
+      elif self.isParam('criteria') :
+        # 詳細検索
+        criteria = self.getParam('criteria')
+        sql = "SELECT * FROM Pictures WHERE " + criteria
+        rows = self.__mysql.query(sql)
+      elif self.isParam('reverse') :
         # reverse 指定がある場合
         reverse = self.getParam('reverse')
         if reverse == 'yes' :
@@ -46,7 +51,7 @@ class MainPage(page.WebPage) :
           self.setPlaceHolder('reverse', 'yes')
           sql = SELECT + f" ORDER BY id ASC LIMIT {LIMIT}"
         rows = self.__mysql.query(sql)
-      elif 'page' in self.params :
+      elif self.isParam('page') :
         # page 指定がある場合
         page = self.getParam('page')
         if page == "first" :
