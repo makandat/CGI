@@ -9,7 +9,10 @@ class ListImages extends WebPage {
   public function __construct($template) {
     parent::__construct($template);
 
-    $this->setPlaceHolder('dirname', $this->getParam('dirname'));
+    $dirname = $this->getParam('dirname');
+    $title = $this->getParentDirectory($dirname);
+    $this->setPlaceHolder('dirname', $dirname);
+    $this->setPlaceHolder('title', $title);
     $this->setPlaceHolder('list', $this->listPics($_GET['dirname']));
     $this->setPlaceHolder('message', "");
     $this->incrementCount();
@@ -35,12 +38,19 @@ class ListImages extends WebPage {
   # COUNT を更新する。
   private function incrementCount() {
     $conn = new MySQL();
-    $sql = "SELECT `count` FROM Pictures WHERE `path`='". $this->v['dirname'] . "'";
+    $sql = "SELECT `count` FROM Pictures WHERE `path`='". $this->getPlaceHolder('dirname') . "'";
     $count = $conn->getValue($sql);
     $count++;
-    $sql = "UPDATE Pictures SET COUNT=" . $count . " WHERE PATH='" . $this->v['dirname'] . "'";
+    $sql = "UPDATE Pictures SET COUNT=" . $count . " WHERE PATH='" . $this->getPlaceHolder('dirname') . "'";
     $conn->execute($sql);
   }
+
+  private function getParentDirectory($dir) {
+    $parts = preg_split('/\\//', $dir);
+    $n = count($parts);
+    return $parts[$n-1];
+  }
+  
 }
 
 // メインプログラム

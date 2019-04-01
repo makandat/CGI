@@ -11,6 +11,21 @@ class ListCreators extends WebPage {
         // 作者リストを作成する。
         $conn = new MySQL();
         $sql = "SELECT DISTINCT CREATOR FROM Pictures ORDER BY CREATOR";
+        if ($this->isParam('filter')) {
+          $filter = $this->getparam('filter');
+          if ($filter == 'MANGA') {
+            $sql = "SELECT DISTINCT CREATOR FROM Pictures WHERE MARK='MANGA' ORDER BY CREATOR";
+          }
+          else if ($filter == 'HCG') {
+            $sql = "SELECT DISTINCT CREATOR FROM Pictures WHERE MARK='HCG' ORDER BY CREATOR";
+          }
+          else if ($filter == 'Others') {
+            $sql = "SELECT DISTINCT CREATOR FROM Pictures WHERE NOT (MARK='HCG' AND MARK='MANGA') ORDER BY CREATOR";
+          }
+          else {
+            $sql = "SELECT DISTINCT CREATOR FROM Pictures ORDER BY CREATOR";
+          }
+        }
         $data = $conn->query($sql);
 
         foreach ($data as $row) {

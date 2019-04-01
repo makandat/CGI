@@ -2,6 +2,7 @@
 include "WebPage.php";
 include "FileSystem.php";
 include "MySQL.php";
+define(APP_VERSION, "4.10");
 
 // 画像一覧クラス
 class Pictures extends WebPage {
@@ -22,13 +23,21 @@ class Pictures extends WebPage {
     else if ($this->isParam('info')) {
       $this->setPlaceHolder('table', $this->listManga("info LIKE '%" . $this->getparam('info') . "%'"));
     }
-    else if ($this->isParam('creator') == "") {
-      $this->setPlaceHolder('table', $this->listManga());
+    else if ($this->isParam('beginId')) {
+      $this->setPlaceHolder('table', $this->listManga("id <= ".$this->getParam('beginId')));
     }
-    else {
+    else if ($this->isParam('creator')) {
       $this->setPlaceHolder('table', $this->listManga("CREATOR='".$this->getParam('creator')."'"));
     }
-    $this->v['message'] = "";
+    else {
+      $this->setPlaceHolder('table', $this->listManga());
+    }
+    // メッセージ
+    $dbinfo = $this->getDbInfo();
+    $this->setPlaceHolder('message', "テーブル行数 ".$dbinfo['rowCount']. ", 最小id ".$dbinfo['minId'].", 最大id ".$dbinfo['maxId']);
+
+    // タイトル
+    $this->setPlaceHolder('title', "画像一覧 " . APP_VERSION);
   }
 
   // まんが一覧を取得する。
@@ -65,8 +74,16 @@ class Pictures extends WebPage {
     else {
       $strbuff .= "<p style='color:red;margin-left:5%;'>エラー：データがありません。</p>";
     }
-    $this->setPlaceHolder('message', '');
     return $strbuff;
+  }
+
+  // データベース情報を得る。
+  private function getDbInfo() {
+    $client = new MySQL();
+    $sql = "SELECT count(*) AS rowCount, min(id) AS minId, max(id) AS maxId FROM Pictures";
+    $result = $client->query($sql);
+    $row = $result[0];
+    return $row;
   }
 }
 

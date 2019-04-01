@@ -27,24 +27,19 @@
                 color:green;
             }
      </style>
-     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
-    <script>
-      function adjust() {
-        $('#image0').css("width", "100%");
-      }
-    </script>
     </head>
 
     <body>
         <h3 style="margin-left:20px;color:darkgray;">(*path*)</h3>
         <div style="padding:6px;margin-bottom:5px;">
+            <a href="index.php" class="LinkButton">もどる</a>&nbsp;
             <a href="move_image.php?path=(*first*)" class="LinkButton">First</a>&nbsp;
             <a href="move_image.php?path=(*previous*)" class="LinkButton">Previous</a>&nbsp;
             <a href="move_image.php?path=(*next*)" class="LinkButton">Next</a>
             <a href="listImages.php?dirname=(*dirname*)" class="LinkButton">ListView</a>
             <a href="showImages.php?dirname=(*dirname*)" class="LinkButton">Show All</a>
             <a href="javascript:window.close();" class="LinkButton">Close</a>
-            <a href="javascript:adjust();" class="LinkButton">Width 100%</a>
+            <a href="move_image.php?w100=1&path=(*path*)" class="LinkButton">Width 100%</a>
             &nbsp;(*message*)
         </div>
         <div>

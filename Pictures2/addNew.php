@@ -18,18 +18,19 @@ class AddNewPage extends WebPage {
             $sql .= "title='".$this->quote2($this->getParam('title'))."'"; $need=true;
         }
         if ($this->getParam('path') != "") {
+            $path = $this->getParam('path');
             if ($need) {
                 $sql .= ",";
             }
-            if (FileSystem\isFile($this->getParam('path')) == FALSE) {
+            if (FileSystem\isDirectory($path) == FALSE) {
                 $this->setPlaceHolder('message', "<span style='color:red;'>ERROR: 指定したパスが存在しません。</span>");
                 return;
             }
-            if ($this->checkString($this->getParam('path'))) {
+            if ($this->checkString($path)) {
                 $this->setPlaceHolder('message', "<span style='color:red;'>ERROR: パスに #, &, +, %, [ , ] が含まれていると画像表示に失敗します。</span>");
                 return;
             }
-            $sql .= "path='". $this->quote2($this->getParam('path')) ."'"; $need=true;
+            $sql .= "path='". $this->quote2($path) ."'"; $need=true;
         }
         if ($this->getParam('creator') != "") {
             if ($need) {
@@ -79,11 +80,11 @@ class AddNewPage extends WebPage {
             $this->setPlaceHolder('message', "<span style='color:red;'>ERROR: PATH 項目がありません。</span>");
             return;
         }
-        if (FileSystem\isFile($this->getParam('path')) == FALSE) {
+        if (FileSystem\isDirectory($this->getParam('path')) == FALSE) {
             $this->setPlaceHolder('message', "<span style='color:red;'>ERROR: 指定したパスが存在しません。</span>");
             return;
         }
-        if ($this->checkString($this->getparam('path'))) {
+        if ($this->checkString($this->getParam('path'))) {
             $this->setPlaceHolder('message', "<span style='color:red;'>ERROR: パスに #, &, +, %, [ , ] が含まれていると画像表示に失敗します。</span>");
             return;
         }
@@ -120,8 +121,10 @@ class AddNewPage extends WebPage {
     $conn = new MySQL();
     # 追加の場合、すでに登録済みかチェックする。v3.20
     if (strpos($sql, "INSERT") == 0) {
-       if ($this->checkPath($conn, $this->getParam('path'))) {
-          $this->setPlaceHolder('message', "ERROR: すでに登録されています。(" . $this->getParam("path") . ")");
+       $path = $this->getParam('path');
+       if ($this->checkPath($conn, $path)) {
+          $id = $conn->getValue("SELECT id FROM Pictures WHERE path='$path'");
+          $this->setPlaceHolder('message', "ERROR: すでに登録されています。(id=" . $id . ", " .$this->getParam("path") . ")");
           return;
        }
     }
@@ -135,8 +138,23 @@ class AddNewPage extends WebPage {
     else {
       $this->setPlaceHolder('message', "OK: データを追加しました。(" . $this->getParam("title") . ")");
     }
-  }
 
+    # path を取得
+    if ($this->getParam('id') != "") {
+      $path = $conn->getValue("SELECT `path` FROM Pictures WHERE id=", $this->getParam('id'));
+      if (isset($path)) {
+        $this->setPlaceHolder('path', $path);
+      }
+      else {
+        $this->setPlaceHolder('path', 'index.php');
+      }
+    }
+    else {
+      $id = $conn->getValue("SELECT max(id) FROM Pictures");
+      $path = $conn->getValue("SELECT `path` FROM Pictures WHERE id=$id");
+      $this->setPlaceHolder('path', $path);
+    }
+  }
 
     //  すでにパスが登録されているかチェックする。
     function checkPath($conn, $path) {
