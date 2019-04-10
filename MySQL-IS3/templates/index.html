@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja_jp">
+<head>
+<meta charset="utf-8" />
+<title>MySQL-IS</title>
+<link rel="stylesheet" href="/stylesheets/default.css" />
+<style>
+td {
+  padding:3px;
+  font-size:10pt;
+}
+</style>
+</head>
+
+<body>
+<div style="margin-left:5%;margin-right:5%;">
+<h1><span style="color:blue;">MySQL-IS</span> <span style="font-size: 18pt">by Python3</span></h1>
+<div class="menubar">
+  <a href="/">HOME</a>&nbsp;/&nbsp;
+  <a href="query.cgi">クエリー</a>&nbsp;/&nbsp;
+  <a href="insert.cgi">データ入力</a>&nbsp;/&nbsp;
+  <a href="delete.cgi">データの削除</a>&nbsp;/&nbsp;
+  <a href="update.cgi">データの修正</a>&nbsp;/&nbsp;
+  <a href="admin.cgi">データベースの管理</a>&nbsp;/&nbsp;
+  <a href="csv.cgi">インポートとエクスポート</a>
+</div>
+<br />
+<p style="text-align:center;color:indianred;">Current user, schema (Database) is <span style="font-weight:bold;">"(*userid*)", "(*schema*)"</span></p>
+<br />
+<table style="width:100%;"><tr><td style="width:15%;vertical-align:top">
+  <ul style="list-style-type:none;font-size:14pt;">
+   <li><a href="index.cgi?menu=databases">Databases</a></li>
+   <li><a href="index.cgi?menu=users">Users</a></li>
+   <li><a href="index.cgi?menu=tables">Tables</a></li>
+   <li><a href="index.cgi?menu=views">Views</a></li>
+   <li><a href="index.cgi?menu=indexes">Indexes</a></li>
+   <li><a href="index.cgi?menu=routines">Routines</a></li>
+   <li><a href="index.cgi?menu=triggers">Triggers</a></li>
+   <li><a href="index.cgi?menu=characters">Character Sets</a></li>
+   <li><a href="index.cgi?menu=collations">Collations</a></li>
+  </ul>
+  </td><td style="width:85%;">
+    <h3 style="text-align:center;color:navy;font-size:14pt;">(*title*)</h3>
+  <table style="margin-left:auto;margin-right:auto;margin-bottom:30px;">
+   (*content*)
+  </table>  
+ </td></tr>
+</table>
+
+</div>
+<p style="display:clear;">&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</html>
