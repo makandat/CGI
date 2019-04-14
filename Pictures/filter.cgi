@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 # Videos テーブルのワードフィルタ
 #   MySQL を利用

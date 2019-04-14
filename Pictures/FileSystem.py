@@ -5,8 +5,8 @@ import shutil
 import glob
 from pathlib import Path
 import tempfile
-import pwd
-import grp
+#import pwd
+#import grp
 import csv
 import json
 from typing import Callable, List, Dict, Any
@@ -99,16 +99,16 @@ def getAttr(path:str) -> int:
   return os.stat(path).st_mode
 
 # ファイルやディレクトリのオーナーを得る。
-def getOwner(path:str) -> str:
-  uid = os.stat(path).st_uid
-  name = pwd.getpwuid(uid).pw_name
-  return name
+#def getOwner(path:str) -> str:
+#  uid = os.stat(path).st_uid
+#  name = pwd.getpwuid(uid).pw_name
+#  return name
 
 # ファイルやディレクトリのグループを得る。
-def getGroup(path:str) -> str:
-  gid = os.stat(path).st_gid
-  name = grp.getgrgid(gid).gr_name
-  return name
+#def getGroup(path:str) -> str:
+#  gid = os.stat(path).st_gid
+#  name = grp.getgrgid(gid).gr_name
+#  return name
 
 # カレントディレクトリを変更する。
 def chdir(dir:str) -> None:

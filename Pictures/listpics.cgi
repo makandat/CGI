@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # Pictures テーブル フォルダ内画像一覧
 #   MySQL を利用
@@ -8,7 +8,7 @@ import MySQL
 import Common
 import Text
 import sys, os
-from syslog import syslog
+#from syslog import syslog
 
 ## ページクラス
 class MainPage(page.WebPage) :
@@ -20,13 +20,14 @@ class MainPage(page.WebPage) :
       id = self.getParam('id')
       folder = self.getPath(id)
       self.setPlaceHolder('folder', folder)
+      self.setPlaceHolder('creator', MainPage.getCreator(folder));
       self.setPlaceHolder('pictures', self.getPictures(folder))
       self.incCount(id)
-      self.setPlaceHolder('message', '')
       self.setPlaceHolder('id', id)
     else :
       self.setPlaceHolder('message', 'id を指定してください。')
       self.setPlaceHolder('id', '')
+      self.setPlaceHolder('creator', 'unknown');
     return
 
   # id から path を得る。
@@ -38,6 +39,10 @@ class MainPage(page.WebPage) :
   def getPictures(self, folder) :
     buff = ""
     files = os.listdir(folder.encode('utf8'))
+    if len(files) == 0 :
+      self.setPlaceHolder('message', 'このフォルダにはファイルがありません。')
+    else :
+      self.setPlaceHolder('message', '')
     files2 = sorted(files)
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
@@ -61,6 +66,12 @@ class MainPage(page.WebPage) :
   def isPicture(path) :
     ext = Text.tolower(fs.getExtension(path))
     return (ext == '.jpg' or ext == '.png' or ext == '.gif')
+
+  @staticmethod
+  def getCreator(folder) :
+    parts = folder.split('/')
+    n = len(parts) - 1
+    return parts[n]
 
 
 

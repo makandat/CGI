@@ -1,13 +1,13 @@
-#!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Pictures テーブルのデータ追加・修正  v1.01  2019-03-27
+# Pictures テーブルのデータ追加・修正  v1.02  2019-04-08
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
 import MySQL
 import Common
 import Text
-from syslog import syslog
+#from syslog import syslog
 
 SELECT = "SELECT title, creator, path, mark, info, fav, count FROM Pictures WHERE id = {0}"
 INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6})"
@@ -36,6 +36,7 @@ class MainPage(page.WebPage) :
         self.clearAll()
         self.setPlaceHolder('message', "")
     except Exception as e:
+      self.clearAll()
       self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
     return
 
@@ -46,6 +47,7 @@ class MainPage(page.WebPage) :
       id = self.getParam('id')
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
+      path = Text.replace("\\", "/", path)
       creator = Text.replace("'", "''", self.getParam('creator'))
       mark = self.getParam('mark')
       info = self.getParam('info')
@@ -68,11 +70,11 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('title', title)
       self.setPlaceHolder('creator', creator)
       self.setPlaceHolder('path', path)
-      self.setPlaceHolder('mark', mark)
-      self.setPlaceHolder('info', info)
+      self.setPlaceHolder('mark', MainPage.setNoneToEmpty(mark))
+      self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
       self.setPlaceHolder('fav', str(fav))
       self.setPlaceHolder('count', str(count))
-      self.setPlaceHolder('message', "修正 OK")
+      self.setPlaceHolder('message', f"修正 OK.  <a href=\"listpics.cgi?id={id}\">見る</a>")
     except Exception as e:
       self.setPlaceHolder('message', "修正 NG : " + str(e))
       self.clearAll()
@@ -82,9 +84,13 @@ class MainPage(page.WebPage) :
   def add(self) :
     rb = True
     try :
-      title = self.getParam('title')
-      path = self.getParam('path')
-      creator = self.getParam('creator')
+      title = Text.replace("'", "''", self.getParam('title'))
+      path = Text.replace("'", "''", self.getParam('path'))
+      path = Text.replace("\\", "/", path)
+      if self.checkPath(path) == False :
+        self.clearAll()
+        return
+      creator = Text.replace("'", "''", self.getParam('creator'))
       mark = self.getParam('mark')
       info = self.getParam('info')
       fav = self.getParam('fav')
@@ -110,16 +116,29 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
       self.setPlaceHolder('fav', str(fav))
       self.setPlaceHolder('count', str(count))
-      self.setPlaceHolder('message', "追加 OK")
+      maxid = self.client.getValue("SELECT max(id) FROM Pictures")
+      self.setPlaceHolder('message', f"追加 OK.  <a href=\"listpics.cgi?id={maxid}\">見る</a>")
     except Exception as e:
       self.setPlaceHolder('message', "追加 NG : " + str(e))
       self.clearAll()
     return
 
+
+  # パスのチェック
+  def checkPath(self, path) :
+    if fs.exists(path) == False :
+      self.setPlaceHolder('message', path + " は存在しません。")
+      return False
+    n = self.client.getValue(f"SELECT count(*) FROM Pictures WHERE path='{path}'")
+    if n > 0 :
+      self.setPlaceHolder('message', path + " は登録済みです。")
+      return False
+    return True
+
   # データ取得
   def query(self) :
     try :
-      sql = SELECT.format(self.params['id'].value)
+      sql = SELECT.format(self.getParam('id'))
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
@@ -136,7 +155,7 @@ class MainPage(page.WebPage) :
         self.clearAll(int(self.getParam('id')))
         self.setPlaceHolder('message', "クエリー NG : Bad id.")
     except Exception as e :
-      self.clearAll(int(self.params['id'].value))
+      self.clearAll(int(self.getParam('id')))
       self.setPlaceHolder['message'] = "クエリー NG : " + str(e)
     return
 

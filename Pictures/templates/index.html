@@ -7,23 +7,28 @@
 </head>
 
 <body style="margin-left:5%;margin-right:5%">
-<h1 style="text-align:center;color:darkslateblue;padding:10px;">MySQL Pictures テーブル</h1>
-<p style="margin-left:10%;">
-  <a href="/cgi">CGI Index</a>&nbsp;/&nbsp;
+<h1 style="text-align:center;color:darkslateblue;padding:10px;">MySQL <span style="color:blue;">Pictures</span> テーブル</h1>
+<p style="display:inline;border:dotted thin silver;padding:5px;">
+  <a href="/">HOME</a>&nbsp;/&nbsp;
+  <a href="index.cgi">表示リセット</a>&nbsp;/&nbsp;
   <a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;
+  <a href="creators.cgi">作者一覧</a>&nbsp;/&nbsp;
   <a href="filter.cgi">ワードフィルタ設定</a>&nbsp;/&nbsp;
   <a href="index.cgi?fav=yes">お気に入り</a>&nbsp;/&nbsp;
   <a href="mark.cgi">マーク種別指定</a>&nbsp;/&nbsp;
   <a href="query.cgi">詳細検索</a>&nbsp;/&nbsp;
-  <a href="index.cgi?reverse=(*reverse*)">逆順</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=first">最初</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=prev">前頁</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=next">次頁</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=last">最後</a></p>
-<p style="text-align:center;color:crimson;">(*filter*)</p>
+  <form style="display:inline;border:dotted thin silver;padding:5px;">
+    <label> 並び　<input type="radio" name="orderby" value="ASC" (*ASCchecked*) />昇順</label>
+    <label>　<input type="radio" name="orderby" value="DESC" (*DESCchecked*) />降順</label>
+    <label>　先頭のid&nbsp;<input type="text" name="start_id" size="6"  value="(*start_id*)" style="border-radius:4px;" /></label>
+    <label>　<input type="submit" name="btnOrder" value="セット"  style="border-radius:4px;" /></label>
+  </form>
+</p>
+<div style="text-align:center;color:indianred;">(*tableInfo*)</div>
+<div style="text-align:center;color:crimson;">(*filter*)</div>
 <br />
 <table style="width:95%">
-<tr><th>id</th><th>title</th><th>creator</th><th>path</th><th>mark</th><th>info</th><th>fav</th><th>count</th></tr>
+<tr><th>id</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th></tr>
 (*result*)
 </table>
 <br />

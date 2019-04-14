@@ -4,7 +4,7 @@ import sys
 import os
 import subprocess
 import logging
-import syslog
+# import syslog
 import time
 import json
 from typing import List, Any, Callable
@@ -122,8 +122,8 @@ def is_bool(x:Any) -> bool:
   return (type(x) is str)
 
 # syslog
-def syslog_out(msg: str) -> None:
-  syslog.syslog(msg)
+#def syslog_out(msg: str) -> None:
+#  syslog.syslog(msg)
 
 # タイマー
 def set_timeout(sec:float, handler:Callable) -> None :

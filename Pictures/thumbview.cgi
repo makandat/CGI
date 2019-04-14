@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # フォルダ内画像のサムネール一覧
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
 import MySQL
-import Common
 import Text
 import sys, os
-from syslog import syslog
+#from syslog import syslog
 
 ## ページクラス
 class MainPage(page.WebPage) :
@@ -21,6 +20,11 @@ class MainPage(page.WebPage) :
       id = self.getParam('id')
       self.setPlaceHolder('id', id)
       folder = self.getPath(id)
+      parts = folder.split('/')
+      n = len(parts) - 1
+      name = parts[n] if n >= 0 else ''
+      self.setPlaceHolder('title', name + "<br /><span style='font-size:0.5em;color:blue;'>フォルダ内画像のサムネール一覧</span>")
+      self.setPlaceHolder('title1', name)
       self.setPlaceHolder('folder', folder);
       self.setPlaceHolder('message', '')
       self.setPlaceHolder('pictures', self.getPictures(folder))
@@ -29,6 +33,7 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('folder', '')
       self.setPlaceHolder('pictures', '')
       self.setPlaceHolder('message', 'エラー： フォルダの id が指定されていない。')
+      self.setPlaceHolder('title1', 'フォルダ内画像のサムネール一覧')
     
   # id から path を得る。
   def getPath(self, id) :
@@ -40,10 +45,12 @@ class MainPage(page.WebPage) :
     buff = ""
     files = os.listdir(folder.encode('utf8'))
     files2 = sorted(files)
+    i = 0
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
       if MainPage.isPicture(fn) :
-        buff += f"<a href=\"getImage.cgi?path={fn}\" target=\"_blank\"><img src=\"getImage.cgi?path={fn}\" style='width:15%;padding:10px;' /></a>"
+        buff += f"<a href=\"slideview.cgi?folder={folder}&slide={i}\" target=\"_blank\"><img src=\"getImage.cgi?path={fn}\" style='width:15%;padding:10px;' /></a>"
+        i += 1
       else :
         pass
     return buff
