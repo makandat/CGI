@@ -22,6 +22,10 @@ input[type="button"] {
   background-color: yellow;
   height: 32px;
 }
+input[type="text"] {
+  border-radius: 5px;
+  height: 28px;
+}
 .message {
   text-align:center;
   color:magenta;
@@ -43,12 +47,12 @@ function createTable() {
   sql += "  field1 varchar(100) not null,\n";
   sql += "  field2 int not null,\n";
   sql += "  primary key(id)\n";
-  sql += ") CHARACTER SET='UTF-8'";
+  sql += ") DEFAULT CHARACTER SET UTF8";
   $('#sql').val(sql);
 }
 
 function rename() {
-  sql = "RENAME TABLE table_name";
+  sql = "RENAME TABLE table_name TO new_table";
   $('#sql').val(sql);
 }
 
@@ -121,25 +125,26 @@ function dropTrigger() {
 <div class="menubar">
   <a href="/">HOME</a>&nbsp;/&nbsp;
   <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
+  <a href="history.cgi?tag=1" target="_blank">履歴を開く</a>&nbsp;/&nbsp;
   <a href="https://dev.mysql.com/doc/refman/5.6/ja/" target="_blank">MySQL 5.6 リファレンス</a>&nbsp;/&nbsp;
   <a href="https://dev.mysql.com/doc/refman/8.0/en/" target="_blank">MySQL 8.0 Reference</a>
 </div>
 <br />
 <ul style="margin-left:15%;font-size:14pt;">
-  <li><a href="javascript:createTable();">テーブルを作成する。</a></li>
-  <li><a href="javascript:rename();">テーブル名を変更する。</a></li>
-  <li><a href="javascript:truncate();">テーブルの中身を空にする。</a></li>
-  <li><a href="javascript:drop();">テーブルを削除する。</a></li>
-  <li><a href="javascript:addColumn();">テーブルのカラムを追加する。</a></li>
-  <li><a href="javascript:modifyColumn();">テーブルのカラムを変更する</a></li>
-  <li><a href="javascript:dropColumn();">テーブルのカラムを削除する</a></li>
-  <li><a href="javascript:createIndex();">インデックスを作成する。</a></li>
-  <li><a href="javascript:dropIndex();">インデックスを削除する。</a></li>
-  <li><a href="javascript:createRoutine();">ルーチンを作成する。</a></li>
-  <li><a href="javascript:createFunction();">関数を作成する。</a></li>
-  <li><a href="javascript:dropRoutine();">ルーチン・関数を削除する。</a></li>
-  <li><a href="javascript:createTrigger();">トリガを作成する。</a></li>
-  <li><a href="javascript:dropTrigger();">トリガを削除する。</a></li>
+  <li><a href="javascript:createTable();">テーブルを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:rename();">テーブル名を変更する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=renameTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:truncate();">テーブルの中身を空にする。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=truncateTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:drop();">テーブルを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:addColumn();">テーブルのカラムを追加する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=addColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:modifyColumn();">テーブルのカラムを変更する</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=changeColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropColumn();">テーブルのカラムを削除する</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createIndex();">インデックスを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createIndex" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropIndex();">インデックスを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropIndex" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createRoutine();">ルーチンを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createProcedure" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createFunction();">関数を作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createFunction" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropRoutine();">ルーチン・関数を削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropProcedure" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createTrigger();">トリガを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createTrigger" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropTrigger();">トリガを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropTrigger" target="_blank">(HELP)</a></li>
 </ul>
 <br />
 <form method="POST" id="form1" style="margin-left:10%">
@@ -149,9 +154,14 @@ function dropTrigger() {
  <div class="form_row">
    <input type="submit" name="submit" value=" 実行する " />&nbsp;<input type="button" id="clear" value=" クリア " />
  </div>
+ <div class="form_row">
+   <label><input type="checkbox" name="history" value="history" (*history*) /> 履歴を取る。</label>&nbsp;
+   <label>情報 <input type="text" name="info" size="80" /></label>
+ </div>
 </form>
 <br />
 <p class="message">(*message*)</p>
+
 <p>&nbsp;</p>
 <p style="text-align:center;"><a href="#top">TOP</a></p>
 <p>&nbsp;</p>

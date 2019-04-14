@@ -3,10 +3,7 @@
 #   MySQL-IS query.cgi  Version 2.00
 import WebPage as web
 import MySQL
-import Text
-import Common
-from syslog import syslog
-
+#from syslog import syslog
 
 # CGI WebPage クラス
 class MainPage(web.WebPage) :
@@ -15,24 +12,55 @@ class MainPage(web.WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL.MySQL()
+    # 履歴が有効か?
+    if self.isCookie('history') :
+      if self.getCookie('history') == '1':
+        # 履歴を取る。
+        self.history = True
+        self.setPlaceHolder('history', 'checked')
+      else :
+        # 履歴を取らない。
+        self.history = False
+        self.setPlaceHolder('history', '')
+    else :
+      # クッキーがなく、パラメータ history があるとき
+      if self.getParam('history') == 'history' :
+        self.history = True
+        self.setPlaceHolder('history', '1')
+      else :
+        # 履歴を取らない。(初期状態)
+        self.history = False
+        self.setPlaceHolder('history', '')
+    # ユーザとスキーマを表示
     self.setPlaceHolder('userid', self.conf['uid'])
     self.setPlaceHolder('schema', self.conf['db'])
+    # Postback かどうか?
     if self.isParam("submit") :
+      # Postback なら SQL を実行する。
       self.execSql()
+      if self.history :
+        # 履歴を取るとき、クッキーを'1'にする。
+        self.saveHistory()
+        self.setCookie('history', '1')
+      else :
+        # 履歴を取らないとき、クッキーを'0'にする。
+        self.setCookie('history', '0')
     else :
+      # 初期表示のとき
       self.setPlaceHolder("result", "")
       self.setPlaceHolder("sql", "")
     return
 
   # SQL を実行して結果を返す。
   def execSql(self) :
-    sql = self.getParam('sql')
+    sql = self.getParam('sql').replace("'", "''")
     self.setPlaceHolder("sql", sql)
     rows = self.__mysql.query(sql)
     fields = self.__mysql.getFieldNames()
     if len(rows) == 0 :
       self.setPlaceHolder('result', 'データがありません。')
     else :
+      # 実行結果をHTMLとして返す。
       buff = "<table>"
       buff += "<tr>"
       for field in fields :
@@ -52,6 +80,14 @@ class MainPage(web.WebPage) :
       self.setPlaceHolder('result', buff)
     return
 
+  # 履歴を取る。
+  def saveHistory(self) :
+    sql = self.getParam('sql').replace("'", "''")
+    info = self.getParam('info').replace("'", "''")
+    # 登録する。
+    insert = f"INSERT INTO History(dtime,caption,content,application,tag,info) VALUES(cast(now() as datetime),'Query', '{sql}', 'MySQL-IS python3', '0', '{info}')"
+    self.__mysql.execute(insert)
+    return
 
 # メイン開始位置
 wp = MainPage('templates/query.html')

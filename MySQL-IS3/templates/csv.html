@@ -42,9 +42,22 @@ input[type="text"] {
 </style>
 <script src="/js/jquery.min.js"></script>
 <script>
+// ヘルプの表示・非表示
+function showhelp() {
+  vis = ($('#help').css('visibility') == 'visible');
+  if (vis) {
+    $('#help').css('visibility', 'hidden');
+    $('#linkhelp').text('ヘルプを表示する。');
+  }
+  else {
+    $('#help').css('visibility', 'visible');
+    $('#linkhelp').text('ヘルプを表示しない。');
+  }
+}
+
 $(function() {
   $('input[name="direction"]').change(function() {
-    radio = $('input[name="direction"]:checked).val();
+    radio = $('input[name="direction"]:checked').val();
     if (radio ==='import') {
       $('input[type="file"]').attr('disabled', false);
     }
@@ -61,28 +74,27 @@ $(function() {
 <h1><span style="color:blue;font-size:0.7em;">MySQL-IS インポートとエクスポート</span> <span style="font-size: 18pt">by Python3</span></h1>
 <div class="menubar">
   <a href="/">HOME</a>&nbsp;/&nbsp;
-  <a href="index.cgi">もどる</a>
+  <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
+  <a href="history.cgi?tag=2" target="_blank">履歴を開く</a>&nbsp;/&nbsp;
+  <a href="javascript:showhelp();">ヘルプを表示しない。</a>
 </div>
 <br />
 <form method="POST" enctype="multipart/form-data" style="margin-left:15%;">
   <div class="form_row" style="border-top: solid 2px gray;">
-    <label>対象テーブル<br /><select name="tables" style="width:200px;">(*tables*)</select></label>
+    <label>対象テーブル<br /><select name="tables" style="width:200px;height:30px;broder-radius:5px;">(*tables*)</select></label>
   </div>
   <div class="form_row">
-    <label>方向 <input type="radio" id="import" name="direction" value="import" checked />&nbsp;IMPORT</label>&nbsp;
-    <label><input type="radio" id="export" name="direction" value="export" />&nbsp;EXPORT</label>&nbsp;
+    <label>方向 <input type="radio" id="import" name="direction" value="import" />&nbsp;IMPORT</label>&nbsp;
+    <label><input type="radio" id="export" name="direction" value="export" checked />&nbsp;EXPORT</label>&nbsp;
   </div>
   <div class="form_row">
     <label><input type="checkbox" name="caption" value="caption" checked /> 1行目を表題行とする。</label>
   </div>
   <div class="form_row">
-    <label><input type="checkbox" name="append" value="append" checked /> データを追加する(インポート)。</label>
-  </div>
-  <div class="form_row">
     <label>区切り文字 <input type="radio" name="separator" value="comma" checked /> カンマ</label>&nbsp;<input type="radio" name="separator" value="tab" /> タブ</label>
   </div>
   <div class="form_row">
-    <label>アップロードファイル (インポート)<br /><input type="file" name="file" /></label>
+    <label>アップロードファイル (インポート)<br /><input type="file" name="file" disabled /></label>
   </div>
   <div class="form_row">
     <input type="submit" name="submit" value=" 実行する " style="margin-top:20px;" />
@@ -92,6 +104,16 @@ $(function() {
 <p class="message">(*message*)</a>
 <br />
 <div class="result">(*result*)</div>
+<p>&nbsp;</p>
+<div id="help" class="help">
+<h3>ヘルプ</h3>
+<ul>
+<li>アップロードファイルの指定はインポートのときのみ必要です。</li>
+<li>インポートするテーブルのデータは主キーが重ならない場合は追加、重なった場合はエラーになります。</li>
+<li>インポートのとき、自動で履歴を取ります。</li>
+</ul>
+</div>
+
 <p>&nbsp;</p>
 <p style="text-align:center;"><a href="#top">TOP</a></p>
 <p>&nbsp;</p>

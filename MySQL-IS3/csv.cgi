@@ -4,8 +4,7 @@
 import WebPage as web
 import MySQL
 import Text
-import Common
-from syslog import syslog
+#from syslog import syslog
 
 
 # CGI WebPage クラス
@@ -22,7 +21,6 @@ class MainPage(web.WebPage) :
       self.tableName = self.getParam('tables')
       self.direction = self.getParam('direction')
       self.caption = False if self.getParam('caption') == "" else True
-      self.append = False if self.getParam('append') == "" else True
       self.separator = self.getParam('separator')
       # Export / Import ?
       try :
@@ -50,14 +48,17 @@ class MainPage(web.WebPage) :
       separator = "\t"
     sql = f"SELECT * FROM {self.tableName}"
     rows = self.__mysql.query(sql)
-    with open(filename, "w") as f :
+    with open(filename, "w", encoding="utf-8") as f :
       if self.caption :
         fields = self.__mysql.getFieldNames()
         s = Text.join(separator, fields)
         f.write(s + "\n")
       for row in rows :
-        s = Text.join(separator, row)
-        f.write(s + "\n")
+        s = ""
+        for i in range(len(row)) :
+          s += str(row[i]) + separator
+        s = s[0:len(s)-1] + "\n"
+        f.write(s)
     message = 'データがエクスポートされました。 '
     message += "テーブル:"
     message += self.tableName
@@ -74,18 +75,33 @@ class MainPage(web.WebPage) :
   def importTable(self) :
     self.saveFile('file', MainPage.SAVEDIR)
     fileName = self.params['file'].filename
-    
-    message = "データがインポートされました。"
-    message += "テーブル:"
-    message += self.tableName
-    message += ", 表題行:"
-    message += ("あり" if self.caption else "なし")
-    message += ", 書き込み方法:"
-    message += ("追加" if self.append else "上書き")
-    message += ", 区切り文字:"
-    message +=  ("カンマ" if self.separator == "comma" else "タブ")
+    tableName = self.tableName
+    separator = "," if self.separator == "comma" else "\t"
+    try :
+      self.loadData(MainPage.SAVEDIR + "/" + fileName, tableName)
+      message = "データがインポートされました。"
+      message += "テーブル:"
+      message += self.tableName
+      message += ", 表題行:"
+      message += ("あり" if self.caption else "なし")
+      message += ", 区切り文字:"
+      message +=  ("カンマ" if self.separator == "comma" else "タブ")
+    except Exception as e :
+      message = "Error: データのインポートに失敗しました。" + str(e)
     self.setPlaceHolder('message', message)
     self.setPlaceHolder('result', '')
+    return
+
+  # CSV ファイルをテーブルに書き込む。
+  def loadData(self, filePath, tableName) :
+    separator = "," if self.separator == "comma" else "\t"
+    number = 1 if self.caption else 0
+    sql = f"LOAD DATA LOCAL INFILE '{filePath}' INTO TABLE {tableName} FIELDS TERMINATED BY '{separator}' IGNORE {number} LINES"
+    self.__mysql.execute(sql)
+    # 履歴を取る。
+    sqlquoted = sql.replace("'", "''")
+    hist = f"INSERT INTO History(dtime,caption,content,application,tag,info) VALUES(cast(now() as datetime),'IMPORT TABLE','{sqlquoted}','MySQL-IS python3','2','IMPORT TABLE')"
+    self.__mysql.execute(hist)
     return
 
   # テーブル一覧を得る。

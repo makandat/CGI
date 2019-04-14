@@ -32,6 +32,22 @@ input[type="text"] {
   height: 25px;
 }
 </style>
+
+<script src="/js/jquery.min.js"></script>
+<script>
+  // ヘルプの表示・非表示
+  function showhelp() {
+    vis = ($('#help').css('visibility') == 'visible');
+    if (vis) {
+      $('#help').css('visibility', 'hidden');
+      $('#linkhelp').text('ヘルプを表示する。');
+    }
+    else {
+      $('#help').css('visibility', 'visible');
+      $('#linkhelp').text('ヘルプを表示しない。');
+    }
+  }
+</script>
 </head>
 
 <body>
@@ -44,7 +60,7 @@ input[type="text"] {
 <br />
 <form method="POST" style="margin-left:10%">
   <div class="form_row">
-    <label>対象テーブル<br /><select name="table" style="width:200px;">(*tables*)</select></label>
+    <label>対象テーブル<br /><select name="table" style="width:200px;height:30px;">(*tables*)</select></label>
   </div>
   <div class="form_row">
     <label>更新するフィールドと値のリスト<br />
@@ -57,6 +73,15 @@ input[type="text"] {
     <input type="submit" name="submit" value=" 更新 " />
   </div>
 </form>
+<br />
+<p>&nbsp;</p>
+<div class="help" id="help">
+<h3>ヘルプ</h3>
+<ul>
+<li>更新するフィールドには、複数のフィールドを書くことができます。(例) field1=0,field2='ABC'</li>
+<li>更新条件を空欄にすることはできません。特定のレコードのみを更新する場合は、主キーの値を指定します。</li>
+</ul>
+</div>
 <br />
 <p class="message">(*message*)</p>
 <p>&nbsp;</p>

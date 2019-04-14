@@ -31,14 +31,25 @@ input[type="text"] {
   border-radius: 4px;
   height: 25px;
 }
+.help {
+  font-size:11pt;
+  margin-left: 5%;
+}
 </style>
 <script src="/js/jquery.min.js"></script>
 <script>
-$(function() {
-  $('#clear').click(function() {
-    $('#sql').val('');
-  });
-});
+// ヘルプの表示・非表示
+function showhelp() {
+  vis = ($('#help').css('visibility') == 'visible');
+  if (vis) {
+    $('#help').css('visibility', 'hidden');
+    $('#linkhelp').text('ヘルプを表示する。');
+  }
+  else {
+    $('#help').css('visibility', 'visible');
+    $('#linkhelp').text('ヘルプを表示しない。');
+  }
+}
 </script>
 </head>
 
@@ -47,12 +58,13 @@ $(function() {
 <h1><span style="color:blue;">MySQL-IS insert</span> <span style="font-size: 18pt">by Python3</span></h1>
 <div class="menubar">
   <a href="/">HOME</a>&nbsp;/&nbsp;
-  <a href="index.cgi">もどる</a>
+  <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
+  <a href="javascript:showhelp();" id="linkhelp">ヘルプを表示しない</a>
 </div>
 <br />
 <form method="POST" style="margin-left:10%;">
 <div class="form_row">
- <label>対象テーブル<br /><select name="table" style="width:200px;">(*tables*)</select></label>
+ <label>対象テーブル<br /><select name="table" style="width:200px;height:30px;">(*tables*)</select></label>
 </div>
 <div class="form_row">
  <label>フィールド<br /><input type="text" name="fields" placeholder="name,count,info" / size="80" /></label>
@@ -66,6 +78,14 @@ $(function() {
 </form>
 <br />
 <p class="message">(*message*)</p>
+<p>&nbsp;</p>
+<div class="help" id="help">
+<h3>ヘルプ</h3>
+<ul>
+<li>フィールドの内容は省略できません。AUTO_INCREMENT フィールド(主キー)を除き、NOT NULL のフィールドをすべて列挙します。</li>
+<li>フィールドにAUTO_INCREMENT フィールドの主キーを含めた場合は、主キーの値は NULL とします。</li>
+</ul>
+</div>
 <p>&nbsp;</p>
 <p style="text-align:center;"><a href="#top">TOP</a></p>
 <p>&nbsp;</p>
