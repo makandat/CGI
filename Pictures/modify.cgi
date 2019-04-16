@@ -1,6 +1,7 @@
+#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Pictures テーブルのデータ追加・修正  v1.02  2019-04-08
+# Pictures テーブルのデータ追加・修正  v1.03  2019-04-16
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -9,9 +10,9 @@ import Common
 import Text
 #from syslog import syslog
 
-SELECT = "SELECT title, creator, path, mark, info, fav, count FROM Pictures WHERE id = {0}"
-INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6})"
-UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav='{6}', count={7} WHERE id={0};"
+SELECT = "SELECT title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
+INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7})"
+UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav='{6}', count={7}, bindata={8} WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(page.WebPage) :
@@ -53,6 +54,7 @@ class MainPage(page.WebPage) :
       info = self.getParam('info')
       fav = self.getParam('fav')
       count = self.getParam('count')
+      bindata = self.getParam('bindata')
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
@@ -63,8 +65,9 @@ class MainPage(page.WebPage) :
         self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
         self.setPlaceHolder('fav', str(fav))
         self.setPlaceHolder('count', str(count))
+        self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
-      sql = Text.format(UPDATE, id, title, creator, path, mark, info, fav, count)
+      sql = Text.format(UPDATE, id, title, creator, path, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.setPlaceHolder('id', id);
       self.setPlaceHolder('title', title)
@@ -74,6 +77,7 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
       self.setPlaceHolder('fav', str(fav))
       self.setPlaceHolder('count', str(count))
+      self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
       self.setPlaceHolder('message', f"修正 OK.  <a href=\"listpics.cgi?id={id}\">見る</a>")
     except Exception as e:
       self.setPlaceHolder('message', "修正 NG : " + str(e))
@@ -95,6 +99,7 @@ class MainPage(page.WebPage) :
       info = self.getParam('info')
       fav = self.getParam('fav')
       count = self.getParam('count')
+      bindata = self.getParam('bindata')
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
@@ -105,8 +110,9 @@ class MainPage(page.WebPage) :
         self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
         self.setPlaceHolder('fav', str(fav))
         self.setPlaceHolder('count', str(count))
+        self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
-      sql = INSERT.format(title, creator, path, mark, info, fav, count)
+      sql = INSERT.format(title, creator, path, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.setPlaceHolder('id', "")
       self.setPlaceHolder('title', title)
@@ -116,8 +122,9 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('info', MainPage.setNoneToEmpty(info))
       self.setPlaceHolder('fav', str(fav))
       self.setPlaceHolder('count', str(count))
+      self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
       maxid = self.client.getValue("SELECT max(id) FROM Pictures")
-      self.setPlaceHolder('message', f"追加 OK.  <a href=\"listpics.cgi?id={maxid}\">見る</a>")
+      self.setPlaceHolder('message', f"追加 {maxid} OK.  <a href=\"listpics.cgi?id={maxid}\">見る</a>")
     except Exception as e:
       self.setPlaceHolder('message', "追加 NG : " + str(e))
       self.clearAll()
@@ -142,7 +149,8 @@ class MainPage(page.WebPage) :
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
-        self.setPlaceHolder('id', self.getParam('id'))
+        id = self.getParam('id')
+        self.setPlaceHolder('id', id)
         self.setPlaceHolder('title', row[0])
         self.setPlaceHolder('creator', row[1])
         self.setPlaceHolder('path', row[2])
@@ -150,13 +158,14 @@ class MainPage(page.WebPage) :
         self.setPlaceHolder('info', MainPage.setNoneToEmpty(row[4]))
         self.setPlaceHolder('fav', row[5])
         self.setPlaceHolder('count', row[6])
-        self.setPlaceHolder('message', "クエリー OK")
+        self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(row[7]))
+        self.setPlaceHolder('message', f"クエリー id={id} OK")
       else :
         self.clearAll(int(self.getParam('id')))
-        self.setPlaceHolder('message', "クエリー NG : Bad id.")
+        self.setPlaceHolder('message', f"クエリー id={id} NG : Bad id.")
     except Exception as e :
       self.clearAll(int(self.getParam('id')))
-      self.setPlaceHolder['message'] = "クエリー NG : " + str(e)
+      self.setPlaceHolder['message'] = f"クエリー NG : id={id}. " + str(e)
     return
 
   # フォームのフィールドをクリアする。
@@ -172,6 +181,7 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('info', "")
     self.setPlaceHolder('fav', "0")
     self.setPlaceHolder('count', "0")
+    self.setPlaceHolder('bindata', "")
     return
 
   # 引数が None の場合、"" に変換する。

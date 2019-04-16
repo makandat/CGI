@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>BINDATA バイナリファイル</title>
+ <link rel="stylesheet" href="/css/default.css" />
+ <script src="/js/jquery.min.js"></script>
+ <script>
+// ヘルプの表示・非表示
+function showhelp() {
+  vis = ($('#help').css('visibility') == 'visible');
+  if (vis) {
+    $('#help').css('visibility', 'hidden');
+    $('#linkhelp').text('ヘルプを表示する。');
+  }
+  else {
+    $('#help').css('visibility', 'visible');
+    $('#linkhelp').text('ヘルプを表示しない。');
+  }
+}
+ </script>
+</head>
+
+<body>
+<h1>BINDATA バイナリファイル</h1>
+<div style="text-align:center;padding:4px;">
+ <a href="/">HOME</a>&nbsp;/&nbsp;
+ <a href="#helpmenu">HELP</a>&nbsp;/&nbsp;
+ <a href="javascript:showhelp();">ヘルプを表示しない。</a>
+</div>
+<br />
+<div class="menubar">
+   <a href="index.cgi">すべて</a>&nbsp;/&nbsp;
+   <a href="index.cgi?filter=image">画像ファイル</a>&nbsp;/&nbsp;
+   <a href="index.cgi?filter=audio">音声ファイル</a>&nbsp;/&nbsp;
+   <a href="index.cgi?filter=zip">圧縮ファイル</a>
+</div>
+<br />
+<table style="margin-left:auto%;margin-right:auto;">
+ <tr><th>id</th><th>タイトル</th><th>オリジナルファイル</th><th>ファイルタイプ</th><th>情報</th><th>サイズ</th></tr>
+ (*content*)
+</table>
+<p>&nbsp;</p>
+<ul style="margin-left:10%;">
+(*images*)
+</ul>
+<br />
+<div id="help" style="margin-left:10%;">
+ <a id="helpmenu"></a>
+ <h2>ヘルプ (コマンドラインツール)</h2>
+   <p>コマンドラインツールは tools フォルダに入っている。</p>
+   <h3>InsBINDATA.py</h3>
+     <p>InsBINDATA.py はバイナリーファイルをテーブル BINDATA に挿入するコマンドラインツールである。</p>
+     <blockquote>
+       python3 InsBINDATA.py file_path
+     </blockquote>
+  <h3>UpdBINDATA.py</h3>
+    <p>UpdBINDATA.py はテーブル BINDATA のバイナリーデータ (data フィールド) を更新するためのコマンドラインツールである。</p>
+    <blockquote>
+     python3 UpdBINDATA.py id file_path
+    </blockquote>
+  <h3>ShowBINDATA.py</h3>
+    <p>ShowBINDATA.py はテーブル BINDATA のデータを表示するためのコマンドラインツールである。<br />最大 400 項目表示できる。</p>
+    <blockquote>
+     python3 ShowBINDATA.py [datatype]
+    </blockquote>
+  <h3>ExtractBINDATA.py</h3>
+    <p>ExtractBINDATA.py はテーブル BINDATA のバイナリーデータ (data フィールド) をファイルとして取り出すためのコマンドラインツールである。</p>
+    <blockquote>
+      python3 ExtractBINDATA.py id file_path
+    </blockquote>
+  <br />
+
+ <h2>BINDATA テーブルの構造</h2>
+   <pre>
+ CREATE TABLE `BINDATA` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) NOT NULL,
+  `original` varchar(400) DEFAULT NULL,
+  `datatype` char(10) DEFAULT NULL,
+  `data` blob,
+  `info` varchar(100) DEFAULT NULL,
+  `size` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `original` (`original`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+  </pre>
+</div>
+
+
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

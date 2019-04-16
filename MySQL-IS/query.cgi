@@ -1,3 +1,4 @@
+#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/python3
 # -*- code=utf-8 -*-
 #   MySQL-IS query.cgi  Version 2.01

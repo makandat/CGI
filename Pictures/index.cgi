@@ -1,12 +1,13 @@
+#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 2.0 (Windows 版)
+#   index.cgi  Version 3.0
 import WebPage as page
 import MySQL
 import Common
 #from syslog import syslog
 
-SELECT = 'SELECT id, title, creator, path, mark, info, fav, count FROM Pictures'
+SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
 LIMIT = 500
 
 # CGI WebPage クラス
@@ -132,6 +133,12 @@ class MainPage(page.WebPage) :
       row2.append(row[5])
       row2.append(f"<a href=\"like.cgi?id={id}\" target=\"_blank\">{fav}</a>")
       row2.append(row[7])
+      if row[8] == None :
+        row2.append('')
+      else :
+        bindata = str(row[8])
+        link = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
+        row2.append(link)
       result += page.WebPage.table_row(row2) + "\n"
     return result
 

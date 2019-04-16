@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja_jp">
+<head>
+<meta charset="utf-8" />
+<title>MySQL-IS insert</title>
+<link rel="stylesheet" href="/css/style.css" />
+<style>
+td {
+  padding:3px;
+  font-size:10pt;
+}
+.form_row {
+  padding:5px;
+}
+input[type="submit"] {
+  border-radius: 4px;
+  background-color: lime;
+  height: 32px;
+}
+input[type="button"] {
+  border-radius: 4px;
+  background-color: yellow;
+  height: 32px;
+}
+.message {
+  text-align:center;
+  font-size:14pt;
+  color:magenta;
+}
+input[type="text"] {
+  border-radius: 4px;
+  height: 25px;
+}
+.help {
+  font-size:11pt;
+  margin-left: 5%;
+}
+</style>
+<script src="/js/jquery.min.js"></script>
+<script>
+// ヘルプの表示・非表示
+function showhelp() {
+  vis = ($('#help').css('visibility') == 'visible');
+  if (vis) {
+    $('#help').css('visibility', 'hidden');
+    $('#linkhelp').text('ヘルプを表示する。');
+  }
+  else {
+    $('#help').css('visibility', 'visible');
+    $('#linkhelp').text('ヘルプを表示しない。');
+  }
+}
+</script>
+</head>
+
+<body>
+<div style="margin-left:5%;margin-right:5%;">
+<h1><span style="color:blue;">MySQL-IS insert</span> <span style="font-size: 18pt">by Python3</span></h1>
+<div class="menubar">
+  <a href="/">HOME</a>&nbsp;/&nbsp;
+  <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
+  <a href="javascript:showhelp();" id="linkhelp">ヘルプを表示しない</a>
+</div>
+<br />
+<form method="POST" style="margin-left:10%;">
+<div class="form_row">
+ <label>対象テーブル<br /><select name="table" style="width:200px;height:30px;">(*tables*)</select></label>
+</div>
+<div class="form_row">
+ <label>フィールド<br /><input type="text" name="fields" placeholder="name,count,info" / size="80" /></label>
+</div>
+<div class="form_row">
+ <label>データ<br /><input type="text" name="data" placeholder="'ABC',0,'info'" size="80" /></label>
+</div>
+<div class="form_row">
+ <input type="submit" name="submit" value=" 送信 " style="margin-top:20px;" /></label>
+</div>
+</form>
+<br />
+<p class="message">(*message*)</p>
+<p>&nbsp;</p>
+<div class="help" id="help">
+<h3>ヘルプ</h3>
+<ul>
+<li>フィールドの内容は省略できません。AUTO_INCREMENT フィールド(主キー)を除き、NOT NULL のフィールドをすべて列挙します。</li>
+<li>フィールドにAUTO_INCREMENT フィールドの主キーを含めた場合は、主キーの値は NULL とします。</li>
+</ul>
+</div>
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</html>

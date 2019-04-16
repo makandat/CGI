@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja_jp">
+<head>
+<meta charset="utf-8" />
+<title>MySQL-IS テーブルの管理</title>
+<link rel="stylesheet" href="/stylesheets/default.css" />
+<style>
+td {
+  padding:3px;
+  font-size:10pt;
+}
+.form_row {
+  padding:5px;
+}
+input[type="submit"] {
+  border-radius: 4px;
+  background-color: lime;
+  height: 32px;
+}
+input[type="button"] {
+  border-radius: 4px;
+  background-color: yellow;
+  height: 32px;
+}
+input[type="text"] {
+  border-radius: 5px;
+  height: 28px;
+}
+.message {
+  text-align:center;
+  color:magenta;
+  font-size:14pt;
+}
+</style>
+<script src="/js/jquery.min.js"></script>
+<script>
+$(function() {
+  $('#clear').click(function() {
+    $('#sql').val('');
+  });
+});
+
+
+function createTable() {
+  sql =  "CREATE TABLE table_name (\n";
+  sql += "  id int not null auto_increment,\n";
+  sql += "  field1 varchar(100) not null,\n";
+  sql += "  field2 int not null,\n";
+  sql += "  primary key(id)\n";
+  sql += ") DEFAULT CHARACTER SET UTF8";
+  $('#sql').val(sql);
+}
+
+function rename() {
+  sql = "RENAME TABLE table_name TO new_table";
+  $('#sql').val(sql);
+}
+
+function truncate() {
+  sql = "TRUNCATE TABLE table_name";
+  $('#sql').val(sql);
+}
+
+function drop() {
+  sql = "DROP TABLE table_name";
+  $('#sql').val(sql);
+}
+
+function addColumn() {
+  sql = "ALTER TABLE table_name ADD COLUMN (column_name ...)";
+  $('#sql').val(sql);
+}
+
+function modifyColumn() {
+  sql = "ALTER TABLE table_name CHANGE COLUMN old_name new_definition";
+  $('#sql').val(sql);
+}
+
+function dropColumn() {
+  sql = "ALTER TABLE table_name DROP COLUMN column_name"
+  $('#sql').val(sql);
+}
+
+function createIndex() {
+  sql = "CREATE INDEX index_name ON table_name (column_name)";
+  $('#sql').val(sql);
+}
+
+function dropIndex() {
+  sql = "DROP INDEX index_name ON table_name";
+  $('#sql').val(sql);
+}
+
+function createRoutine() {
+  sql = "CREATE PROCEDURE sp_name(parameter,..)\n  routine_body";
+  $('#sql').val(sql);
+}
+
+function createFunction() {
+  sql = "CREATE FUNCTION sp_name(parameter,..) RETURNS type\n  routine_body";
+  $('#sql').val(sql);
+}
+
+function dropRoutine() {
+  sql = "DROP PROCEDURE|FUNCTION sp_name";
+  $('#sql').val(sql);
+}
+
+function createTrigger() {
+  sql = "CREATE TRIGGER trigger_name\n  trigger_time trigger_event\n  ON tbl_name FOR EACH ROW\n  trigger_body";
+  $('#sql').val(sql);
+}
+
+function dropTrigger() {
+  sql = "DROP TRIGGER trigger_name";
+  $('#sql').val(sql);
+}
+
+</script>
+</head>
+
+<body>
+<div style="margin-left:5%;margin-right:5%;">
+<h1><span style="color:blue;font-size:0.8em;">MySQL-IS データベースの管理</span> <span style="font-size: 18pt">by Python3</span></h1>
+<div class="menubar">
+  <a href="/">HOME</a>&nbsp;/&nbsp;
+  <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
+  <a href="history.cgi?tag=1" target="_blank">履歴を開く</a>&nbsp;/&nbsp;
+  <a href="https://dev.mysql.com/doc/refman/5.6/ja/" target="_blank">MySQL 5.6 リファレンス</a>&nbsp;/&nbsp;
+  <a href="https://dev.mysql.com/doc/refman/8.0/en/" target="_blank">MySQL 8.0 Reference</a>
+</div>
+<br />
+<ul style="margin-left:15%;font-size:14pt;">
+  <li><a href="javascript:createTable();">テーブルを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:rename();">テーブル名を変更する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=renameTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:truncate();">テーブルの中身を空にする。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=truncateTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:drop();">テーブルを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropTable" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:addColumn();">テーブルのカラムを追加する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=addColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:modifyColumn();">テーブルのカラムを変更する</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=changeColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropColumn();">テーブルのカラムを削除する</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropColumn" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createIndex();">インデックスを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createIndex" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropIndex();">インデックスを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropIndex" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createRoutine();">ルーチンを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createProcedure" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createFunction();">関数を作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createFunction" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropRoutine();">ルーチン・関数を削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropProcedure" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:createTrigger();">トリガを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createTrigger" target="_blank">(HELP)</a></li>
+  <li><a href="javascript:dropTrigger();">トリガを削除する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=dropTrigger" target="_blank">(HELP)</a></li>
+</ul>
+<br />
+<form method="POST" id="form1" style="margin-left:10%">
+ <div class="form_row">
+  <label>SQL を修正して実行します。<br /><textarea name="sql" id="sql" style="width:800px;height:250px;"></textarea></label>
+ </div>
+ <div class="form_row">
+   <input type="submit" name="submit" value=" 実行する " />&nbsp;<input type="button" id="clear" value=" クリア " />
+ </div>
+ <div class="form_row">
+   <label><input type="checkbox" name="history" value="history" (*history*) /> 履歴を取る。</label>&nbsp;
+   <label>情報 <input type="text" name="info" size="80" /></label>
+ </div>
+</form>
+<br />
+<p class="message">(*message*)</p>
+
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</html>
