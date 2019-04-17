@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # Pictures テーブル フォルダ内画像一覧

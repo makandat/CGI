@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 #  画像を返す。
 import WebPage as page
