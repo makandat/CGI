@@ -34,9 +34,13 @@ class MainPage(web.WebPage) :
       sql = self.getParam('sql')
       if sql == "" :
         self.setPlaceHolder('message', 'SQL が空欄です。')
+        self.setPlaceHolder('sql', '')
       else :
+        self.setPlaceHolder('sql', sql)
+        # 実行する。
         self.execSQL(sql)
     else :
+      self.setPlaceHolder('sql', '')
       self.setPlaceHolder('message', '')
       # 履歴クッキーがあるか?
       if self.isCookie('history1') :
@@ -54,13 +58,15 @@ class MainPage(web.WebPage) :
 
   # SQL を実行する。
   def execSQL(self, sql) :
+    if sql.startswith('SELECT') or sql.startswith('select') :
+      self.setPlaceHolder('message', 'SELECT は実行できません。')
+      return
     try :
-      self.setPlaceHolder('sql', sql)
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', 'SQL を実行しました。')
       self.saveHistory(sql)
     except Exception as e :
-      self.setPlaceHolder('message', 'Error: ' + str(e))    
+      self.setPlaceHolder('message', 'Error: ' + str(e))
     return
 
   # 履歴を保存する。

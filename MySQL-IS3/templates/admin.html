@@ -126,11 +126,12 @@ function dropTrigger() {
   <a href="/">HOME</a>&nbsp;/&nbsp;
   <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
   <a href="history.cgi?tag=1" target="_blank">履歴を開く</a>&nbsp;/&nbsp;
+  <a href="showHtml.cgi?html=sqlhelp.html" target="_blank">SQL のヘルプ</a>&nbsp;/&nbsp;
   <a href="https://dev.mysql.com/doc/refman/5.6/ja/" target="_blank">MySQL 5.6 リファレンス</a>&nbsp;/&nbsp;
   <a href="https://dev.mysql.com/doc/refman/8.0/en/" target="_blank">MySQL 8.0 Reference</a>
 </div>
 <br />
-<ul style="margin-left:15%;font-size:14pt;">
+<ul style="margin-left:15%;font-size:12pt;">
   <li><a href="javascript:createTable();">テーブルを作成する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=createTable" target="_blank">(HELP)</a></li>
   <li><a href="javascript:rename();">テーブル名を変更する。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=renameTable" target="_blank">(HELP)</a></li>
   <li><a href="javascript:truncate();">テーブルの中身を空にする。</a>&nbsp;<a href="showHtml.cgi?html=sqlhelp.html&anchor=truncateTable" target="_blank">(HELP)</a></li>
@@ -149,7 +150,7 @@ function dropTrigger() {
 <br />
 <form method="POST" id="form1" style="margin-left:10%">
  <div class="form_row">
-  <label>SQL を修正して実行します。<br /><textarea name="sql" id="sql" style="width:800px;height:250px;">(*sql*)</textarea></label>
+  <label>SQL を修正して実行します。(SELECT は実行できません)<br /><textarea name="sql" id="sql" style="width:800px;height:250px;">(*sql*)</textarea></label>
  </div>
  <div class="form_row">
    <input type="submit" name="submit" value=" 実行する " />&nbsp;<input type="button" id="clear" value=" クリア " />

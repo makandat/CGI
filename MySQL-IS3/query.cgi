@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 #   MySQL-IS query.cgi  Version 2.01
 import WebPage as web
@@ -31,6 +32,7 @@ class MainPage(web.WebPage) :
           self.history = False
           self.setPlaceHolder('history', '')
           self.setCookie('history', '0')
+      self.history = self.getCookie('history') == '1'
       if self.history :
         # 履歴を取るとき、クッキーを'1'にする。
         self.saveHistory()
@@ -52,6 +54,12 @@ class MainPage(web.WebPage) :
   # SQL を実行して結果を返す。
   def execSql(self) :
     sql = self.getParam('sql')
+    if sql.startswith('SELECT') or sql.startswith('select') :
+      pass
+    else :
+      self.setPlaceHolder('sql', sql)
+      self.setPlaceHolder('result', '<span style="color:red;">SELECT がありません。</span>')
+      return
     self.setPlaceHolder("sql", sql)
     rows = self.__mysql.query(sql)
     fields = self.__mysql.getFieldNames()
