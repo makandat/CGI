@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 #   index.cgi  Version 3.0

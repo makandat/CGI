@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!/usr/bin/python3
 #  extract.cgi  BINDATA テーブルから指定された id の画像を取り出す。
 import sys
 import WebPage as page

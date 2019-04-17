@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # slideview.cgi フォルダ内画像のスライド表示
@@ -48,6 +49,7 @@ class MainPage(page.WebPage) :
       current = 0
     files = os.listdir(folder.encode('utf8'))
     n = len(files)
+    m = n - 1
     files2 = sorted(files)
     if slide == "first" :
       current = 0
@@ -57,32 +59,32 @@ class MainPage(page.WebPage) :
       if current == 0 :
         self.setPlaceHolder('message', '最初の画像です。No.0')
       else :
-        self.setPlaceHolder('message', f"No.{current} の画像です。")
+        self.setPlaceHolder('message', f"No.{current} / {m}の画像です。")
     elif slide == "next" :
       current = (current + 1) if current < (n - 1) else (n - 1)
       if current == n - 1 :
         self.setPlaceHolder('message', f"最後の画像です。No.{current}")
       else :
-        self.setPlaceHolder('message', f"No.{current} の画像です。")
+        self.setPlaceHolder('message', f"No.{current} / {m} の画像です。")
     elif slide == "last" :
       current = n - 1
       self.setPlaceHolder('message', f"最後の画像です。No.{current}")
     else :
       # CURRENT
       current = int(slide)
-      self.setPlaceHolder('message', f"No.{current} の画像です。")
+      self.setPlaceHolder('message', f"No.{current} / {m} の画像です。")
     filename = files2[current].decode('utf8')
     filePath = folder + "/" + filename
     self.setPlaceHolder('filename', '')
     self.setPlaceHolder('filename', filePath)
     self.setCookie('current_image', str(current))
-    if self.isCookie('image_adjust') :
-      if self.getCookie('image_adjust') == '1' :
-        self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
-      else :
-        self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
-    else :
-      self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
+    #if self.isCookie('image_adjust') :
+    #  if self.getCookie('image_adjust') == '1' :
+    #    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
+    #  else :
+    #    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
+    #else :
+    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
     self.setPlaceHolder('path', filePath)
     return
 
