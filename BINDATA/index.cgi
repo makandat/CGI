@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 #  BINDATA バイナリファイル index.cgi
 import WebPage as cgi
 import Text as text
@@ -50,7 +51,7 @@ class BinDataPage(cgi.WebPage) :
       size = "" if row[5] == None else row[5]
       buff += "<tr>"
       buff += f"<td><a href=\"modify.cgi?id={id}\">{id}</a></td>"
-      buff += f"<td>{title}</td><td>{original}</td><td>{datatype}</td><td>{info}</td><td>{size}</td>"
+      buff += f"<td><a href='extract.cgi?id={id}' target='_blank'>{title}</a></td><td>{original}</td><td>{datatype}</td><td>{info}</td><td>{size}</td>"
       buff += "</tr>\n"
     return buff
 

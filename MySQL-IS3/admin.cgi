@@ -1,9 +1,10 @@
 #!/usr/bin/python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   MySQL-IS admin.cgi  Version 2.00
+#   MySQL-IS admin.cgi  Version 2.01 2019-04-17
 import WebPage as web
 import MySQL
-from syslog import syslog
+#from syslog import syslog
 
 
 # CGI WebPage クラス
@@ -54,7 +55,7 @@ class MainPage(web.WebPage) :
   # SQL を実行する。
   def execSQL(self, sql) :
     try :
-      sql = sql.replace("'", "''")
+      self.setPlaceHolder('sql', sql)
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', 'SQL を実行しました。')
       self.saveHistory(sql)
@@ -70,7 +71,6 @@ class MainPage(web.WebPage) :
       # 登録する。
       info = self.getParam('info')
       insert = f"INSERT INTO History(dtime,caption,content,application,tag,info) VALUES(cast(now() as datetime),'Query', '{sql}', 'MySQL-IS python3', '1', '{info}')"
-      syslog(insert)
       self.__mysql.execute(insert)
     else :
       pass

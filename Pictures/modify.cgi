@@ -11,7 +11,8 @@ import Text
 #from syslog import syslog
 
 SELECT = "SELECT title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
-INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7})"
+INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6})"
+INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7})"
 UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav='{6}', count={7}, bindata={8} WHERE id={0};"
 
 # CGI WebPage クラス
@@ -112,7 +113,10 @@ class MainPage(page.WebPage) :
         self.setPlaceHolder('count', str(count))
         self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
-      sql = INSERT.format(title, creator, path, mark, info, fav, count, bindata)
+      if bindata == '' :
+        sql = INSERT.format(title, creator, path, mark, info, fav, count)
+      else :
+        sql = INSERT2.format(title, creator, path, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.setPlaceHolder('id', "")
       self.setPlaceHolder('title', title)

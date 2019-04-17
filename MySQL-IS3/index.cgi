@@ -1,11 +1,12 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   MySQL-IS index.cgi  Version 2.00
+#   MySQL-IS index.cgi  Version 2.01  2019-04-17
 import WebPage as web
 import MySQL
 import Text
 import Common
-from syslog import syslog
+#from syslog import syslog
 
 
 # CGI WebPage クラス
@@ -112,7 +113,12 @@ class MainPage(web.WebPage) :
         if i == 0 :
           content += self.makelink(str(row[i]), alink)
         else :
-          content += str(row[i])
+          s = str(row[i])
+          if s == 'None' :
+            s = 'NULL'
+          else :
+            pass
+          content += s
         content += "</td>"
       content += "</tr>\n"
     self.setPlaceHolder('content', content)

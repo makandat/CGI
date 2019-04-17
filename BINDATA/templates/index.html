@@ -25,8 +25,7 @@ function showhelp() {
 <h1>BINDATA バイナリファイル</h1>
 <div style="text-align:center;padding:4px;">
  <a href="/">HOME</a>&nbsp;/&nbsp;
- <a href="#helpmenu">HELP</a>&nbsp;/&nbsp;
- <a href="javascript:showhelp();">ヘルプを表示しない。</a>
+ <a href="javascript:showhelp();">ヘルプを表示する。</a>
 </div>
 <br />
 <div class="menubar">
@@ -36,7 +35,7 @@ function showhelp() {
    <a href="index.cgi?filter=zip">圧縮ファイル</a>
 </div>
 <br />
-<table style="margin-left:auto%;margin-right:auto;">
+<table style="margin-left:10%;">
  <tr><th>id</th><th>タイトル</th><th>オリジナルファイル</th><th>ファイルタイプ</th><th>情報</th><th>サイズ</th></tr>
  (*content*)
 </table>
@@ -45,7 +44,7 @@ function showhelp() {
 (*images*)
 </ul>
 <br />
-<div id="help" style="margin-left:10%;">
+<div id="help" style="margin-left:10%;visibility:hidden;">
  <a id="helpmenu"></a>
  <h2>ヘルプ (コマンドラインツール)</h2>
    <p>コマンドラインツールは tools フォルダに入っている。</p>
