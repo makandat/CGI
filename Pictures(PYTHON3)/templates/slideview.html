@@ -8,20 +8,24 @@
 <script src="/js/jquery.cookie.js"></script>
 <script>
 function adjustWidth() {
-  // $("img").css("width", "100%");
+   $("img").css("width", "100%");
+/*
   var cookie_value = $.cookie('image_adjust');  
   if (cookie_value) {
     if (cookie_value == "1") {
       $.cookie('image_adjust', '0');  // 反転する。
+      $("img").css("width", "");
     }
     else {
       $.cookie('image_adjust', '1');  // 反転する。
+      $("img").css("width", "100%");
     }
   }
   else {
-    $.cookie('image_adjust', '1');  // クッキーがない場合はセットする。
+    $.cookie('image_adjust', '0');  // クッキーがない場合はセットしない。
   }
   location.reload();
+*/
 }
 </script>
 <style>
