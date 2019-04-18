@@ -5,8 +5,9 @@
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
-import MySQL
+from MySQL import MySQL
 import Text
+import Common
 import sys, os
 #from syslog import syslog
 
@@ -16,11 +17,33 @@ class MainPage(page.WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
+    #Common.init_logger('C:/temp/Logger.log')
+    self.adjust = '0'
     if self.isParam('folder') :
       # Postback のとき
       folder = self.getParam('folder')
       slide = self.getParam('slide')
+      if self.isParam('width') :
+        Common.log('パラメータ width あり。')
+        # 画像幅調整あり
+        if self.isCookie('adjust_width') :
+          #Common.log('クッキー adjust_width あり。')
+          self.adjust = self.getCookie('adjust_width')
+          #Common.log('クッキー adjust_width  = ' + self.adjust)
+          if self.adjust == '1' :
+            # 反転させる。
+            self.adjust = '0'
+          else :
+            self.adjust = '1'
+        else :
+          self.adjust = '1'
+        #Common.log('self.adjust = ' + self.adjust)
+        self.setCookie('adjust_width', self.adjust)
+      else :
+        # 画像調整指定なし(width=なし)
+        self.adjust = self.getCookie('adjust_width')
+        #Common.log("width なし self.adjust = " + "None" if self.adjust == None else self.adjust)
       self.showPicture(folder, slide)
       parts = folder.split('/')
       n = len(parts) - 1
@@ -32,6 +55,7 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('message', '')
       self.setPlaceHolder('title', 'スライド表示')
       self.setPlaceHolder('filename', '')
+      self.setCookie('adjust_width', '0')
     return
 
 
@@ -43,14 +67,14 @@ class MainPage(page.WebPage) :
 
   # 画像を表示する。
   def showPicture(self, folder, slide) :
+    current = 0
     if self.isCookie('current_image') :
       current = int(self.getCookie('current_image'))
-    else :
-      current = 0
     files = os.listdir(folder.encode('utf8'))
     n = len(files)
     m = n - 1
     files2 = sorted(files)
+    #Common.log("showPicture folder={0}, slide={1}, self.adjust={2}".format(folder, slide, self.adjust))
     if slide == "first" :
       current = 0
       self.setPlaceHolder('message', "最初の画像です。No.0")
@@ -69,6 +93,8 @@ class MainPage(page.WebPage) :
     elif slide == "last" :
       current = n - 1
       self.setPlaceHolder('message', f"最後の画像です。No.{current}")
+    elif slide == 'current' :
+      self.setPlaceHolder('message', f"No.{current} / {m}の画像です。")
     else :
       # CURRENT
       current = int(slide)
@@ -78,13 +104,11 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('filename', '')
     self.setPlaceHolder('filename', filePath)
     self.setCookie('current_image', str(current))
-    #if self.isCookie('image_adjust') :
-    #  if self.getCookie('image_adjust') == '1' :
-    #    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
-    #  else :
-    #    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
-    #else :
-    self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
+    #Common.log("picture 直前 self.adjust = {0}".format(self.adjust))
+    if self.adjust == '0' :
+      self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
+    else :
+      self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
     self.setPlaceHolder('path', filePath)
     return
 

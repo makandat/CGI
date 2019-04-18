@@ -9,23 +9,6 @@
 <script>
 function adjustWidth() {
    $("img").css("width", "100%");
-/*
-  var cookie_value = $.cookie('image_adjust');  
-  if (cookie_value) {
-    if (cookie_value == "1") {
-      $.cookie('image_adjust', '0');  // 反転する。
-      $("img").css("width", "");
-    }
-    else {
-      $.cookie('image_adjust', '1');  // 反転する。
-      $("img").css("width", "100%");
-    }
-  }
-  else {
-    $.cookie('image_adjust', '0');  // クッキーがない場合はセットしない。
-  }
-  location.reload();
-*/
 }
 </script>
 <style>
@@ -50,7 +33,7 @@ table, th, td {
 <a href="slideview.cgi?folder=(*folder*)&slide=prev">前</a>&nbsp;
 <a href="slideview.cgi?folder=(*folder*)&slide=next">次</a>&nbsp;
 <a href="slideview.cgi?folder=(*folder*)&slide=last">最後</a>&nbsp;/&nbsp;
-<a href="javascript:adjustWidth();">画像の幅をブラウザに合わせる</a>&nbsp;/&nbsp;
+<a href="slideview.cgi?width=toggle&folder=(*folder*)&slide=current">画像の幅をブラウザに合わせる</a>&nbsp;/&nbsp;
 <a href="getImage.cgi?path=(*path*)" target="_blank">画像のみを表示</a>
 <br />
 <h3>(*filename*)</h3>
