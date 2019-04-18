@@ -1,253 +1,186 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   MySQL-IS index.cgi  Version 2.01  2019-04-17
-import WebPage as web
+#   index.cgi  Version 3.01  2019-04-18
+import WebPage as page
 import MySQL
-import Text
+import FileSystem as fs
 import Common
 #from syslog import syslog
 
+SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
+LIMIT = 500
 
 # CGI WebPage クラス
-class MainPage(web.WebPage) :
+class MainPage(page.WebPage) :
 
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
-    self.setPlaceHolder('schema', self.conf['db'])
-    self.setPlaceHolder('userid', self.conf['uid'])
-    if self.isParam("menu") :
-      menu = self.getParam('menu')
-      if menu == "users" :
-        # ユーザ一覧
-        rows = self.listUsers()
-        self.showRows(rows, ['GRANTEE'])
-        self.setPlaceHolder('title', 'ユーザ一覧')
-      elif menu == "tables" :
-        # テーブル一覧
-        rows = self.listTables()
-        self.showRows(rows, ['TABLE_NAME', 'DATA_LENGTH', 'AUTO_INCREMENT', 'CREATE_TIME', 'UPDATE_TIME'], "columns")
-        self.setPlaceHolder('title', 'テーブル一覧')
-      elif menu == "views" :
-        # ビュー一覧
-        rows = self.listViews()
-        self.showRows(rows, ['TABLE_NAME'], "viewdef")
-        self.setPlaceHolder('title', 'ビュー一覧')
-      elif menu == "indexes" :
-        # インデックス一覧
-        rows = self.listIndexes()
-        self.showRows(rows, ['INDEX_NAME', 'TABLE_NAME', 'COLUMN_NAME', 'SEQ_IN_INDEX'], "indexdef")
-        self.setPlaceHolder('title', 'インデックス一覧')
-      elif menu == "routines" :
-        # ルーチン一覧
-        rows = self.listRoutines()
-        self.showRows(rows, ['ROUTINE_NAME', 'ROUTINE_TYPE', 'DATA_TYPE'], "routinedef")
-        self.setPlaceHolder('title', 'ルーチン一覧')
-      elif menu == "triggers" :
-        # トリガ一覧
-        rows = self.listTriggers()
-        self.showRows(rows, ['TRIGGER_NAME', 'EVENT_MANIPULATION', 'ACTION_TIMING'], "triggerdef")
-        self.setPlaceHolder('title', 'トリガ一覧')
-      elif menu == "characters" :
-        # 文字コード一覧
-        rows = self.listCharacterSet()
-        self.showRows(rows, ['CHARACTER_SET_NAME', 'DEFAULT_COLLATE_NAME', 'DESCRIPTION', 'MAXLEN'])
-        self.setPlaceHolder('title', '文字コード一覧')
-      elif menu == "collations" :
-        # 並び順一覧
-        rows = self.listCollation()
-        self.showRows(rows, ['COLLATION_NAME', 'CHARACTER_SET_NAME', 'ID', 'IS_DEFAULT'])
-        self.setPlaceHolder('title', '並び順一覧')
-      elif menu == "columns" :
-        # テーブルのカラム一覧
-        tableName = self.getParam('name')
-        rows = self.getColumns(tableName)
-        self.showRows(rows, ['ORDINAL_POSITION', 'COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE', 'COLUMN_TYPE', 'COLUMN_KEY', 'EXTRA'])
-        self.setPlaceHolder('title', tableName + ' カラム一覧')
-      elif menu == "viewdef" :
-        viewName = self.getParam('name')
-        rows = self.getViewDef(viewName)
-        self.showText(rows)
-        self.setPlaceHolder('title', viewName + ' の定義')
-      elif menu == "routinedef" :
-        routine = self.getParam('name')
-        rows = self.getRoutineDef(routine)
-        self.showText(rows)
-        self.setPlaceHolder('title', routine + ' の定義')
-      elif menu == "triggerdef" :
-        trigger = self.getParam('name')
-        rows = self.getTriggerDef(trigger)
-        self.showText(rows)
-        self.setPlaceHolder('title', trigger + ' の定義')
+    # Common.init_logger("C:/temp/PyLogger.log")
+    self.setPlaceHolder('result', "")
+    try :
+      rows = []
+      self.setPlaceHolder('filter', "")
+      self.__mysql = MySQL.MySQL()
+      # テーブル情報を表示
+      self.setPlaceHolder("tableInfo", self.tableInfo())
+      # フィルタ別処理
+      if self.isParam('filter') :
+        # フィルタ指定がある場合
+        filter = self.getParam('filter')
+        self.setPlaceHolder('filter', "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>')
+        sql = self.makeFilterSql(filter)
+        rows = self.__mysql.query(sql)
+        self.resetOrder()
+      elif self.isParam('creator') :
+        sql = SELECT + " WHERE creator='" + self.getParam('creator') + "'"
+        rows = self.__mysql.query(sql)
+        self.resetOrder()
+      elif self.isParam('fav') :
+        # fav 指定がある場合
+        sql = SELECT + " WHERE fav > 0"
+        rows = self.__mysql.query(sql)
+        self.resetOrder("ASC")
+      elif self.isParam('mark') :
+        # mark 指定がある場合
+        mark = self.getParam('mark')
+        sql = SELECT + f" WHERE mark = '{mark}'"
+        rows = self.__mysql.query(sql)
+        self.resetOrder("ASC")
+      elif self.isParam('criteria') :
+        # 詳細検索
+        criteria = self.getParam('criteria')
+        sql = "SELECT * FROM Pictures WHERE " + criteria
+        rows = self.__mysql.query(sql)
+        self.resetOrder()
+      elif self.isParam("btnOrder") :
+        # フォームのクエリー
+        rows = self.btnOrder()
       else :
-        # データベース一覧
-        rows = self.listDatabases()
-        self.showRows(rows, ['SCHEMA_NAME', 'DEFAULT_CHARACTER_SET_NAME', 'DEFAULT_COLLATION_NAME'])
-        self.setPlaceHolder('title', 'データベース一覧')
-    else :
-        # データベース一覧
-      rows = self.listDatabases()
-      self.showRows(rows, ['SCHEMA_NAME', 'DEFAULT_CHARACTER_SET_NAME', 'DEFAULT_COLLATION_NAME'])
-      self.setPlaceHolder('title', 'データベース一覧')
+        # フィルタ指定がない(通常の)場合
+        rows = self.queryNormal()
+      # end case
+      n = len(rows) - 1
+      self.setPlaceHolder('result', "")
+      # クエリー結果を表示する。
+      self.setPlaceHolder('result', self.getResult(rows))
+      self.setPlaceHolder('message', "クエリー OK")
+      if len(rows) == 0 :
+        self.setPlaceHolder('message', "０件のデータが検出されました。")
+    except Exception as e:
+      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
     return
 
+  # 通常のクエリ(フィルタ指定なし)
+  def queryNormal(self) :
+    self.setPlaceHolder("start_id", "")
+    if self.isCookie('order') :
+      self.order = self.getCookie("order")
+      rows = self.__mysql.query(SELECT + f" ORDER BY id {self.order} LIMIT {LIMIT};")
+      if self.order == "DESC" :
+        self.setPlaceHolder("ASCchecked", "")
+        self.setPlaceHolder("DESCchecked", "checked")
+      else :
+        self.setPlaceHolder("ASCchecked", "checked")
+        self.setPlaceHolder("DESCchecked", "")
+    else:
+      rows = self.__mysql.query(SELECT + f" ORDER BY id DESC LIMIT {LIMIT};")
+      self.order = "DESC"
+      self.setCookie("order", "DESC")
+      self.setPlaceHolder("ASCchecked", "")
+      self.setPlaceHolder("DESCchecked", "checked")
+    return rows
 
-  # 行列を表示する。
-  def showRows(self, rows, names, alink="") :
-    content = "<tr>"
-    i = 0
-    # HTML テーブルの表題部分
-    for name in names :
-      content += "<th>"
-      content += names[i]
-      content += "</th>"
-      i += 1
-    content += "</tr>\n"
-    # HTML テーブルの内容部分
+  # フォームのクエリー
+  def btnOrder(self) :
+    # 並び順を得る。
+    self.order = self.getParam("orderby")
+    self.setCookie("order", self.order)
+    # 降順か昇順かを得る。
+    if self.isParam("start_id") :
+      self.start_id = int(self.getParam("start_id"))
+      self.setPlaceHolder("start_id", self.start_id)
+    else :
+      if self.order == "ASC" :
+        self.start_id = 0
+      else :
+        self.start_id = 1000000
+      self.setPlaceHolder("start_id", "")
+
+    # クエリー実行
+    if self.order == "DESC" :
+      rows = self.__mysql.query(SELECT + f" WHERE id <= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};")
+      self.setPlaceHolder("DESCchecked", "checked")
+      self.setPlaceHolder("ASCchecked", "")
+    else :
+      rows = self.__mysql.query(SELECT + f" WHERE id >= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};")
+      self.setPlaceHolder("DESCchecked", "")
+      self.setPlaceHolder("ASCchecked", "checked")
+    return rows
+
+  # クエリー結果を表にする。
+  def getResult(self, rows) :
+    result = ""
     for row in rows :
-      content += "<tr>"
-      for i in range(len(names)) :
-        content += "<td>"
-        if i == 0 :
-          content += self.makelink(str(row[i]), alink)
-        else :
-          s = str(row[i])
-          if s == 'None' :
-            s = 'NULL'
-          else :
-            pass
-          content += s
-        content += "</td>"
-      content += "</tr>\n"
-    self.setPlaceHolder('content', content)
-    return
-
-  # テキストを表示
-  def showText(self, rows) :
-    content = "<pre style='margin-left:30px;'>"
-    for row in rows :
-      c = row[0]
-      if c == "&" :
-        c = "&amp;"
-      if c == "<" :
-        c = "&lt;"
-      content += c
-      if len(content) % 160 == 0:
-        content += "\n"
-    content += "</pre>"
-    self.setPlaceHolder('content', content)
-    return
-
-  # alink に従ってアンカーを作る。
-  def makelink(self, text, alink="") :
-    if alink == 'columns' :
-      s = f"<a href=\"index.cgi?menu=columns&name={text}\">{text}</a>"
-    elif alink == 'viewdef' :
-      s = f"<a href=\"index.cgi?menu=viewdef&name={text}\">{text}</a>"
-      #elif alink == 'indexdef' and text != "PRIMARY" :
-      #  s = f"<a href=\"index.cgi?menu=indexdef&name={text}\">{text}</a>"
-    elif alink == 'routinedef' :
-      s = f"<a href=\"index.cgi?menu=routinedef&name={text}\">{text}</a>"
-    elif alink == 'triggerdef' :
-      s = f"<a href=\"index.cgi?menu=triggerdef&name={text}\">{text}</a>"
-    else :
-      s = text
-    return s
-
-  # データベース一覧を得る。
-  def listDatabases(self) :
-    sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM INFORMATION_SCHEMA.SCHEMATA ORDER BY SCHEMA_NAME"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # ユーザ一覧を得る。
-  def listUsers(self) :
-    sql = "SELECT DISTINCT GRANTEE FROM INFORMATION_SCHEMA.USER_PRIVILEGES ORDER BY GRANTEE"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # テーブル一覧
-  def listTables(self) :
-    schema = self.conf['db']
-    sql = f"SELECT TABLE_NAME, DATA_LENGTH, AUTO_INCREMENT, CREATE_TIME, UPDATE_TIME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='{schema}'"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # ビュー一覧
-  def listViews(self) :
-    schema = self.conf['db']
-    sql = f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA='{schema}'"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # インデックス一覧
-  def listIndexes(self) :
-    schema = self.conf['db']
-    sql = f"SELECT INDEX_NAME, TABLE_NAME, COLUMN_NAME, SEQ_IN_INDEX FROM INFORMATION_SCHEMA.STATISTICS WHERE INDEX_SCHEMA='{schema}'"
-    indexes = self.__mysql.query(sql)
-    return indexes;
-
-  # ルーチン一覧
-  def listRoutines(self) :
-    schema = self.conf['db']
-    sql = f"SELECT ROUTINE_NAME, ROUTINE_TYPE, DATA_TYPE FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA='{schema}'"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # トリガ一覧
-  def listTriggers(self) :
-    schema = self.conf['db']
-    sql = f"SELECT TRIGGER_NAME, EVENT_MANIPULATION, ACTION_TIMING FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schema}'"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # 文字セット一覧
-  def listCharacterSet(self) :
-    sql = "SELECT CHARACTER_SET_NAME, DEFAULT_COLLATE_NAME, DESCRIPTION, MAXLEN FROM INFORMATION_SCHEMA.CHARACTER_SETS"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # 並び順一覧
-  def listCollation(self) :
-    sql = "SELECT COLLATION_NAME, CHARACTER_SET_NAME, ID, IS_DEFAULT FROM INFORMATION_SCHEMA.COLLATIONS"
-    rows = self.__mysql.query(sql)
-    return rows
-
-  # ビューの定義を得る。
-  def getViewDef(self, view) :
-    schema = self.conf['db']
-    sql = f"SELECT VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA='{schema}' AND TABLE_NAME='{view}'"
-    rows = self.__mysql.query(sql)
-    if len(rows) > 0 :
-      row = rows[0]
-      return row[0]
-    else :
-      return ''
-
-  # ルーチンの定義を得る。
-  def getRoutineDef(self, routine) :
-    schema = self.conf['db']
-    sql = f"SELECT PARAM_LIST, RETURNS, BODY FROM mysql.proc WHERE DB='{schema}' AND NAME='{routine}'"
-    result = self.__mysql.query(sql)
+      id = str(row[0])
+      title = row[1]
+      creator = row[2]
+      path = row[3]
+      mark = row[4]
+      info = row[5]
+      fav = str(row[6])
+      count = str(row[7])
+      bindata = str(row[8])
+      row2 = list()
+      row2.append(id)
+      ext = fs.getExtension(path).upper()
+      if ext == ".JPG" or ext == ".PNG" or ext == ".GIF" :
+        row2.append("<a href=\"getImage.cgi?path={0}\" target=\"_blank\">{1}</a>".format(path, title))
+      else :
+        row2.append("<a href='listpics.cgi?id={0}' target='_blank'>{1}</a>".format(id, title))
+      row2.append(creator)
+      row2.append(path)
+      row2.append(mark)
+      row2.append(info)
+      row2.append(f"<a href=\"like.cgi?id={id}\" target=\"_blank\">{fav}</a>")
+      row2.append(count)
+      if row[8] == None :
+        row2.append('')
+      else :
+        link = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
+        row2.append(link)
+      result += page.WebPage.table_row(row2) + "\n"
     return result
 
-  # トリガの定義を得る。
-  def getTriggerDef(self, trigger) :
-    schema = self.conf['db']
-    sql = f"SELECT ACTION_STATEMENT FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schema}' AND TRIGGER_NAME='{trigger}'"
-    result = self.__mysql.getValue(sql)
-    return result;
+  # SQL を作る。
+  def makeFilterSql(self, filter) :
+    sql = SELECT + f" WHERE `title` LIKE '%{filter}%' UNION "
+    sql += SELECT + f" WHERE `path` LIKE '%{filter}%' UNION "
+    sql += SELECT + f" WHERE `creator` LIKE '%{filter}%' UNION "
+    sql += SELECT + f" WHERE `info` LIKE '%{filter}%'"
+    return sql
 
-  # カラム一覧を得る。
-  def getColumns(self, tableName) :
-    schema = self.conf['db']
-    sql = f"SELECT ORDINAL_POSITION, COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, COLUMN_TYPE, COLUMN_KEY, EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{schema}' AND TABLE_NAME='{tableName}'";
-    columns = self.__mysql.query(sql)
-    return columns
+  # テーブル情報を得る。
+  def tableInfo(self) :
+    n = self.__mysql.getValue("SELECT count(id) FROM Pictures")
+    minId = self.__mysql.getValue("SELECT min(id) FROM Pictures")
+    maxId = self.__mysql.getValue("SELECT max(id) FROM Pictures")
+    return f"Pictures テーブルの行数：{n}, 最小 id {minId}, 最大 id {maxId}"
 
- 
+  #  並び順フォームを初期化
+  def resetOrder(self, order="DESC") :
+    self.setPlaceHolder('start_id', '')
+    if order == "DESC" :
+      self.setPlaceHolder('DESCchecked', 'checked')
+      self.setPlaceHolder('ASCchecked', '')
+      self.setCookie('order', 'DESC')
+    else :
+      self.setPlaceHolder('DESCchecked', '')
+      self.setPlaceHolder('ASCchecked', 'checked')
+      self.setCookie('order', 'ASC')
+    return
+
 
 # メイン開始位置
 wp = MainPage('templates/index.html')
