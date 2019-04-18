@@ -6,7 +6,6 @@ CREATE TABLE `BINDATA` (
   `data` blob,
   `info` varchar(100) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `original` (`original`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
