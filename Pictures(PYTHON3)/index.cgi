@@ -1,9 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.0
+#   index.cgi  Version 3.02  2019-04-18
 import WebPage as page
 import MySQL
+import FileSystem as fs
 import Common
 #from syslog import syslog
 
@@ -123,20 +124,32 @@ class MainPage(page.WebPage) :
     result = ""
     for row in rows :
       id = str(row[0])
+      title = row[1]
+      creator = row[2]
+      path = row[3]
+      mark = row[4]
+      info = row[5]
       fav = str(row[6])
+      count = str(row[7])
+      bindata = str(row[8])
       row2 = list()
-      row2.append(str(id))
-      row2.append("<a href='listpics.cgi?id={0}' target='_blank'>{1}</a>".format(id, row[1]))
-      row2.append(row[2])
-      row2.append(row[3])
-      row2.append(row[4])
-      row2.append(row[5])
+      row2.append(id)
+      ext = fs.getExtension(path).upper()
+      if ext == ".JPG" or ext == ".PNG" or ext == ".GIF" :
+        row2.append("<a href=\"getImage.cgi?path={0}\" target=\"_blank\">{1}</a>".format(path, title))
+      else :
+        row2.append("<a href='listpics.cgi?id={0}' target='_blank'>{1}</a>".format(id, title))
+      row2.append(creator)
+      row2.append(path)
+      row2.append(mark)
+      row2.append(info)
       row2.append(f"<a href=\"like.cgi?id={id}\" target=\"_blank\">{fav}</a>")
-      row2.append(row[7])
+      row2.append(count)
       if row[8] == None :
         row2.append('')
+      elif bindata == '0' :
+        row2.append('0')
       else :
-        bindata = str(row[8])
         link = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
         row2.append(link)
       result += page.WebPage.table_row(row2) + "\n"

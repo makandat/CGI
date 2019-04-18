@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Pictures テーブルのデータ追加・修正  v1.03  2019-04-16
+# Pictures テーブルのデータ追加・修正  v1.04  2019-04-18
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -13,13 +13,14 @@ import Text
 SELECT = "SELECT title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
 INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6})"
 INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7})"
-UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav='{6}', count={7}, bindata={8} WHERE id={0};"
+UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav={6}, count={7}, bindata={8} WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(page.WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
+    #Common.init_logger('C:/temp/Logger.log')
     try :
       self.client = MySQL.MySQL()
       if self.isParam('btnAdd') :
@@ -68,6 +69,8 @@ class MainPage(page.WebPage) :
         self.setPlaceHolder('count', str(count))
         self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
+      if bindata == '' :
+        bindata = 0
       sql = Text.format(UPDATE, id, title, creator, path, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.setPlaceHolder('id', id);
@@ -185,7 +188,7 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('info', "")
     self.setPlaceHolder('fav', "0")
     self.setPlaceHolder('count', "0")
-    self.setPlaceHolder('bindata', "")
+    self.setPlaceHolder('bindata', "0")
     return
 
   # 引数が None の場合、"" に変換する。
