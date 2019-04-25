@@ -33,7 +33,7 @@ class MainPage(page.WebPage) :
           else :
             self.adjust = '1'
         else :
-          self.adjust = '1'
+          self.adjust = '0'
         self.setCookie('adjust_width', self.adjust)
       else :
         # 画像調整指定なし(width=なし)
@@ -97,7 +97,7 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('filename', '')
     self.setPlaceHolder('filename', filePath)
     self.setCookie('current_image', str(current))
-    if self.adjust == '0' :
+    if self.adjust == '1' :
       self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
     else :
       self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
