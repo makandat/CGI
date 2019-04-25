@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<head>
+<!-- modify_item.html  画像の追加・修正 -->
+<meta charset="utf-8" />
+<title>画像の追加・修正</title>
+<link rel="stylesheet" href="/css/default.css" />
+<style>
+.content {
+  margin-left:5%;
+  margin-right:5%;
+  padding:8px;
+}
+</style>
+<script src="/js/jquery.min.js"></script>
+<script>
+$(function() {
+  $("#clear").click(function() {
+    $("input[type='text']").val('');
+  });
+});
+</script>
+</head>
+
+<body>
+<h1>画像の追加・修正</h1>
+<div class="menubar">
+ <div style="display:inline-block;">
+  <a href="/">HOME</a>&nbsp;/&nbsp;
+  <a href="index.cgi">もどる</a>
+ </div>
+</div>
+<br />
+<div class="message">
+(*message*)
+</div>
+<br />
+<form method="POST" style="margin-left:15%;">
+ <div class="form_row">
+  <label>id<br />
+  <input type="text" size="10" name="id" value="(*id*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>アルバム番号<br />
+  <input type="text" size="10" name="album" value="(*album*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>タイトル<br />
+  <input type="text" size="50" name="title" value="(*title*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>パス<br />
+  <input type="text" size="100" name="path" value="(*path*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>作者<br />
+  <input type="text" size="50" name="creator" value="(*creator*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>情報<br />
+  <input type="text" size="100" name="info" value="(*info*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>好き<br />
+  <input type="text" size="5" name="fav"  value="(*fav*)" /></label>
+ </div>
+ <div class="form_row">
+  <label>イメージリンク<br />
+  <input type="text" size="10" name="bindata" value="(*bindata*)" /></label>
+ </div>
+ <div class="form_row" style="margin-top:18px;">
+  <input type="submit" name="submit" value=" 送信 " />&nbsp;
+  <input type="submit" name="query" value=" データ確認 " />&nbsp;
+  <input type="button" id="clear" value=" クリア " />&nbsp;
+ </div>
+</form>
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
