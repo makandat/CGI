@@ -3,7 +3,7 @@
 #   MySQL-IS delete.cgi  Version 2.00
 import WebPage as web
 import MySQL
-from syslog import syslog
+#from syslog import syslog
 
 # CGI WebPage クラス
 class MainPage(web.WebPage) :
@@ -27,7 +27,6 @@ class MainPage(web.WebPage) :
       self.setPlaceHolder('message', '削除条件が空欄です。')
     else :
       sql = f"DELETE FROM {table} WHERE {criteria}"
-      syslog(sql)
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', 'データを削除しました。')     
     return
