@@ -13,7 +13,7 @@ class Pixiv4(WebPage) :
     self.setPlaceHolder('message', '')
     if self.isParam('creator') :
       creator = self.getParam('creator')
-      self.setPlaceHolder('title', creator + 'さん作品')
+      self.setPlaceHolder('title', creator + ' さんの作品')
       self.showClips(creator)
     else :
       self.setPlaceHolder('message', 'エラー：作者の指定がありません。')
@@ -37,7 +37,7 @@ class Pixiv4(WebPage) :
         illust_id = row[3]
         original = Pixiv4.NoneToSpace(row[4])
         tags = Pixiv4.NoneToSpace(row[5])
-        bindata = Pixiv4.NoneToSpace(row[6])
+        bindata = row[6]
         buff += "<tr>"
         buff += WebPage.tag("td", id)
         tlink = f"<a href=\"https://www.pixiv.net/member_illust.php?mode=medium&illust_id={illust_id}\" target=\"_blank\">{title}</a>"
@@ -46,7 +46,10 @@ class Pixiv4(WebPage) :
         buff += WebPage.tag("td", illust_id)
         buff += WebPage.tag("td", original)
         buff += WebPage.tag("td", tags)
-        blink = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />" if not (bindata == 0 or bindata == "") else ""
+        if bindata == 0 or bindata == None :
+          blink = ""
+        else :
+          blink = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
         buff += WebPage.tag("td", blink)
         buff += "</tr>\n"
       self.setPlaceHolder('clips', buff)

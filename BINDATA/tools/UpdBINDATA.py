@@ -2,9 +2,10 @@
 #  Binaries テーブルのバイナリデータ更新
 import MySQL as mysql
 import Text, Common
+import FileSystem as fs
 from pprint import pprint
 
-UPDATE = "UPDATE Binaries SET datatype='{1}', original='{2}', data={3} WHERE id={0}"
+UPDATE = "UPDATE BINDATA SET datatype='{1}', original='{2}', data={3} WHERE id={0}"
 
 # バイナリーファイル filePath の内容でテーブル Binaries の data を更新する。
 def updateBinaries(id, filePath) :

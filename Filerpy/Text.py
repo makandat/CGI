@@ -1,5 +1,5 @@
 # -*- code=utf-8 -*-
-# Version 2.0  2019-04-19  Text クラス廃止
+# Version 2.01  2019-04-23  Text クラス廃止
 from typing import List, Tuple
 import re
 
@@ -16,8 +16,11 @@ def concat(str1:str, str2:str) -> str:
   return str1 + str2
 
 # start から長さ length の部分文字列を返す。
-def substring(text:str, start:int, length:int) ->str:
-  return text[start:start+length]
+def substring(text:str, start:int, length:int=-1) ->str:
+  if length < 0 :
+    return text[start:len(text)]
+  else :
+    return text[start:start+length]
 
 # start から end までの部分文字列を返す。
 def substr(text:str, start:int, end:int) ->str:

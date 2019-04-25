@@ -13,6 +13,17 @@ class BinDataPage(cgi.WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = mysql.MySQL()
+    if self.isCookie('order') :
+      self.order = self.getCookie('order')
+    else :
+      self.order = 'ASC'
+    if self.isParam('order') :
+      if self.order == 'DESC' :
+        self.order = "ASC"
+        self.setCookie('order', 'ASC')
+      else :
+        self.order = "DESC"
+        self.setCookie('order', 'DESC')
     if self.isParam('filter') :
       filter = self.getParam('filter')
       if filter == "image" :
@@ -41,7 +52,8 @@ class BinDataPage(cgi.WebPage) :
   # BINDATA テーブルの内容一覧を得る。
   def getContent(self, where="") :
     buff = ""
-    rows = self.__mysql.query(SELECT + where)
+    orderby = " ORDER BY id " + self.order
+    rows = self.__mysql.query(SELECT + where + orderby)
     for row in rows :
       id = str(row[0])
       title = row[1]
@@ -62,9 +74,8 @@ class BinDataPage(cgi.WebPage) :
     for row in rows :
       id = str(row[0])
       title = row[1]
-      images += "<li>"
-      images += f"<img src=\"extract.cgi?id={id}\" />"
-      images += f"<br />{title}"
+      images += "<li style='display:inline;'>"
+      images += f"{id}<img src=\"extract.cgi?id={id}\" />"
       images += "</li>\n"
     return images
     

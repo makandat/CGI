@@ -1,6 +1,6 @@
-#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/env python3
-#  Pixiv Clip by Python3 v4.0  2019-04-17
+#!C:\Program Files (x86)\Python37\python.exe
+#  Pixiv Clip by Python3 v4.01  2019-04-18
 #    Pixiv のイラストを管理するアプリ。
 from WebPage import WebPage
 from MySQL import MySQL
@@ -12,19 +12,28 @@ class Pixiv4(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
-    # 作者一覧を表示する。
-    self.showCreators()
     # ポストバックか？
     if self.isParam('submit') :
-      pass
+      # 作者検索
+      if self.isParam('creator') :
+        creator = "%" + self.getParam('creator') + "%"
+        # 作者一覧を表示する。
+        self.showCreators(creator)
+      else :
+        # 作者一覧を表示する。
+        self.showCreators()
     else :
-      pass
+      # 作者一覧を表示する。
+      self.showCreators()
     return
 
   # 作者一覧を表示する。
-  def showCreators(self) :
+  def showCreators(self, creator="") :
     # 作者と登録数を得る。
-    sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
+    if creator == "" :
+      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
+    else :
+      sql = f"SELECT creator, count(creator) AS count FROM Pixiv3 WHERE creator LIKE '{creator}' GROUP BY creator ORDER By creator"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', '作品が登録されていません。')

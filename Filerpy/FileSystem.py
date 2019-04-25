@@ -1,6 +1,6 @@
 # FileSystem.py
-# Version 1.15  2019-04-19
-import os
+# Version 1.22  2019-04-24
+import os, io, sys
 import shutil
 import glob
 from pathlib import Path
@@ -10,8 +10,10 @@ import grp
 import csv
 import json
 from typing import Callable, List, Dict, Any
+from datetime import datetime, timezone, timedelta
 
 StrList = List[str]
+
 
 # テキストファイルを読んでその内容を返す。
 def readAllText(file: str) -> str :
@@ -23,13 +25,23 @@ def readAllText(file: str) -> str :
 # テキストをファイルに書く。
 def writeAllText(file: str, text: str, append:bool=False) -> None:
   if append == True :
-    with open(file, "a") as f :
+    with open(file, "a", encoding="utf-8") as f :
       f.write(text)
   else :
-    with open(file, "w") as f :
+    with open(file, "w", encoding="utf-8") as f :
       f.write(text)
   return
 
+# ファイルを読んで行の配列として返す。
+def readLines(file: str, encode='utf-8') :
+  lines = list()
+  with open(file, mode='r', encoding=encode) as f:
+    line = f.readline().rstrip()
+    while line :
+      lines.append(line)
+      line = f.readline().rstrip()
+  return lines
+    
 # ファイルを１行づつ読んで callback で処理する。
 def readAllLines(file: str, callback: Callable) -> None:
   with open(file) as f :
@@ -65,30 +77,30 @@ def readIni(file: str) -> Dict:
 
 # ファイルをコピーする。
 def copy(src: str, dest:str) ->None:
-  shutil.copy(src, dest)
+  shutil.copy(src.encode('utf-8'), dest.encode('utf-8'))
   return
 
 # ファイルを移動する(名前の変更)
 def move(src:str, dest:str) -> None:
-  shutil.move(src, dest)
+  shutil.move(src.encode('utf-8'), dest.encode('utf-8'))
   return
 
 # ファイルやリンクを削除する。
 def unlink(file:str) -> None:
-  os.unlink(file)
+  os.unlink(file.encode('utf-8'))
   return
 
 # ファイルやディレクトリが存在するか調べる。
 def exists(file:str) -> bool:
-  return os.path.exists(file)
+  return os.path.exists(file.encode('utf-8'))
 
 # ファイルが存在するか調べる。
 def isFile(file:str) -> bool:
-  return os.path.isfile(file)
+  return os.path.isfile(file.encode('utf-8'))
 
 # ディレクトリが存在するか調べる。
 def isDirectory(dir:str) -> bool:
-  return os.path.isdir(dir)
+  return os.path.isdir(dir.encode('utf-8'))
 
 # リンクかどうか調べる。
 def isLink(path:str) -> bool:
@@ -98,6 +110,16 @@ def isLink(path:str) -> bool:
 def getFileSize(path) :
   return os.path.getsize(path)
 
+# ファイルの最終更新日時を得る。
+def getLastWrite(path, utc=False) :
+  time = os.stat(path).st_mtime
+  if utc :
+    utctime = datetime.fromtimestamp(time, timezone.utc)
+    return utctime.strftime("%Y-%m-%d %H:%M:%S")
+  else :
+    JST = timezone(timedelta(hours=+9), 'JST')
+    local = datetime.fromtimestamp(time, JST)
+    return local.strftime("%Y-%m-%d %H:%M:%S")
 
 # ファイルやディレクトリの属性を得る。
 def getAttr(path:str) -> int:
@@ -117,29 +139,29 @@ def getGroup(path:str) -> str:
 
 # カレントディレクトリを変更する。
 def chdir(dir:str) -> None:
-  os.chdir(dir)
+  os.chdir(dir.encode('utf-8'))
   return
 
 # ディレクトリを作成する。
 def mkdir(dir:str) -> None:
   try :
-    os.mkdir(dir)
+    os.mkdir(dir.encode('utf-8'))
   except :
-    os.makedirs(dir)
+    os.makedirs(dir.encode('utf-8'))
   return
 
 # ディレクトリを削除する。
 def rmdir(dir:str) -> None:
   try :
-    os.rmdir(dir)
+    os.rmdir(dir.encode('utf-8'))
   except :
-    shutil.rmtree(dir)
+    shutil.rmtree(dir.encode('utf-8'))
   return
 
 # ファイル内の文字列を検索する。(行番号のリストを返す)
 def grep(str:str, file:str) -> List:
   result = []
-  with open(file) as f :
+  with open(file.encode('utf-8')) as f :
     for i, line in enumerate(f) :
       if str in line :
         result.append(i)
@@ -147,7 +169,8 @@ def grep(str:str, file:str) -> List:
 
 # 指定したワイルドカードでディレクトリ内を検索する。
 def listFiles(dir:str, wildcard:str="*") -> List:
-  list = glob.glob(dir + "/" + wildcard)
+  diru8 = dir.encode('utf-8')
+  list = glob.glob(diru8 + b"/" + wildcard.encode('utf-8'))
   result = []
   for item in list :
     if os.path.isfile(item) :
@@ -156,10 +179,11 @@ def listFiles(dir:str, wildcard:str="*") -> List:
 
 # ディレクトリ一覧を得る。
 def listDirectories(dir:str) -> List:
-  list = os.listdir(dir)
+  diru8 = dir.encode('utf-8')
+  list = os.listdir(diru8)
   result = []
   for item in list :
-    fpath = dir + "/" + item
+    fpath = bytearray(diru8) + b"/" + item
     if os.path.isdir(fpath) :
       result.append(fpath)
   return result
@@ -192,14 +216,17 @@ def getAbsolutePath(path:str) -> str:
 
 # 親のディレクトリを得る。
 def getParentDirectory(path:str) -> str:
-  return Path(path).parent
-
+  #return Path(path).parent.name
+  (head,tail) = os.path.split(path)
+  return head
+  
 # フルパスの中から一番下のディレクトリを得る。
 def getThisDirectory(path:str) -> str :
-  parts = path.split('/')
+  path1 = path.decode('utf-8')
+  parts = path1.split('/')
   n = len(parts)
   if n <= 1 :
-    return path
+    return path1
   else :
     return parts[n-1]
 
@@ -214,6 +241,14 @@ def getHomeDirectory() -> str :
 # 一時ファイル(パス名)を得る。
 def getTempFile() -> str:
   return tempfile.NamedTemporaryFile().name
+
+# リンク先を得る。
+def getLinkedPath(link:str) -> str :
+  slink = str(link)
+  rpath = os.path.realpath(slink)
+  p = rpath.find("(b'") + 3
+  path = rpath[p:len(rpath)-2]
+  return path
 
 # CSV ファイルを読む。
 def readCsv(path:str, header:bool=True, delim:str=",", lterm:str="\n") -> List[StrList]:
