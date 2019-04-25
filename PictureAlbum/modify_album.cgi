@@ -26,6 +26,7 @@ class MainPage(WebPage) :
       else :
         self.modify(id)
     elif self.isParam('query') :
+      id = self.getParam('id')
       self.query(id)
     else :
       self.clear()
@@ -94,10 +95,10 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata}) WHERE id={id}"
+    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata} WHERE id={id}"
     try :
       self.__mysql.execute(sql)
-      self.setPlaceHolder('message', f"{name} が挿入されました。")
+      self.setPlaceHolder('message', f"{name} が修正されました。")
       self.clear()
     except Exception as e :
       self.setPlaceHolder('message', str(e))

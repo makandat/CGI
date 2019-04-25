@@ -39,10 +39,16 @@ class MainPage(WebPage) :
         tr += WebPage.tag('td', id, "style='text-align:center;'")   # id
         tr += WebPage.tag('td', f"<a href=\"show_items.cgi?id={id}\">{name}</a>")  # name
         n = self.__mysql.getValue(f"SELECT COUNT(album) FROM PictureAlbum GROUP BY album HAVING album={id}")
+        if n == None :
+          n = 0
         tr += WebPage.tag('td', n, "style='text-align:right;'")  # summation
         tr += WebPage.tag('td', row[3])  # mark
         tr += WebPage.tag('td', row[4])  # info
-        tr += WebPage.tag('td', row[5])  # bindata
+        bindata = row[5]
+        if bindata == None or bindata == 0 :
+          tr += WebPage.tag('td', '')  # 無効なbindata
+        else :
+          tr += WebPage.tag('td', f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />")  # bindata
         tr += "</tr>\n"
         content += tr
       self.setPlaceHolder('content', content)

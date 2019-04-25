@@ -17,7 +17,7 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    Common.init_logger('/var/www/data/Loggrt.log')
+    #Common.init_logger('/var/www/data/Loggrt.log')
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
     if self.isParam('submit') :
@@ -171,7 +171,6 @@ class MainPage(WebPage) :
       self.clear()
       return
     id = self.getParam('id')
-    Common.log('id = ' + id)
     sql = f"SELECT album,title,path,creator,info,fav,bindata FROM PictureAlbum WHERE id={id}"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :

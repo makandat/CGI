@@ -52,8 +52,11 @@ class MainPage(WebPage) :
       tr += "</tr>\n"
       content += tr
     self.setPlaceHolder('content', content)
-    albumName = self.getAlbumName(id)
-    self.setPlaceHolder('title', 'アルバム#' + str(id) + ' "' + albumName + '"画像一覧')
+    if id > 0 :
+      albumName = self.getAlbumName(id)
+      self.setPlaceHolder('title', 'アルバム#' + str(id) + ' "' + albumName + '"画像一覧')
+    else :
+      self.setPlaceHolder('title', '全アルバム画像一覧')
     return
 
   # アルバム番号から名称を得る。
@@ -67,8 +70,9 @@ class MainPage(WebPage) :
   def makeLink(path) :
     anchor = f"<a href=\"getImage.cgi?path={path}\" target=\"_blank\">{path}</a>"
     return anchor
-    
-    
+
+
+
 # 実行開始
 wp = MainPage('templates/show_items.html')
 wp.echo()
