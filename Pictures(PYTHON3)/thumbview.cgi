@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # フォルダ内画像のサムネール一覧
