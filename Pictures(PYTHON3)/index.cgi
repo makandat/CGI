@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.02  2019-04-18
-import WebPage as page
-import MySQL
+#   index.cgi  Version 3.51  2019-04-28
+from WebPage import WebPage
+from MySQL import MySQL
 import FileSystem as fs
 import Common
 #from syslog import syslog
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
-LIMIT = 500
+LIMIT = 200
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
 
   # コンストラクタ
   def __init__(self, template) :
@@ -22,9 +22,13 @@ class MainPage(page.WebPage) :
     try :
       rows = []
       self.setPlaceHolder('filter', "")
-      self.__mysql = MySQL.MySQL()
+      self.setPlaceHolder('start_id', "")
+      self.__mysql = MySQL()
       # テーブル情報を表示
       self.setPlaceHolder("tableInfo", self.tableInfo())
+      # ページ処理
+      self.setPlaceHolder('next', '')
+      self.setPlaceHolder('prev', '')
       # フィルタ別処理
       if self.isParam('filter') :
         # フィルタ指定がある場合
@@ -33,6 +37,30 @@ class MainPage(page.WebPage) :
         sql = self.makeFilterSql(filter)
         rows = self.__mysql.query(sql)
         self.resetOrder()
+      elif self.isParam('id') and self.isParam('dir') :
+        id = int(self.getParam('id'))
+        dir = self.getParam('dir')
+        if self.isCookie('order') :
+          order = self.getCookie('order')
+        else :
+          order = "DESC"
+        if order == "ASC" :
+          if dir == 'next' :
+            sql = SELECT + f" WHERE id > {id} ORDER BY id ASC LIMIT {LIMIT}"
+          else :
+            id0 = id - LIMIT
+            sql = SELECT + f" WHERE id > {id0} ORDER BY id ASC LIMIT {LIMIT}"
+          self.setPlaceHolder("ASCchecked", "checked")
+          self.setPlaceHolder("DESCchecked", "")
+        else :
+          if dir == 'next' :
+            sql = SELECT + f" WHERE id < {id} ORDER BY id DESC LIMIT {LIMIT}"
+          else :
+            id0 = id + LIMIT
+            sql = SELECT + f" WHERE id < {id0} ORDER BY id DESC LIMIT {LIMIT}"
+          self.setPlaceHolder("ASCchecked", "")
+          self.setPlaceHolder("DESCchecked", "checked")
+        rows = self.__mysql.query(sql)
       elif self.isParam('creator') :
         sql = SELECT + " WHERE creator='" + self.getParam('creator') + "'"
         rows = self.__mysql.query(sql)
@@ -64,7 +92,8 @@ class MainPage(page.WebPage) :
       n = len(rows) - 1
       self.setPlaceHolder('result', "")
       # クエリー結果を表示する。
-      self.setPlaceHolder('result', self.getResult(rows))
+      result = self.getResult(rows)
+      self.setPlaceHolder('result', result)
       self.setPlaceHolder('message', "クエリー OK")
       if len(rows) == 0 :
         self.setPlaceHolder('message', "０件のデータが検出されました。")
@@ -122,8 +151,12 @@ class MainPage(page.WebPage) :
   # クエリー結果を表にする。
   def getResult(self, rows) :
     result = ""
+    id0 = 0
+    id = 0
     for row in rows :
       id = str(row[0])
+      if id0 == 0 :
+        id0 = id
       title = row[1]
       creator = row[2]
       path = row[3]
@@ -133,13 +166,14 @@ class MainPage(page.WebPage) :
       count = str(row[7])
       bindata = str(row[8])
       row2 = list()
+      #row2.append(f"<a href=\"modify.cgi?id={id}\">{id}</a>")
       row2.append(id)
       ext = fs.getExtension(path).upper()
       if ext == ".JPG" or ext == ".PNG" or ext == ".GIF" :
         row2.append("<a href=\"getImage.cgi?path={0}\" target=\"_blank\">{1}</a>".format(path, title))
       else :
         row2.append("<a href='listpics.cgi?id={0}' target='_blank'>{1}</a>".format(id, title))
-      row2.append(creator)
+      row2.append(f"<a href=\"index.cgi?creator={creator}\">{creator}</a>")
       row2.append(path)
       row2.append(mark)
       row2.append(info)
@@ -152,7 +186,9 @@ class MainPage(page.WebPage) :
       else :
         link = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
         row2.append(link)
-      result += page.WebPage.table_row(row2) + "\n"
+      result += WebPage.table_row(row2) + "\n"
+    self.setPlaceHolder('next', id)
+    self.setPlaceHolder('prev', id0)
     return result
 
   # SQL を作る。
