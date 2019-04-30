@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   MySQL-IS index.cgi  Version 2.01  2019-04-17
+#   MySQL-IS index.cgi  Version 2.10  2019-04-31
 import WebPage as web
 import MySQL
 import Text
@@ -18,6 +18,7 @@ class MainPage(web.WebPage) :
     self.__mysql = MySQL.MySQL()
     self.setPlaceHolder('schema', self.conf['db'])
     self.setPlaceHolder('userid', self.conf['uid'])
+    #Common.init_logger('c:/temp/Logger.log')
     if self.isParam("menu") :
       menu = self.getParam('menu')
       if menu == "users" :
@@ -74,12 +75,34 @@ class MainPage(web.WebPage) :
       elif menu == "routinedef" :
         routine = self.getParam('name')
         rows = self.getRoutineDef(routine)
-        self.showText(rows)
+        if len(rows) == 0 :
+          self.setPlaceHolder('content', '<tr><td>ルーチン見つかりません。</td></tr>')
+          self.setPlaceHolder('title', routine + ' の定義')
+          return
+        row = rows[0]
+        param_list = row[0]
+        returns = row[1]
+        body = row[2]
+        self.showRoutine(param_list, returns, body)
         self.setPlaceHolder('title', routine + ' の定義')
       elif menu == "triggerdef" :
         trigger = self.getParam('name')
         rows = self.getTriggerDef(trigger)
-        self.showText(rows)
+        if len(rows) == 0 :
+          self.setPlaceHolder('content', '<tr><td>トリガが見つかりません。</td></tr>')
+          self.setPlaceHolder('title', trigger + ' の定義')
+          return
+        #Common.log("menu=triggerdef")
+        row = rows[0]
+        tigger_name = trigger
+        #Common.log(tigger_name)
+        event_manipulation = row[0]
+        #Common.log(event_manipulation)
+        action_timing = row[1]
+        #Common.log(action_timing)
+        action_statement = row[2]
+        #Common.log(action_statement)
+        self.showTrigger(tigger_name, event_manipulation, action_timing, action_statement)
         self.setPlaceHolder('title', trigger + ' の定義')
       else :
         # データベース一覧
@@ -136,9 +159,35 @@ class MainPage(web.WebPage) :
       content += c
       if len(content) % 160 == 0:
         content += "\n"
-    content += "</pre>"
     self.setPlaceHolder('content', content)
     return
+
+  # ルーチンの内容を表示 (PARAM_LIST, RETURNS, BODY)
+  def showRoutine(self, param_list, returns, body) :
+    content = "<tr><td><b>PARAM_LIST : </b><br />"
+    content += str(param_list) if param_list != None else ""
+    content += "<br /><b>RETURNS : </b><br />"
+    content += str(returns) if returns != None else ""
+    content += "<br /><b>BODY : </b><br />"
+    content += str(body).replace("\\r", "<br />") if body != None else ""
+    content += "</td></tr>"
+    self.setPlaceHolder('content', content)
+    return
+
+  # トリガの内容を表示 (TRIGGER_NAME, EVENT_MANIPULATION, ACTION_TIMING)
+  def showTrigger(self, trigger_name, event_manipulation, action_timing, action_statement) :
+    content = "<tr><td><b>TRIGGER_NAME : </b><br />"
+    content += str(trigger_name)
+    content += "<br /><b>EVENT_MANIPULATION : </b><br />"
+    content += str(event_manipulation)
+    content += "<br /><b>ACTION_TIMING : </b><br />"
+    content += str(action_timing)
+    content += "<br /><b>ACTION_STATEMENT : </b><br />"
+    content += str(action_statement.replace("\\r", "<br />")) if action_statement != None else ""
+    content += "</td></tr>"
+    self.setPlaceHolder('content', content)
+    return
+
 
   # alink に従ってアンカーを作る。
   def makelink(self, text, alink="") :
@@ -236,8 +285,8 @@ class MainPage(web.WebPage) :
   # トリガの定義を得る。
   def getTriggerDef(self, trigger) :
     schema = self.conf['db']
-    sql = f"SELECT ACTION_STATEMENT FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schema}' AND TRIGGER_NAME='{trigger}'"
-    result = self.__mysql.getValue(sql)
+    sql = f"SELECT EVENT_MANIPULATION, ACTION_TIMING, ACTION_STATEMENT FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schema}' AND TRIGGER_NAME='{trigger}'"
+    result = self.__mysql.query(sql)
     return result;
 
   # カラム一覧を得る。

@@ -1,11 +1,12 @@
 # coding:utf-8
-# Version 1.11  2019-04-05 getCookie() method bug fix
+# Version 1.14  2019-05-01 embed() 追加。
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
 import locale
 import http.cookies as Cookie
 import urllib.parse
+#from syslog import syslog  # Windows ではエラーになる。
 
 #
 #  WebPage クラス
@@ -66,6 +67,12 @@ class WebPage :
   # プレースホルダに値を設定する。
   def setPlaceHolder(self, key, value) :
     self.vars[key] = value
+    return
+
+  # setPlaceHolder のシノニム
+  def embed(self, key, value) :
+    self.vars[key] = value
+    return
 
   # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
@@ -146,8 +153,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, str) :
-    return "<" + name + ">" + str + "</" + name + ">"
+  def tag(name:str, s, attr="") -> str:
+    if s == None :
+      s = ""
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod
