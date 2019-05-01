@@ -1,11 +1,12 @@
 # coding:utf-8
-# Version 1.11  2019-04-05 getCookie() method bug fix
+# Version 1.14  2019-05-01 getPlaceHolder(key) 追加
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
 import locale
 import http.cookies as Cookie
 import urllib.parse
+#from syslog import syslog
 
 #
 #  WebPage クラス
@@ -67,6 +68,19 @@ class WebPage :
   def setPlaceHolder(self, key, value) :
     self.vars[key] = value
 
+  # プレースホルダの値を得る。
+  def getPlaceHolder(self, key) :
+    if key in self.vars.keys() :
+      return self.vars[key]
+    else :
+      return ""
+
+  # 連想配列で与えられたキーと値をプレースホルダに値を設定する。
+  def embed(self, hashtable) :
+    for key, value in hashtable.items() :
+      self.vars[key] = value
+    return
+
   # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
     return key in self.params.keys()
@@ -74,8 +88,7 @@ class WebPage :
   # 外部から来る引数の値を得る。
   def getParam(self, key) :
     if self.isParam(key) :
-      p = self.params[key].value
-      return p
+      return self.params[key].value
     else :
       return ''
 
@@ -147,8 +160,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, str) :
-    return "<" + name + ">" + str + "</" + name + ">"
+  def tag(name:str, s, attr="") -> str:
+    if s == None :
+      s = ""
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod

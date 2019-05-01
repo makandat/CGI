@@ -1,22 +1,22 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # Pictures テーブル フォルダ内画像一覧
 #   MySQL を利用
-import WebPage as page
+from WebPage import WebPage
 import FileSystem as fs
-import MySQL
+from MySQL import MySQL
 import Common
 import Text
 import sys, os
 #from syslog import syslog
 
 ## ページクラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     if self.isParam('id') :
       id = self.getParam('id')
       folder = self.getPath(id)
@@ -25,6 +25,8 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('pictures', self.getPictures(folder))
       self.incCount(id)
       self.setPlaceHolder('id', id)
+      if self.getPlaceHolder('message') == "" :
+        self.setPlaceHolder('message', '画像をクリックすると画像のパス名リストに追加され、「パス一覧を表示」により表示できます。。')
     else :
       self.setPlaceHolder('message', 'id を指定してください。')
       self.setPlaceHolder('id', '')

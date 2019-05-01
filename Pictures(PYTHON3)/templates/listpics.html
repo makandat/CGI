@@ -13,13 +13,44 @@ table, th, td {
   text-align:center;
   color:magenta;
 }
-
 </style>
 <script src="/js/jquery.min.js"></script>
 <script>
+var separator = ";";
+
 function ajust_width() {
   $('img').css('width', '100%');
 }
+
+function show_pathlist() {
+  var path_array = localStorage.image_pathlist.split(separator);
+  var str = "";
+  for (let i = 0; i < path_array.length; i++) {
+    if (path_array[i] != "") {
+      str += ("<li>" + path_array[i] + "</li>\n");
+    }
+  }
+  $('.message').text('');
+  $('#pathlist').html(str);
+}
+
+function clear_pathlist() {
+  localStorage.image_pathlist = "";
+  $('#pathlist').html("");
+}
+
+$(function() {
+  var src;
+  var p;
+  var path;
+  localStorage.image_pathlist = "";
+  $('img').click(function() {
+    src = $(this).attr('src');
+    p = src.split('=');
+    path = p[1] + separator;
+    localStorage.image_pathlist += path;
+  });
+});
 </script>
 </head>
 
@@ -28,10 +59,15 @@ function ajust_width() {
 <p style="margin-left:10%;"><a href="/">HOME</a>&nbsp;/&nbsp;<a href="index.cgi">もどる</a>&nbsp;/&nbsp;
 <a href="javascript:window.close();">閉じる</a>&nbsp;/&nbsp;
 <a href="thumbview.cgi?id=(*id*)">サムネール一覧表示</a>&nbsp;/&nbsp;
-<a href="javascript:ajust_width();">画像の幅をウィンドウに合わせる</a></p>
+<a href="javascript:ajust_width();">画像の幅をウィンドウに合わせる</a>&nbsp;/&nbsp;
+<a href="javascript:show_pathlist();">クリックしたパス一覧を表示</a>&nbsp;/&nbsp;
+<a href="javascript:clear_pathlist();">パス一覧をクリア</a>
+</p>
 <br />
 <h3>(*folder*)</h3>
 <p class="message">(*message*)</p>
+<ul style="margin-left:10%;font-size:10pt;" id="pathlist"></ul>
+<br />
 <div>
 (*pictures*)
 </div>
