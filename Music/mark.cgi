@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 # Music テーブルのマーク種別
 #   MySQL を利用
-import WebPage as page
-import FileSystem as fsys
-import MySQL
+from WebPage import WebPage
+from MySQL import MySQL
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
-    self.vars['message'] = ""
-    self.vars['marks'] = self.getMarks()
+    self.__mysql = MySQL()
+    self.setPlaceHolder('message', "")
+    self.setPlaceHolder('marks', self.getMarks())
     return
 
   # マーク一覧を得る。
@@ -23,7 +23,7 @@ class MainPage(page.WebPage) :
     for row in rows :
       if row[0] == None :
         continue
-      buff += page.WebPage.tag("option", row[0])
+      buff += WebPage.tag("option", row[0])
       buff += "\n"
     return buff
 

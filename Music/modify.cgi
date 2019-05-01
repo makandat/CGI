@@ -1,164 +1,132 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Music テーブルのデータ追加・修正
+# Music テーブルのデータ追加・修正 (modify.cgi)
 #   MySQL を利用
-import WebPage as page
+from WebPage import WebPage
 import FileSystem as fs
-import MySQL
+from MySQL import MySQL
 import Common
 import Text
-from syslog import syslog
+#from syslog import syslog
 
-SELECT = "SELECT title, path, artist, album, mark, info, fav, count FROM Music WHERE id = {0}"
-INSERT = "INSERT INTO Music(title, path, artist, album, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7})"
-UPDATE = "UPDATE Music SET title='{1}', path='{2}', artist='{3}', album='{4}', mark='{5}', info='{6}', fav='{7}', count={8} WHERE id={0};"
+SELECT = "SELECT title, path, artist, album, mark, info, fav, count, bindata, alindex FROM Music WHERE id = {0}"
+INSERT = "INSERT INTO Music(title, path, artist, album, mark, info, fav, count, bindata, alindex) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, {9})"
+UPDATE = "UPDATE Music SET title='{1}', path='{2}', artist='{3}', album='{4}', mark='{5}', info='{6}', fav='{7}', count={8}, bindata={9}, alindex={10} WHERE id={0};"
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
+    #Common.init_logger('/var/www/data/Logger.log')
     try :
-      self.client = MySQL.MySQL()
-      if 'btnAdd' in self.params.keys() :
+      self.client = MySQL()
+      if self.isParam('btnAdd') :
         # 追加・修正ボタンのとき
-        if 'id' in self.params.keys() :
+        if self.isParam('id') :
           # id が指定されている場合
           self.modify()
         else :
           # id が指定されていない場合
           self.add()
-      elif 'btnQuery' in self.params.keys() :
+      elif self.isParam('btnQuery') :
         # データ確認ボタンの時
         self.query()
       else :
         # その他の場合
         self.clearAll()
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "")
     except Exception as e:
-      self.vars['message'] = "致命的エラーを検出。" + str(e)
+      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
     return
 
   # データ修正
   def modify(self) :
-    rb = True
     try :
-      id = self.params['id'].value
-      title = Text.replace("'", "''", self.params['title'].value)  if 'title' in self.params else ""
-      path = Text.replace("'", "''", self.params['path'].value)  if 'path' in self.params else ""
+      id = self.getParam('id')
+      title = Text.replace("'", "''", self.getParam('title'))
+      path = Text.replace("'", "''", self.getParam('path').replace("\\", "/"))
+      artist = MainPage.setNoneToEmpty(self.getParam('artist'))
+      album = MainPage.setNoneToEmpty(self.getParam('album'))
+      mark = MainPage.setNoneToEmpty(self.getParam('mark'))
+      info = MainPage.setNoneToEmpty(self.getParam('info'))
+      fav = self.getParam('fav')
+      count = self.getParam('count')
+      bindata = self.getParam('bindata')
+      alindex = self.getParam('alindex')
+      dict1 = {'id':id, 'title':title, 'path':path, 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'alindex':alindex}
       if title == "" or path == "" or title == None or path == None :
-        self.vars['message'] = "修正 NG : タイトルまたはパスが空欄です。"
-        self.vars['id'] = ""
-        self.vars['title'] = title
-        self.vars['path'] = path
-        self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-        self.vars['album'] = MainPage.setNoneToEmpty(album)
-        self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-        self.vars['info'] = MainPage.setNoneToEmpty(info)
-        self.vars['fav'] = fav
-        self.vars['count'] = str(count)
+        self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
+        self.embed(dict1)
         return
-      artist = MainPage.setNoneToEmpty(self.params['artist'].value  if 'artist' in self.params else "")
-      album = MainPage.setNoneToEmpty(self.params['album'].value  if 'album' in self.params else "")
-      mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
-      info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
-      fav = self.params['fav'].value  if 'fav' in self.params else ""
-      count = self.params['count'].value  if 'count' in self.params else ""
-      sql = Text.format(UPDATE, id, title, path, artist, album, mark, info, fav, count)
+      sql = Text.format(UPDATE, id, title, path, artist, album, mark, info, fav, count, bindata, alindex)
       self.client.execute(sql)
-      self.vars['id'] = id
-      self.vars['title'] = title
-      self.vars['path'] = path
-      self.vars['artist'] = artist
-      self.vars['album'] = album
-      self.vars['mark'] = mark
-      self.vars['info'] = info
-      self.vars['fav'] = fav
-      self.vars['count'] = str(count)
-      self.vars['message'] = "修正 OK"
+      self.embed(dict1)
+      self.setPlaceHolder('message', "id={0} 修正 OK".format(id))
     except Exception as e:
-      self.vars['message'] = "修正 NG : " + str(e)
+      self.setPlaceHolder('message', "修正 NG : " + str(e))
     return
 
   # データ追加
   def add(self) :
-    rb = True
     try :
-      title = self.params['title'].value  if 'title' in self.params else ""
-      path = self.params['path'].value  if 'path' in self.params else ""
+      id = ""
+      title = self.getParam('title').replace("'", "''")
+      path = self.getParam('path').replace("\\", "/").replace("'", "''")
+      artist = MainPage.setNoneToEmpty(self.getParam('artist'))
+      album = MainPage.setNoneToEmpty(self.getParam('album'))
+      mark = MainPage.setNoneToEmpty(self.getParam('mark'))
+      info = MainPage.setNoneToEmpty(self.getParam('info'))
+      fav = self.getParam('fav')
+      count = self.getParam('count')
+      bindata = self.getParam('bindata')
+      alindex = self.getParam('alindex')
+      dict1 = {'id':id, 'title':title, 'path':path, 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'alindex':alindex}
       if title == "" or path == "" or title == None or path == None :
-        self.vars['message'] = "追加 NG : タイトルまたはパスが空欄です。"
-        self.vars['id'] = ""
-        self.vars['title'] = title
-        self.vars['path'] = path
-        self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-        self.vars['album'] = MainPage.setNoneToEmpty(album)
-        self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-        self.vars['info'] = MainPage.setNoneToEmpty(info)
-        self.vars['fav'] = fav
-        self.vars['count'] = str(count)
+        self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
+        self.embed(dict1)
         return
-      artist = MainPage.setNoneToEmpty(self.params['artist'].value  if 'artist' in self.params else "")
-      album = MainPage.setNoneToEmpty(self.params['album'].value  if 'album' in self.params else "")
-      mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
-      info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
-      fav = self.params['fav'].value  if 'fav' in self.params else ""
-      count = self.params['count'].value  if 'count' in self.params else ""
-      sql = INSERT.format(title, path, artist, album, mark, info, fav, count)
+      sql = INSERT.format(title, path, artist, album, mark, info, fav, count, bindata, alindex)
       self.client.execute(sql)
-      self.vars['id'] = ""
-      self.vars['title'] = title
-      self.vars['path'] = path
-      self.vars['artist'] = MainPage.setNoneToEmpty(artist)
-      self.vars['album'] = MainPage.setNoneToEmpty(album)
-      self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-      self.vars['info'] = MainPage.setNoneToEmpty(info)
-      self.vars['fav'] = fav
-      self.vars['count'] = str(count)
-      self.vars['message'] = "追加 OK"
+      self.embed(dict1)
+      self.setPlaceHolder('message', title + " 追加 OK")
     except Exception as e:
-      self.vars['message'] = "追加 NG : " + str(e)
+      self.clearAll()
+      self.setPlaceHolder('message', "追加 NG : " + str(e))
     return
 
   # データ取得
   def query(self) :
     try :
-      sql = SELECT.format(self.params['id'].value)
+      id = self.getParam('id')
+      sql = SELECT.format(id)
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
-        self.vars['id'] = self.params['id'].value
-        self.vars['title'] = row[0]
-        self.vars['path'] = row[1]
-        self.vars['artist'] = MainPage.setNoneToEmpty(row[2])
-        self.vars['album'] = MainPage.setNoneToEmpty(row[3])
-        self.vars['mark'] = MainPage.setNoneToEmpty(row[4])
-        self.vars['info'] = MainPage.setNoneToEmpty(row[5])
-        self.vars['fav'] = row[6]
-        self.vars['count'] = row[7]
-        self.vars['message'] = "クエリー OK"
+        artist = MainPage.setNoneToEmpty(row[2])
+        album = MainPage.setNoneToEmpty(row[3])
+        mark = MainPage.setNoneToEmpty(row[4])
+        info = MainPage.setNoneToEmpty(row[5])
+        dict1 = {'id':id, 'title':row[0], 'path':row[1], 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':row[6], 'count':row[7], 'bindata':row[8], 'alindex':row[9]}
+        self.embed(dict1)
+        self.setPlaceHolder('message', "id={0} クエリー OK".format(id))
       else :
-        self.clearAll(int(self.params['id'].value))
-        self.vars['message'] = "クエリー NG : Bad id."
+        self.clearAll(int(id))
+        self.setPlaceHolder('message', "クエリー NG : Bad id.")
     except Exception as e :
-      self.clearAll(int(self.params['id'].value))
-      self.vars['message'] = "クエリー NG : " + str(e)
+      self.clearAll(int(id))
+      self.setPlaceHolder('message', "クエリー NG : " + str(e))
     return
 
   # フォームのフィールドをクリアする。
   def clearAll(self, id = -1) :
     if id < 0 :
-      self.vars['id'] = ""
+      self.setPlaceHolder('id', "")
     else :
-      self.vars['id'] = str(id)
-    self.vars['title'] = ""
-    self.vars['path'] = ""
-    self.vars['artist'] = ""
-    self.vars['album'] = ""
-    self.vars['mark'] = ""
-    self.vars['info'] = ""
-    self.vars['fav'] = "0"
-    self.vars['count'] = "0"
+      self.setPlaceHolder('id', id)
+    dict1 = {'title':'', 'path':'', 'artist':'', 'album':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0, 'alindex':0}
+    self.embed(dict1)
     return
 
   # 引数が None の場合、"" に変換する。
