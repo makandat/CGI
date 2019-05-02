@@ -1,164 +1,129 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Videos テーブルのデータ追加・修正
+# Videos テーブルのデータ追加・修正 modify.cgi
 #   MySQL を利用
-import WebPage as page
+from WebPage import WebPage
 import FileSystem as fs
-import MySQL
+from MySQL import MySQL
 import Common
 import Text
-from syslog import syslog
+#from syslog import syslog
 
-SELECT = "SELECT title, path, creator, series, mark, info, fav, count FROM Videos WHERE id = {0}"
-INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7})"
-UPDATE = "UPDATE Videos SET title='{1}', path='{2}', creator='{3}', series='{4}', mark='{5}', info='{6}', fav='{7}', count={8} WHERE id={0};"
+SELECT = "SELECT title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos WHERE id = {0}"
+INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count, bindata, album) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9})"
+UPDATE = "UPDATE Videos SET title='{1}', path='{2}', creator='{3}', series='{4}', mark='{5}', info='{6}', fav={7}, count={8}, bindata={9}, album={10} WHERE id={0};"
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
+    #Common.init_logger('/var/www/data/Logger.log')
     try :
-      self.client = MySQL.MySQL()
-      if 'btnAdd' in self.params.keys() :
+      self.client = MySQL()
+      if self.isParam('btnAdd') :
         # 追加・修正ボタンのとき
-        if 'id' in self.params.keys() :
+        if self.isParam('id') :
           # id が指定されている場合
           self.modify()
         else :
           # id が指定されていない場合
           self.add()
-      elif 'btnQuery' in self.params.keys() :
+      elif self.isParam('btnQuery') :
         # データ確認ボタンの時
         self.query()
       else :
         # その他の場合
         self.clearAll()
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "")
     except Exception as e:
-      self.vars['message'] = "致命的エラーを検出。" + str(e)
+      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
     return
 
   # データ修正
   def modify(self) :
-    rb = True
     try :
-      id = self.params['id'].value
-      title = Text.replace("'", "''", self.params['title'].value)  if 'title' in self.params else ""
-      path = Text.replace("'", "''", self.params['path'].value)  if 'path' in self.params else ""
-      if title == "" or path == "" or title == None or path == None :
-        self.vars['message'] = "修正 NG : タイトルまたはパスが空欄です。"
-        self.vars['id'] = ""
-        self.vars['title'] = title
-        self.vars['path'] = path
-        self.vars['creator'] = MainPage.setNoneToEmpty(creator)
-        self.vars['series'] = MainPage.setNoneToEmpty(series)
-        self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-        self.vars['info'] = MainPage.setNoneToEmpty(info)
-        self.vars['fav'] = fav
-        self.vars['count'] = str(count)
+      id = self.getParam('id')
+      title = self.getParam('title')
+      path = self.getParam('path').replace("\\", "/")
+      creator = self.getParam('creator')
+      series = self.getParam('series')
+      mark = self.getParam('mark')
+      info = self.getParam('info')
+      fav = self.getParam('fav')
+      count = self.getParam('count')
+      bindata = self.getParam('bindata')
+      album = self.getParam('album')
+      if title == "" or path == "" :
+        self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
+        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
         return
-      creator = MainPage.setNoneToEmpty(self.params['creator'].value  if 'creator' in self.params else "")
-      series = MainPage.setNoneToEmpty(self.params['series'].value  if 'series' in self.params else "")
-      mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
-      info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
-      fav = self.params['fav'].value  if 'fav' in self.params else ""
-      count = self.params['count'].value  if 'count' in self.params else ""
-      sql = Text.format(UPDATE, id, title, path, creator, series, mark, info, fav, count)
+      sql = UPDATE.format(id, title, path, creator, series, mark, info, fav, count, bindata, album)
       self.client.execute(sql)
-      self.vars['id'] = id
-      self.vars['title'] = title
-      self.vars['path'] = path
-      self.vars['creator'] = creator
-      self.vars['series'] = series
-      self.vars['mark'] = mark
-      self.vars['info'] = info
-      self.vars['fav'] = fav
-      self.vars['count'] = str(count)
-      self.vars['message'] = "修正 OK"
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+      self.setPlaceHolder('message', f"id={id} 修正 OK")
     except Exception as e:
-      self.vars['message'] = "修正 NG : " + str(e)
+      self.setPlaceHolder('message', "修正 NG : " + str(e))
+      self.clearAll()
     return
 
   # データ追加
   def add(self) :
-    rb = True
     try :
-      title = self.params['title'].value  if 'title' in self.params else ""
-      path = self.params['path'].value  if 'path' in self.params else ""
-      if title == "" or path == "" or title == None or path == None :
-        self.vars['message'] = "追加 NG : タイトルまたはパスが空欄です。"
-        self.vars['id'] = ""
-        self.vars['title'] = title
-        self.vars['path'] = path
-        self.vars['creator'] = MainPage.setNoneToEmpty(creator)
-        self.vars['series'] = MainPage.setNoneToEmpty(series)
-        self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-        self.vars['info'] = MainPage.setNoneToEmpty(info)
-        self.vars['fav'] = fav
-        self.vars['count'] = str(count)
+      id = ""
+      title = Text.replace("'", "''", self.getParam('title'))
+      path = Text.replace("\\", "/", self.getParam('path'))
+      creator = self.getParam('creator')
+      series = self.getParam('series')
+      mark = self.getParam('mark')
+      info = self.getParam('info')
+      fav = self.getParam('fav')
+      count = self.getParam('count')
+      bindata = self.getParam('bindata')
+      album = self.getParam('album')
+      if title == "" or path == "" :
+        self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
+        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
         return
-      creator = MainPage.setNoneToEmpty(self.params['creator'].value  if 'creator' in self.params else "")
-      series = MainPage.setNoneToEmpty(self.params['series'].value  if 'series' in self.params else "")
-      mark = MainPage.setNoneToEmpty(self.params['mark'].value  if 'mark' in self.params else "")
-      info = MainPage.setNoneToEmpty(self.params['info'].value  if 'info' in self.params else "")
-      fav = self.params['fav'].value  if 'fav' in self.params else ""
-      count = self.params['count'].value  if 'count' in self.params else ""
-      sql = INSERT.format(title, path, creator, series, mark, info, fav, count)
+      sql = INSERT.format(title, path, creator, series, mark, info, fav, count, bindata, album)
       self.client.execute(sql)
-      self.vars['id'] = ""
-      self.vars['title'] = title
-      self.vars['path'] = path
-      self.vars['creator'] = MainPage.setNoneToEmpty(creator)
-      self.vars['series'] = MainPage.setNoneToEmpty(series)
-      self.vars['mark'] = MainPage.setNoneToEmpty(mark)
-      self.vars['info'] = MainPage.setNoneToEmpty(info)
-      self.vars['fav'] = fav
-      self.vars['count'] = str(count)
-      self.vars['message'] = "追加 OK"
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+      self.setPlaceHolder('message', title + " 追加 OK")
     except Exception as e:
-      self.vars['message'] = "追加 NG : " + str(e)
+      self.setPlaceHolder('message', "追加 NG : " + str(e))
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
     return
 
   # データ取得
   def query(self) :
     try :
-      sql = SELECT.format(self.params['id'].value)
+      id = self.getParam('id')
+      sql = SELECT.format(id)
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
-        self.vars['id'] = self.params['id'].value
-        self.vars['title'] = row[0]
-        self.vars['path'] = row[1]
-        self.vars['creator'] = MainPage.setNoneToEmpty(row[2])
-        self.vars['series'] = MainPage.setNoneToEmpty(row[3])
-        self.vars['mark'] = MainPage.setNoneToEmpty(row[4])
-        self.vars['info'] = MainPage.setNoneToEmpty(row[5])
-        self.vars['fav'] = row[6]
-        self.vars['count'] = row[7]
-        self.vars['message'] = "クエリー OK"
+        creator = MainPage.setNoneToEmpty(row[2])
+        series = MainPage.setNoneToEmpty(row[3])
+        mark = MainPage.setNoneToEmpty(row[4])
+        info = MainPage.setNoneToEmpty(row[5])
+        self.embed({'id':id, 'title':row[0], 'path':row[1], 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':row[6], 'count':row[7], 'bindata':row[8], 'album':row[9]})
+        self.setPlaceHolder('message', f"id={id} クエリー OK")
       else :
-        self.clearAll(int(self.params['id'].value))
-        self.vars['message'] = "クエリー NG : Bad id."
+        self.clearAll(int(id))
+        self.setPlaceHolder('message', "クエリー NG : Bad id.")
     except Exception as e :
-      self.clearAll(int(self.params['id'].value))
-      self.vars['message'] = "クエリー NG : " + str(e)
+      self.clearAll(int(id))
+      self.setPlaceHolder('message', "クエリー NG : " + str(e))
     return
 
   # フォームのフィールドをクリアする。
   def clearAll(self, id = -1) :
+    id2 = str(id)
     if id < 0 :
-      self.vars['id'] = ""
-    else :
-      self.vars['id'] = str(id)
-    self.vars['title'] = ""
-    self.vars['path'] = ""
-    self.vars['creator'] = ""
-    self.vars['series'] = ""
-    self.vars['mark'] = ""
-    self.vars['info'] = ""
-    self.vars['fav'] = "0"
-    self.vars['count'] = "0"
+      id2 = ""
+    self.embed({'id':id2, 'title':'', 'path':'', 'creator':'', 'series':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0, 'album':0})
+    return
     return
 
   # 引数が None の場合、"" に変換する。

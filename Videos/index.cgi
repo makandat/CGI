@@ -1,53 +1,66 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# MySQL Videos テーブル
-import WebPage as page
+# MySQL Videos テーブル  ver1.50 2019-05-02
+from WebPage import WebPage
 import FileSystem as fsys
-import MySQL
+from MySQL import MySQL
 
-SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count FROM Videos'
+SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos'
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
     try :
       rows = []
-      self.__mysql = MySQL.MySQL()
-      self.vars['filter'] = ""
-      if 'filter' in self.params :
+      self.__mysql = MySQL()
+      self.setPlaceHolder('filter', "")
+      if self.isParam('filter') :
         # フィルタ指定がある場合
-        filter = self.params['filter'].value
-        self.vars['filter'] = "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>'
+        filter = self.getParam('filter')
+        self.setPlaceHolder('filter', "[設定フィルタ] \"" + filter + '"　<a href="index.cgi">(リセット)</a>')
         sql = self.makeFilterSql(filter)
         rows = self.__mysql.query(sql)
-      elif 'fav' in self.params :
+      elif self.isParam('fav') :
         # fav 指定がある場合
         sql = SELECT + " WHERE fav = '1' or fav = '2'"
         rows = self.__mysql.query(sql)
-      elif 'mark' in self.params :
+      elif self.isParam('mark') :
         # mark 指定がある場合
-        mark = self.params['mark'].value
+        mark = self.getParam('mark')
         sql = SELECT + f" WHERE mark = '{mark}'"
         rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
         rows = self.__mysql.query(SELECT + " LIMIT 1000;")
-      self.vars['result'] = ""
+      self.setPlaceHolder('result', "")
       # クエリー
-      self.vars['result'] = self.getResult(rows)
-      self.vars['message'] = "クエリー OK"
+      self.setPlaceHolder('result', self.getResult(rows))
+      self.setPlaceHolder('message', "クエリー OK")
       if len(rows) == 0 :
-        self.vars['message'] = "０件のデータが検出されました。"
+        self.setPlaceHolder('message', "０件のデータが検出されました。")
     except Exception as e:
-      self.vars['message'] = "致命的エラーを検出。" + str(e)
+      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
     result = ""
     for row in rows :
-      result += page.WebPage.table_row(row) + "\n"
+      tr = []
+      tr.append(row[0])
+      tr.append(row[1])
+      tr.append(row[2])
+      tr.append(MainPage.NoneToSpace(row[3]))
+      tr.append(MainPage.NoneToSpace(row[4]))
+      tr.append(MainPage.NoneToSpace(row[5]))
+      tr.append(MainPage.NoneToSpace(row[6]))
+      tr.append(row[7])
+      tr.append(row[8])
+      tr.append(row[9])
+      tr.append(row[10])
+      result += WebPage.table_row(tr) + "\n"
     return result
 
   # SQL を作る。
@@ -57,6 +70,14 @@ class MainPage(page.WebPage) :
     sql += SELECT + f" WHERE `series` LIKE '%{filter}%' UNION "
     sql += SELECT + f" WHERE `info` LIKE '%{filter}%'"
     return sql
+
+  # パラメータが None なら空文字列にする。
+  @staticmethod
+  def NoneToSpace(s) :
+    if s == None :
+      return ""
+    else :
+      return s
 
 # メイン開始位置
 wp = MainPage('templates/index.html')
