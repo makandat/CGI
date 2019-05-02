@@ -22,8 +22,10 @@ class MainPage(WebPage) :
     if self.isParam('id') :
       id = int(self.getParam('id'))
       self.setPlaceHolder('album', id)
+      self.setPlaceHolder('display', '')
       self.showPictures(id)
     else :
+      self.setPlaceHolder('display', 'display:none;')
       self.showPictures()
     return
 
