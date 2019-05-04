@@ -1,39 +1,45 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 #  YJFX CSV データ読み込み
-
-import WebPage as page
+#  load_settle.cgi
+from WebPage import WebPage
 import Text
-import MySQL
+from MySQL import MySQL
 
 SELECT = "SELECT count(id) FROM YJFX_Settle WHERE id={0}"
 INSERT = "INSERT INTO YJFX_Settle(id, CurrencyPair, Sell, price1, Date1, price2, Date2, Benefit) VALUES({0}, '{1}', '{2}', {3}, '{4}', {5}, '{6}', {7})"
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     try :
-      if 'data' in self.params :
+      if self.isParam('data') :
         n = self.insertData()
-        self.vars['message'] = str(n) + "件のデータを読み込みました。"
+        self.setPlaceHolder('message', str(n) + "件のデータを読み込みました。")
       else :
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "")
     except Exception as e :
-      self.vars['message'] = "クエリー NG " + str(e)
+      self.setPlaceHolder('message', "クエリー NG " + str(e))
     return
 
   # データ読み込み
   def insertData(self) :
-    lines = Text.split("\n", self.params['data'].value)
+    lines = Text.split("\n", self.getParam('data'))
+    i = 0
     # タイトル行を読み飛ばす。
-    i = 1
+    if lines[0].startswith('注文番号') :
+      i = 1
     while i < len(lines) :
       line = lines[i]
       if Text.trim(line) == "" :
         break
       pline = Text.split(',', line)
+      # 決済以外は無視
+      if pline[0] != '決済' :
+        continue
       # id (取引番号)
       id = pline[0]
       # CurrencyPair

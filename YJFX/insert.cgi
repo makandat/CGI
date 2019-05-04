@@ -1,37 +1,38 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 #  YJFX 資産・取引管理
-
-import WebPage as page
+#    insert.cgi
+from WebPage import WebPage
 import Text
-import MySQL
+from MySQL import MySQL
 
 INSERT = "INSERT INTO YJFX_Asset(`date`, asset, profit_loss) VALUES('{0}', {1}, {2})"
 UPDATE = "UPDATE YJFX_Asset SET `date`='{1}', asset={2}, profit_loss={3} WHERE id = {0}"
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     try :
-      if 'date' in self.params :
-        date = self.params['date'].value
-        asset = self.params['asset'].value
-        profit = self.params['profit'].value
-        if 'id' in self.params :
+      if self.isParam('date') :
+        date = self.getParam('date')
+        asset = self.getParam('asset')
+        profit = self.getParam('profit')
+        if self.isParam('id') :
           # id がある場合は修正
-          id = self.params['id'].value
+          id = self.getPara,('id')
           sql = Text.format(UPDATE, id, date, asset, profit)
         else :
           # id がない場合は追加
           sql = Text.format(INSERT, date, asset, profit)
         self.__mysql.execute(sql)
-        self.vars['message'] = "クエリー OK " + self.params['date'].value
+        self.setPlaceHolder('message', "クエリー OK " + self.getParam('date'))
       else :
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "")
     except Exception as e :
-      self.vars['message'] = "クエリー NG " + str(e)
+      self.setPlaceHolder('message', "クエリー NG " + str(e))
     return
 
 # メイン開始位置
