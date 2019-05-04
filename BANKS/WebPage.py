@@ -1,11 +1,12 @@
 # coding:utf-8
-# Version 1.10  2019-01-12 bug fix
+# Version 1.14  2019-05-01 getPlaceHolder(key) 追加
 #   参考 http://cgi.tutorial.codepoint.net/intro
 import os, sys, io
 import cgi
 import locale
 import http.cookies as Cookie
 import urllib.parse
+#from syslog import syslog
 
 #
 #  WebPage クラス
@@ -63,32 +64,57 @@ class WebPage :
       print(s)
     print()
 
-  # クッキーを登録する。
-  def cookie(self, key, value) :
-    self.cookies[key] =value
+  # プレースホルダに値を設定する。
+  def setPlaceHolder(self, key, value) :
+    self.vars[key] = value
 
-  # cookie() のシノニム  v1.1 で追加
-  def setCookie(self, key, value) :
-    self.cookie(key, value)
+  # プレースホルダの値を得る。
+  def getPlaceHolder(self, key) :
+    if key in self.vars.keys() :
+      return self.vars[key]
+    else :
+      return ""
 
-  # クッキーの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
-  def getCookie(self, key) :
-    if key in self.cookies :
-      return self.cookies[key].value
-    else:
-      return ''
+  # 連想配列で与えられたキーと値をプレースホルダに値を設定する。
+  def embed(self, hashtable) :
+    for key, value in hashtable.items() :
+      self.vars[key] = value
+    return
 
-  # パラメータが存在するかどうかを返す。v1.1 で追加
+  # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
-    return key in self.params
-
-  # パラメータの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
+    return key in self.params.keys()
+    
+  # 外部から来る引数の値を得る。
   def getParam(self, key) :
     if self.isParam(key) :
       return self.params[key].value
     else :
       return ''
 
+  # クッキー key の有無を返す。
+  def isCookie(self, key) :
+    return key in self.cookies.keys()
+    
+  # クッキーを得る。
+  def getCookie(self, key) :
+    if self.isCookie(key) :
+      c = self.cookies[key]
+      if type(c) == str :
+        return c
+      else :
+        return c.value
+    else :
+      return ''
+
+  # クッキーを登録する。
+  def setCookie(self, key, value) :
+    self.cookie(key, value)
+
+  # クッキーを登録する。(Alias)
+  def cookie(self, key, value) :
+      self.cookies[key] = value
+  
   # AppConf.ini を読む。
   def readConf(self) :
     self.conf = {}
@@ -134,8 +160,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, str) :
-    return "<" + name + ">" + str + "</" + name + ">"
+  def tag(name:str, s, attr="") -> str:
+    if s == None :
+      s = ""
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod

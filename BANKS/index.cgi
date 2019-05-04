@@ -1,36 +1,38 @@
 #!/usr/bin/env python3
-# 銀行預金管理
-import WebPage as CGI
-import MySQL as DB
+# 銀行預金管理 index.cgi 2019-05-04
+from WebPage import WebPage
+from MySQL import MySQL
 import Text
-from syslog import syslog
+#from syslog import syslog
 
 SELECT = "SELECT id, day, bank, deposit, balance, info FROM BANKS"
 SELECT2 = "SELECT day, balance FROM vw_balance ORDER BY day"
 
 
 # ページクラス
-class IndexPage(CGI.WebPage) :
+class IndexPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = DB.MySQL()
-    self.vars['message'] = ""
+    self.__mysql = MySQL()
+    self.setPlaceHolder('message', "")
+    self.setPlaceHolder('content', "")
+    self.setPlaceHolder('content2', "")
     try :
       # 銀行コードを得る。
       bank = ""
       if 'bank' in self.params :
-        bank = self.params['bank'].value
+        bank = self.getParam('bank')
       rawspan = ""
       # 期間を得る。
-      if 'span' in self.params :
-        rawspan = self.params['span'].value
+      if self.isParam('span') :
+        rawspan = self.getParam('span')
       # クエリー結果を得る。
-      self.vars['content'] = self.getContent(bank, rawspan)
+      self.setPlaceHolder('content', self.getContent(bank, rawspan))
       # 預金総額を求める。
-      self.vars['content2'] = self.getSummary()
+      self.setPlaceHolder('content2', self.getSummary())
     except Exception as e:
-      self.vars['message'] = "エラー " + str(e)
+      self.setPlaceHolder('messag:e', "エラー " + str(e))
     return
 
   # ページ内容を作成する。
@@ -45,7 +47,7 @@ class IndexPage(CGI.WebPage) :
       sql = SELECT
     else :
       sql = SELECT + " WHERE "
-      #⃣bank のみが有効
+      # bank のみが有効
       if len(bank) > 0 and len(rawspan) == 0 :
         sql += Text.format(" bank='{0}'", bank)
       # rawspan のみが有効
@@ -73,7 +75,7 @@ class IndexPage(CGI.WebPage) :
       row2[3] = '外貨' if n == 1 else '普通'
       row2[4] = Text.money(row[4])
       row2[5] = "" if row[5] == None else row[5]
-      s = CGI.WebPage.table_row(row2)
+      s = WebPage.table_row(row2)
       buff += s + "\n"
     return buff
 

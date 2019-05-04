@@ -2,6 +2,7 @@
 # Version 0.50  2018-09-12
 # Version 1.00  2018-10-03
 # Version 1.10  2018-12-01
+# Version 1.20  2019-04-09
 #    To install mysql connector
 #  sudo pip3 install mysql-connector-python
 import mysql.connector
@@ -84,6 +85,12 @@ class MySQL :
     # カーソルを閉じる。
     def cursorClose(self) :
         self.__cursor.close()
+
+    # カラム名を得る。
+    def getFieldNames(self) :
+      num_fields = len(self.__cursor.description)
+      field_names = [i[0] for i in self.__cursor.description]
+      return field_names
 
     # 接続情報
     @property
