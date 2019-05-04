@@ -14,7 +14,7 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    Common.init_logger('c:/temp/Logger.log')
+    #Common.init_logger('c:/temp/Logger.log')
     self.__mysql = MySQL()
     self.showInfo()
     # ポストバックかどうか？
@@ -40,7 +40,6 @@ class MainPage(WebPage) :
       if self.isCookie('idf') :
         idf = int(self.getCookie('idf'))
       sql += " WHERE id < {0} ORDER BY id DESC LIMIT {1}".format(idf + MainPage.LIMIT, MainPage.LIMIT)
-      Common.log(sql)
     elif id == 'next' :
       # 次へ (逆順表示なのでidが小さい方へ)
       idl = 100000

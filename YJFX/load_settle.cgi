@@ -39,6 +39,7 @@ class MainPage(WebPage) :
       pline = Text.split(',', line)
       # 決済以外は無視
       if pline[0] != '決済' :
+        i += 1
         continue
       # id (取引番号)
       id = pline[0]
