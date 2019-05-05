@@ -1,35 +1,37 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 #  クレジットカード管理 (JCB)
-import WebPage
-import MySQL, Text
-from syslog import syslog
+from WebPage import WebPage
+from MySQL import MySQL
+import Text
+#from syslog import syslog
 
 
-class MyPage(WebPage.WebPage) :
+class MyPage(WebPage) :
 
   # コンストラクタ
   def __init__(self, tepmlate) :
     super().__init__(tepmlate)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     try :
-      self.vars['result'] = ""
-      self.vars['card'] = "OMC JCB"
+      self.setPlaceHolder('result', "")
+      self.setPlaceHolder('card', "OMC JCB")
       if self.isParam('span') :
         # 期間指定がある場合
         span = self.getParam('span')
         parts = Text.split('-', span)
         span_from = "20" + parts[0] 
         span_to = "20" + parts[1]
-        self.vars['result'] = self.getResult(span_from, span_to)
-        self.vars['sum'] = Text.format("この期間の支払総額 {0}円", Text.money(self.getSum(span_from, span_to)))
+        self.setPlaceHolder('result', self.getResult(span_from, span_to))
+        self.setPlaceHolder('sum', Text.format("この期間の支払総額 {0}円", Text.money(self.getSum(span_from, span_to))))
       else :
         # 期間指定がない場合
         span = ""
-        self.vars['result'] = self.getResult()
-        self.vars['sum'] = Text.format("この期間の支払総額 {0}円", Text.money(self.getSum()))
-      self.vars['message'] = f"クエリー OK ({span})" if len(span) > 0 else "クエリー OK"
+        self.setPlaceHolder('result', self.getResult())
+        self.setPlaceHolder('sum', Text.format("この期間の支払総額 {0}円", Text.money(self.getSum())))
+      self.setPlaceHolder('message', f"クエリー OK ({span})" if len(span) > 0 else "クエリー OK")
     except Exception as e:
-      self.vars['message'] = "エラー " + str(e)
+      self.setPlaceHolder('message', "エラー " + str(e))
 
   # 一覧を得る。
   def getResult(self, span_from = '200001', span_to='210001') :
@@ -39,7 +41,7 @@ class MyPage(WebPage.WebPage) :
     rows = self.__mysql.query(sql)
     buff = ""
     for row in rows :
-      buff += WebPage.WebPage.table_row(row)
+      buff += WebPage.table_row(row)
     return buff
 
   # 期間の総支払額を計算する。

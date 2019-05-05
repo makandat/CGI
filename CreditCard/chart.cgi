@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 #  クレジットカード管理 データ入力
-import WebPage
-import MySQL, Text
+from WebPage import WebPage
+from MySQL import MySQL
+import Text
 
 SELECT = "SELECT `date`, payment FROM smbcvisa WHERE `date` LIKE '{0}-%' ORDER BY `date`"
 
-class ChartPage(WebPage.WebPage) :
+class ChartPage(WebPage) :
   # コンストラクタ
   def __init__(self, tepmlate) :
     super().__init__(tepmlate)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     if 'year' in self.params :
       # 表示指定があるとき
-      year = self.params['year'].value
+      year = self.getParam('year')
       sql = Text.format(SELECT, year)
       rows = self.__mysql.query(sql)
-      self.vars['data'] = self.getData(rows)
-      self.vars['message'] = f"{year}年のグラフ"
+      self.setPlaceHolder('data', self.getData(rows))
+      self.setPlaceHolder('message', f"{year}年のグラフ")
     else :
-      self.vars['data'] = ""
-      self.vars['message'] = ""
+      self.setPlaceHolder('data', "")
+      self.setPlaceHolder('message', "")
     return
 
   # データを作成する。
@@ -36,7 +37,7 @@ class ChartPage(WebPage.WebPage) :
       data += "],"
     result = data[0:len(data)-1]
     result += "]]"
-    self.vars['average'] = Text.money(round(sum / len(rows)))
+    self.setPlaceHolder('average', Text.money(round(sum / len(rows))))
     return result
 
 # 応答を返す。

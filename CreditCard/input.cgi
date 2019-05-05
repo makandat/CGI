@@ -1,45 +1,46 @@
 #!/usr/bin/env python3
 #  クレジットカード管理 データ入力
 #    Version 1.01  2019-03-30 Bug fix
-import WebPage
-import MySQL, Text
+from WebPage import WebPage
+from MySQL import MySQL
+import Text
 
 
 INSERT = "INSERT INTO {3}(`date`, payment, info) VALUES('{0}', {1}, '{2}')"
 UPDATE = "UPDATE {0} SET "
 
 # データ入力ページ
-class InputPage(WebPage.WebPage) :
+class InputPage(WebPage) :
   # コンストラクタ
   def __init__(self, tepmlate) :
     super().__init__(tepmlate)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     try :
-      self.vars['message'] = ""
+      self.setPlaceHolder('message', "")
       if self.isParam('card') :
         self.card = "omcjcb"
-        self.vars['card'] = "JCB"
-        self.vars['back'] = "jcbcard.cgi"
+        self.setPlaceHolder('card', "JCB")
+        self.setPlaceHolder('back', "jcbcard.cgi")
       else :
         self.card = 'smbcvisa'
-        self.vars['card'] = "VISA"
-        self.vars['back'] = "index.cgi"
+        self.setPlaceHolder('card', "VISA")
+        self.setPlaceHolder('back', "index.cgi")
       b = self.isModify()
       if b == 1 :
         # 新規の場合
         self.insert()
-        self.vars['message'] = "データが新規登録されました。"
+        self.setPlaceHolder('message', "データが新規登録されました。")
       elif b == 0 :
         # 修正の場合
         if self.modify() :
-          self.vars['message'] = "データが修正されました。"
+          self.setPlaceHolder('message', "データが修正されました。")
         else :
-          self.vars['message'] = "エラー：データが修正されませんでいた。"
+          self.setPlaceHolder('message', "エラー：データが修正されませんでいた。")
       else :
         # その他の場合
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "")
     except Exception as e:
-      self.vars['message'] = Text.format("エラー {0}", str(e))
+      self.setPlaceHolder('message', Text.format("エラー {0}", str(e)))
     return
 
 
@@ -83,7 +84,6 @@ class InputPage(WebPage.WebPage) :
       return False
     sql += Text.format(" WHERE `date`= '{0}'", self.getParam('date'))
     self.__mysql.execute(sql)
-
     return True
 
 
