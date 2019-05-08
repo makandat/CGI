@@ -1,11 +1,11 @@
 # coding:utf-8
-# Version 1.12  2019-04-17 tag() でパラメータが文字列型でないときも対応。
-#   参考 http://cgi.tutorial.codepoint.net/intro
+# WebPage.py Version 1.15  2019-05-08 getCookie(key, default="") default 追加
 import os, sys, io
 import cgi
 import locale
 import http.cookies as Cookie
 import urllib.parse
+#from syslog import syslog
 
 #
 #  WebPage クラス
@@ -67,6 +67,19 @@ class WebPage :
   def setPlaceHolder(self, key, value) :
     self.vars[key] = value
 
+  # プレースホルダの値を得る。
+  def getPlaceHolder(self, key) :
+    if key in self.vars.keys() :
+      return self.vars[key]
+    else :
+      return ""
+
+  # 連想配列で与えられたキーと値をプレースホルダに値を設定する。
+  def embed(self, hashtable) :
+    for key, value in hashtable.items() :
+      self.vars[key] = value
+    return
+
   # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
     return key in self.params.keys()
@@ -83,7 +96,7 @@ class WebPage :
     return key in self.cookies.keys()
     
   # クッキーを得る。
-  def getCookie(self, key) :
+  def getCookie(self, key, default="") :
     if self.isCookie(key) :
       c = self.cookies[key]
       if type(c) == str :
@@ -91,7 +104,7 @@ class WebPage :
       else :
         return c.value
     else :
-      return ''
+      return default
 
   # クッキーを登録する。
   def setCookie(self, key, value) :
@@ -99,7 +112,7 @@ class WebPage :
 
   # クッキーを登録する。(Alias)
   def cookie(self, key, value) :
-      self.cookies[key] = value
+    self.cookies[key] = value
   
   # AppConf.ini を読む。
   def readConf(self) :
@@ -146,10 +159,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, s) :
+  def tag(name:str, s, attr="") -> str:
     if s == None :
       s = ""
-    return "<" + name + ">" + str(s) + "</" + name + ">"
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod

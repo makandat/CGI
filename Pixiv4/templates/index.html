@@ -12,12 +12,13 @@
  </script>
 </head>
 
-<body>
+<body style="margin-left:4%;margin-right:4%;">
 <h1>Pixiv Clip 4<span style="font-size:14pt;color:teal;"> by python3</span></h1>
 <div class="menu" style="text-align:center;">
  <div style="display:inline-block;width:30%;">
   <a href="/">HOME</a>&nbsp;/&nbsp;
-  <a href="modify.cgi">作品の追加・修正</a>
+  <a href="modify.cgi">作品の追加・修正</a>&nbsp;/&nbsp;
+  <a href="index.cgi?view=(*view*)">アイコン・詳細表示</a>
  </div>
  <form style="display:inline-block">
   <label>作者の検索：<input type="text" name="creator" size="20" /></label>
@@ -27,8 +28,7 @@
 <p class="message">(*message*)</p>
 <div>
   <!-- 作者一覧 -->
- <table style="margin-left:auto;margin-right:auto;">
-  <tr><th>作者</th><th>登録数</th><th>タグ</th><th>登録イメージ</th></tr>
+ <table id="table1" style="margin-left:auto;margin-right:auto;">
   (*creators*)
  </table>
 </div>

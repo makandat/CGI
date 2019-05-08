@@ -13,6 +13,7 @@ class Pixiv4(WebPage) :
     self.setPlaceHolder('message', '')
     if self.isParam('creator') :
       creator = self.getParam('creator')
+      self.setPlaceHolder('creator', creator)
       self.setPlaceHolder('title', creator + ' さんの作品')
       self.showClips(creator)
     else :

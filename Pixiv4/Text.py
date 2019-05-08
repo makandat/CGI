@@ -1,5 +1,5 @@
 # -*- code=utf-8 -*-
-# Version 1.04  2019-04-10
+# Version 2.01  2019-04-23  Text クラス廃止
 from typing import List, Tuple
 import re
 
@@ -7,48 +7,38 @@ import re
 StrList = List[str]
 StrTuple = Tuple[str]
 
-# テキストクラス
-class Text :
-    # コンストラクタ
-    def __init__(self, s:str="") :
-        self.__text = s
+# 文字列の長さ
+def length(s:str) -> int:
+  return len(s)
 
-    # 文字列の長さ
-    @property
-    def length(self) -> int:
-        return len(self.__text)
+# 文字列の結合
+def concat(str1:str, str2:str) -> str:
+  return str1 + str2
 
-    # インスタンスメソッド
-    def append(self, s:str) ->str:
-        self.__text += s
-    
-    # start から長さ length の部分文字列を返す。
-    def substring(self, start:int, length:int) ->str:
-        return self.__text[start:start+length]
+# start から長さ length の部分文字列を返す。
+def substring(text:str, start:int, length:int=-1) ->str:
+  if length < 0 :
+    return text[start:len(text)]
+  else :
+    return text[start:start+length]
 
-    # start から end までの部分文字列を返す。
-    def substr(self, start:int, end:int) ->str:
-        return self.__text[start:end+1]
+# start から end までの部分文字列を返す。
+def substr(text:str, start:int, end:int) ->str:
+  return text[start:end+1]
 
-    # 先頭から長さ length の部分文字列を返す。
-    def left(self, length:str) -> str:
-        return self.__text[0:length]
+# 先頭から長さ length の部分文字列を返す。
+def left(text, length:str) -> str:
+  return text[0 : length]
 
-    # 最後から長さ length の部分文字列を返す。
-    def right(self, length:int) -> str:
-        return self.__text[self.length-length:self.length]
+# 最後から長さ length の部分文字列を返す。
+def right(text:str, length:int) -> str:
+  n = len(text)
+  begin = n - length
+  return text[begin : n]
 
-    # このオブジェクトの文字列を返す。
-    def toString(self) -> str:
-        return self.__text
-
-    # 文字列 c を n 回繰り返した文字列をこのオブジェクトの値とする。
-    def times(self, c:str, n:int) -> str:
-        self.__text = c * n
-
-    # このオブジェクトの文字列をクリアする。
-    def clear(self) :
-        self.__text = ""
+# 文字列 c を n 回繰り返した文字列をこのオブジェクトの値とする。
+def times(c:str, n:int) -> str:
+  return c * n
 
 # 数字を判別
 def isdigit(a: str) -> str:
@@ -163,3 +153,12 @@ def re_replace(rstr:str, c:str, s:str) -> str :
 def money(d:float) -> str :
   m = '{0:,}'.format(d)
   return m
+
+# bytes(バイト列)を文字列に変換する。
+def b2s(b: bytes) -> str :
+  return b.decode()
+
+# 文字列(utf-8)をバイト列に変換する。
+def s2b(s: str) -> bytes :
+  return s.encode()
+

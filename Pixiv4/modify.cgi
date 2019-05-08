@@ -12,6 +12,9 @@ class Pixiv4(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
+    # 作者指定があるか
+    if self.isParam('name') :
+      self.setPlaceHolder('name', self.getParam('name'))
     # ポストバックか？
     if self.isParam('submit') :
       if self.isParam('id') :

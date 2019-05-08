@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
-#  Pixiv Clip by Python3 v4.01  2019-04-18
+#  Pixiv Clip by Python3 v4.05  2019-05-08
 #    Pixiv のイラストを管理するアプリ。
 from WebPage import WebPage
 from MySQL import MySQL
@@ -12,6 +12,13 @@ class Pixiv4(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
+    self.setPlaceHolder('view', 'detail')
+    if self.isCookie('view') :
+      self.view = self.getCookie('view')
+      self.setPlaceHolder('view', 'icons' if self.view == 'detail' else 'detail')
+    else :
+      self.view = 'detail'
+      self.setCookie('view', 'detail')
     # ポストバックか？
     if self.isParam('submit') :
       # 作者検索
@@ -22,8 +29,22 @@ class Pixiv4(WebPage) :
       else :
         # 作者一覧を表示する。
         self.showCreators()
+    elif self.isParam('view') :
+      view = self.getParam('view')
+      if view == 'icons' :
+        self.setCookie('view', 'icons')
+        self.view = 'icons'
+        self.setPlaceHolder('view', 'detail')
+        # 作者一覧をアイコン表示する。
+        self.showIcons()
+      else :
+        self.setCookie('view', 'detail')
+        self.view = 'detail'
+        self.setPlaceHolder('view', 'icons')       
+        # 作者一覧を詳細ン表示する。
+        self.showCreators()
     else :
-      # 作者一覧を表示する。
+      # 作者一覧を詳細表示する。
       self.showCreators()
     return
 
@@ -31,7 +52,7 @@ class Pixiv4(WebPage) :
   def showCreators(self, creator="") :
     # 作者と登録数を得る。
     if creator == "" :
-      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
+      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By count DESC"
     else :
       sql = f"SELECT creator, count(creator) AS count FROM Pixiv3 WHERE creator LIKE '{creator}' GROUP BY creator ORDER By creator"
     rows = self.__mysql.query(sql)
@@ -39,7 +60,7 @@ class Pixiv4(WebPage) :
       self.setPlaceHolder('message', '作品が登録されていません。')
       self.setPlaceHolder('creators', '')
       return
-    buff = ""
+    buff = "<tr><th>作者</th><th>登録数</th><th>タグ</th><th>登録イメージ</th></tr>"
     for row in rows :
       creator = row[0]
       count = row[1]
@@ -70,6 +91,36 @@ class Pixiv4(WebPage) :
     self.setPlaceHolder('creators', buff)
     return
 
+  # 作者一覧をアイコン表示する。
+  def showIcons(self, creator="") :
+    # 作者と登録数を得る。
+    if creator == "" :
+      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
+    else :
+      sql = f"SELECT creator, count(creator) AS count FROM Pixiv3 WHERE creator LIKE '{creator}' GROUP BY creator ORDER By creator"
+    rows = self.__mysql.query(sql)
+    if len(rows) == 0 :
+      self.setPlaceHolder('message', '作品が登録されていません。')
+      self.setPlaceHolder('creators', '')
+      return
+    buff = "<div>"
+    for row in rows :
+      creator = row[0]
+      count = row[1]
+      # もしあれば、作者の最新のイメージを得る。
+      sql = "SELECT bindata FROM Pixiv3 WHERE creator='{0}' AND bindata > 0".format(creator)
+      bdrows = self.__mysql.query(sql)
+      n = len(bdrows) - 1
+      if n >= 0 :
+        bdid = bdrows[n][0]
+        bindata = f"<img src=\"extract.cgi?id={bdid}\" alt=\"{bdid}\" />"
+      else :
+        bindata = f"<img src=\"/img/NoImage.jpg\" />"
+      binlink = f"<a href=\"showclips.cgi?creator={creator}\" target=\"_blank\">{bindata}</a>"
+      buff += f"<div style=\"display:inline-block;padding:6px;\"><div>{binlink}</div><div style=\"font-size:10pt;\">{creator} ({count})</div></div>"
+    buff += "</div>\n"
+    self.setPlaceHolder('creators', buff)
+    return
 
 # プログラム開始
 wp = Pixiv4('templates/index.html')
