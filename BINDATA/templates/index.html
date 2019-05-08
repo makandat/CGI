@@ -8,11 +8,21 @@
 
 <body>
 <h1>BINDATA バイナリファイル</h1>
-<div style="text-align:center;padding:4px;">
+<div>
+<div style="margin-left:5%;padding:4px;display:inline-block;">
  <a href="/">HOME</a>&nbsp;/&nbsp;
  <a href="index.cgi?order=1">逆順で表示する</a>&nbsp;/&nbsp;
- <a href="#images">画像一覧(画像ファイル指定のときのみ)</a>&nbsp;/&nbsp;
- <a href="showHtml.cgi?html=bindata_help.html" target="_blank">ヘルプを表示する。</a>
+ <a href="index.cgi?view=(*view*)">アイコン・詳細表示</a>&nbsp;/&nbsp;
+ <a href="showHtml.cgi?html=bindata_help.html" target="_blank">ヘルプを表示する。</a>&nbsp;/&nbsp;
+ <a href="index.cgi?id=first">先頭</a>&nbsp;
+ <a href="index.cgi?id=prev">前</a>&nbsp;
+ <a href="index.cgi?id=next">次</a>&nbsp;
+ <a href="index.cgi?id=last">最後</a>&nbsp;/&nbsp;
+</div>
+ <form style="display:inline-block;">
+  <label>id&nbsp;<input type="text" name="id" id="id" size="8" /></label>&nbsp;
+  <input type="submit" name="submit" value="セット" />
+ </form>
 </div>
 <br />
 <div class="menubar">
@@ -23,15 +33,10 @@
 </div>
 <p class="message">※ データの挿入や更新はコマンドで行う。詳細はヘルプを参照。</p>
 <br />
-<table style="margin-left:10%;">
- <tr><th>id</th><th>タイトル</th><th>オリジナルファイル</th><th>ファイルタイプ</th><th>情報</th><th>サイズ</th></tr>
+<table id="table1" style="margin-left:4%;margin-right:4%;">
  (*content*)
 </table>
-<p>&nbsp;</p>
-<a id="images"></a>
-<ul style="display:inline;">
 (*images*)
-</ul>
 <br />
 
 
