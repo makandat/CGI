@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!/usr/bin/env python3
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.51  2019-04-28
+#   index.cgi  Version 3.60  2019-05-10
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
 import Common
+import Text
 #from syslog import syslog
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
@@ -17,10 +18,14 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    # Common.init_logger("C:/temp/PyLogger.log")
+    #Common.init_logger("/home/user/temp/Logger.log")
     self.setPlaceHolder('result', "")
+    self.setPlaceHolder('images', "")
+    self.setPlaceHolder('view', "icons")
+    self.view = "detail"
     try :
       rows = []
+      sql = ""
       self.setPlaceHolder('filter', "")
       self.setPlaceHolder('start_id', "")
       self.__mysql = MySQL()
@@ -38,6 +43,7 @@ class MainPage(WebPage) :
         rows = self.__mysql.query(sql)
         self.resetOrder()
       elif self.isParam('id') and self.isParam('dir') :
+        # ページ処理
         id = int(self.getParam('id'))
         dir = self.getParam('dir')
         if self.isCookie('order') :
@@ -79,12 +85,35 @@ class MainPage(WebPage) :
       elif self.isParam('criteria') :
         # 詳細検索
         criteria = self.getParam('criteria')
-        sql = "SELECT * FROM Pictures WHERE " + criteria
+        sql = SELECT + criteria
         rows = self.__mysql.query(sql)
         self.resetOrder()
       elif self.isParam("btnOrder") :
         # フォームのクエリー
         rows = self.btnOrder()
+      elif self.isParam('view') :
+        # アイコン・詳細表示
+        view = self.getParam('view')
+        order = ""
+        if self.isCookie('order') :
+          order = self.getCookie('order')
+        else :
+          order = "DESC"
+          self.setCookie('order', 'DESC')
+        self.resetOrder(order)
+        if view == 'detail' :
+          self.view = 'detail'
+          self.setPlaceHolder('view', 'icons')
+        else :
+          self.view = 'icons'
+          self.setPlaceHolder('view', 'detail')
+        current = int(self.getCookie('current_image', '0'))
+        order = self.getCookie('order', 'DESC')
+        if order == 'ASC' :
+          sql = SELECT + " WHERE id > {0} ORDER BY id LIMIT {1}".format(current, LIMIT)
+        else :
+          sql = SELECT + " WHERE id < {0} ORDER BY id DESC LIMIT {1}".format(current + LIMIT, LIMIT)
+        rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
         rows = self.queryNormal()
@@ -92,21 +121,30 @@ class MainPage(WebPage) :
       n = len(rows) - 1
       self.setPlaceHolder('result', "")
       # クエリー結果を表示する。
-      result = self.getResult(rows)
-      self.setPlaceHolder('result', result)
+      if self.view == 'icons' :
+        result = self.getIcons(rows)
+        self.setPlaceHolder('images', result)
+        self.setPlaceHolder('result', '')
+      else :
+        result = self.getResult(rows)
+        self.setPlaceHolder('result', result)
+        self.setPlaceHolder('images', '')
       self.setPlaceHolder('message', "クエリー OK")
       if len(rows) == 0 :
         self.setPlaceHolder('message', "０件のデータが検出されました。")
     except Exception as e:
-      self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
+      (filename, lineno, line, exc_obj) = Common.errorInfo()
+      self.setPlaceHolder('message', "致命的エラーを検出。<br />Filename={0}, <br />LineNo={1}, Line='{2}', <br />Message='{3}'".format(filename, lineno, line, exc_obj))
     return
 
   # 通常のクエリ(フィルタ指定なし)
   def queryNormal(self) :
     self.setPlaceHolder("start_id", "")
+    sql = ""
     if self.isCookie('order') :
       self.order = self.getCookie("order")
-      rows = self.__mysql.query(SELECT + f" ORDER BY id {self.order} LIMIT {LIMIT};")
+      sql = SELECT + f" ORDER BY id {self.order} LIMIT {LIMIT};"
+      rows = self.__mysql.query(sql)
       if self.order == "DESC" :
         self.setPlaceHolder("ASCchecked", "")
         self.setPlaceHolder("DESCchecked", "checked")
@@ -114,7 +152,8 @@ class MainPage(WebPage) :
         self.setPlaceHolder("ASCchecked", "checked")
         self.setPlaceHolder("DESCchecked", "")
     else:
-      rows = self.__mysql.query(SELECT + f" ORDER BY id DESC LIMIT {LIMIT};")
+      sql = SELECT + f" ORDER BY id DESC LIMIT {LIMIT};"
+      rows = self.__mysql.query(sql)
       self.order = "DESC"
       self.setCookie("order", "DESC")
       self.setPlaceHolder("ASCchecked", "")
@@ -136,21 +175,23 @@ class MainPage(WebPage) :
       else :
         self.start_id = 1000000
       self.setPlaceHolder("start_id", "")
-
     # クエリー実行
+    sql = ''
     if self.order == "DESC" :
-      rows = self.__mysql.query(SELECT + f" WHERE id <= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};")
+      sql = SELECT + f" WHERE id <= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};"
+      rows = self.__mysql.query(sql)
       self.setPlaceHolder("DESCchecked", "checked")
       self.setPlaceHolder("ASCchecked", "")
     else :
-      rows = self.__mysql.query(SELECT + f" WHERE id >= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};")
+      sql = SELECT + f" WHERE id >= {self.start_id} ORDER BY id {self.order} LIMIT {LIMIT};"
+      rows = self.__mysql.query(sql)
       self.setPlaceHolder("DESCchecked", "")
       self.setPlaceHolder("ASCchecked", "checked")
     return rows
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
-    result = ""
+    result = "<tr><th>id</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th><th>イメージ</th></tr>"
     id0 = 0
     id = 0
     for row in rows :
@@ -191,6 +232,35 @@ class MainPage(WebPage) :
     self.setPlaceHolder('prev', id0)
     return result
 
+  # アイコン一覧を作る。
+  def getIcons(self, rows) :
+    result = "<div>\n"
+    id0 = 0
+    id = 0
+    for row in rows :
+      id = str(row[0])
+      if id0 == 0 :
+        id0 = id
+      title = row[1]
+      creator = row[2]
+      path = row[3]
+      bindata = row[8]
+      if bindata == 0 or bindata == None :
+        img = "<img src=\"/img/NoImage.jpg\" />"
+      else :
+        img = "<img src=\"extract.cgi?id={0}\" />".format(bindata)
+      imglink = "<a href=\"listpics.cgi?id={0}\" target=\"_blank\">{1}</a>".format(id, img)
+      result += "<div style=\"display:inline-block;padding:6px;\">"
+      result += imglink
+      annotation = "[{0}] {1}".format(creator, title)
+      annotation = Text.left(annotation, 16)
+      result += WebPage.tag('div', annotation, 'style="font-size:10pt;"')
+      result += "</div>\n"
+    result += "</div>\n"
+    self.setPlaceHolder('next', id)
+    self.setPlaceHolder('prev', id0)
+    return result
+
   # SQL を作る。
   def makeFilterSql(self, filter) :
     sql = SELECT + f" WHERE `title` LIKE '%{filter}%' UNION "
@@ -218,6 +288,7 @@ class MainPage(WebPage) :
       self.setPlaceHolder('ASCchecked', 'checked')
       self.setCookie('order', 'ASC')
     return
+
 
 
 # メイン開始位置

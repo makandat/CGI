@@ -1,12 +1,12 @@
 # coding:utf-8
-# Version 1.14  2019-05-01 getPlaceHolder(key) 追加
-#   参考 http://cgi.tutorial.codepoint.net/intro
+# WebPage.py Version 1.16  2019-05-08 getCookie(key, default=""), getParam((key, default="") default 追加
 import os, sys, io
 import cgi
 import locale
 import http.cookies as Cookie
 import urllib.parse
 #from syslog import syslog
+import Common
 
 #
 #  WebPage クラス
@@ -16,6 +16,7 @@ class WebPage :
         
     # コンストラクタ
   def __init__(self, template="") :
+    #Common.init_logger('C:/temp/Logger.log')
     self.headers = ["Content-Type: text/html"] # HTTP ヘッダーのリスト
     self.vars =    {}  # HTML 埋め込み変数
     self.params =  {}  # HTTP パラメータ
@@ -37,13 +38,15 @@ class WebPage :
     form = cgi.FieldStorage()
     for k in form.keys() :
       self.params[k] = form[k]
-    # クッキーを得る。
+    # クッキーを得る。※ 長いクッキーの処理ができないので注意。
     if "HTTP_COOKIE" in os.environ :
       cc = Cookie.SimpleCookie()
       cc.load(os.environ["HTTP_COOKIE"])
       for k, v in cc.items() :
         self.cookies[k] = v
-
+    else :
+      pass
+    return
   # コンテンツを送信する。
   def echo(self) :
     # クッキーをヘッダーに追加
@@ -86,18 +89,18 @@ class WebPage :
     return key in self.params.keys()
     
   # 外部から来る引数の値を得る。
-  def getParam(self, key) :
+  def getParam(self, key, default="") :
     if self.isParam(key) :
       return self.params[key].value
     else :
-      return ''
+      return default
 
   # クッキー key の有無を返す。
   def isCookie(self, key) :
     return key in self.cookies.keys()
     
   # クッキーを得る。
-  def getCookie(self, key) :
+  def getCookie(self, key, default="") :
     if self.isCookie(key) :
       c = self.cookies[key]
       if type(c) == str :
@@ -105,7 +108,7 @@ class WebPage :
       else :
         return c.value
     else :
-      return ''
+      return default
 
   # クッキーを登録する。
   def setCookie(self, key, value) :
@@ -113,7 +116,7 @@ class WebPage :
 
   # クッキーを登録する。(Alias)
   def cookie(self, key, value) :
-      self.cookies[key] = value
+    self.cookies[key] = value
   
   # AppConf.ini を読む。
   def readConf(self) :
