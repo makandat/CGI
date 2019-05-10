@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
-# slideview.cgi フォルダ内画像のスライド表示
+# slideview.cgi フォルダ内画像のスライド表示  2019-05-10
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -18,6 +18,7 @@ class MainPage(page.WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL()
+    #Common.init_logger('C:/temp/Logger.log')
     self.adjust = '0'
     if self.isParam('folder') :
       # Postback のとき
@@ -33,7 +34,7 @@ class MainPage(page.WebPage) :
           else :
             self.adjust = '1'
         else :
-          self.adjust = '0'
+          self.adjust = '1'
         self.setCookie('adjust_width', self.adjust)
       else :
         # 画像調整指定なし(width=なし)
@@ -61,9 +62,7 @@ class MainPage(page.WebPage) :
 
   # 画像を表示する。
   def showPicture(self, folder, slide) :
-    current = 0
-    if self.isCookie('current_image') :
-      current = int(self.getCookie('current_image'))
+    current = int(self.getCookie('current_image', '0'))
     files = os.listdir(folder.encode('utf8'))
     n = len(files)
     m = n - 1
@@ -97,7 +96,7 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('filename', '')
     self.setPlaceHolder('filename', filePath)
     self.setCookie('current_image', str(current))
-    if self.adjust == '1' :
+    if self.adjust == '0' :
       self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
     else :
       self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")

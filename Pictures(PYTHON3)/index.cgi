@@ -1,5 +1,5 @@
-#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 #   index.cgi  Version 3.60  2019-05-10
 from WebPage import WebPage
@@ -107,7 +107,7 @@ class MainPage(WebPage) :
         else :
           self.view = 'icons'
           self.setPlaceHolder('view', 'detail')
-        current = int(self.getCookie('current_image', '0'))
+        current = int(self.getCookie('next', '0'))
         order = self.getCookie('order', 'DESC')
         if order == 'ASC' :
           sql = SELECT + " WHERE id > {0} ORDER BY id LIMIT {1}".format(current, LIMIT)
@@ -230,6 +230,8 @@ class MainPage(WebPage) :
       result += WebPage.table_row(row2) + "\n"
     self.setPlaceHolder('next', id)
     self.setPlaceHolder('prev', id0)
+    self.setCookie('next', id)
+    self.setCookie('prev', id0)
     return result
 
   # アイコン一覧を作る。
@@ -259,6 +261,8 @@ class MainPage(WebPage) :
     result += "</div>\n"
     self.setPlaceHolder('next', id)
     self.setPlaceHolder('prev', id0)
+    self.setCookie('next', id)
+    self.setCookie('prev', id0)
     return result
 
   # SQL を作る。
