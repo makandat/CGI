@@ -26,11 +26,17 @@ def bin2hex(filePath) :
 # メイン
 client = mysql.MySQL()
 if Common.count_args() == 0 :
-  Common.stop("id とファイルを指定してください。")
-
-id = Common.args()[0]
-filePath = Common.args()[1]
-
-updateBinaries(id, filePath)
-
-print("Done.")
+  id = Common.readline("対象の id を入力します。")
+  if id == "" :
+    Common.stop(1, "実行を中止しました。")
+  filePath = Common.readline("画像ファイルのフルパス名を入力します。")
+  if filePath == "" :
+    Common.stop(1, "実行を中止しました。")
+else :
+  id = Common.args(0)
+  filePath = Common.args(1)
+if fs.exists(filePath) :
+  updateBinaries(id, filePath)
+  print("Done. " + filePath)
+else :
+  Common.esc_print("red", filePath + ' does NOT exists.')

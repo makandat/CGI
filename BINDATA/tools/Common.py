@@ -94,11 +94,11 @@ def shell(cmd:StrList) -> str:
 
 # ログ情報出力
 def log(msg:str) -> None:
-  logger.info(msg)
+  logger.info(str(msg))
 
 # ログエラー出力
 def error(msg:str) -> None:
-  logger.error(msg)
+  logger.error(str(msg))
 
 # 変数が有効かどうか
 def isset(v:Any) -> bool:
