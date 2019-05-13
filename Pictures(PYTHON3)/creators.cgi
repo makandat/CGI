@@ -1,25 +1,29 @@
-#/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-import WebPage as page
-import MySQL
+from WebPage import WebPage
+from MySQL import MySQL
 import Common
 #from syslog import syslog
 
 SELECT = f"SELECT DISTINCT creator FROM Pictures "
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
 
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
     # Common.init_logger("C:/temp/PyLogger.log")
-    self.__mysql = MySQL.MySQL()
+    self.orderby = 'count'
+    self.__mysql = MySQL()
     if self.isParam('filter') :
       self.setPlaceHolder('word', self.getParam('filter'))
       self.filter()
+    elif self.isParam('key') :
+      self.orderby = self.getParam('key') + " DESC"
+      self.all()
+      self.setPlaceHolder('word', '---')
     else :
       self.all()
       self.setPlaceHolder('word', '---')
@@ -38,7 +42,7 @@ class MainPage(page.WebPage) :
 
   # すべての作者を列挙
   def all(self) :
-    sql = "SELECT creator, count(creator) as count, sum(count) as refer, sum(fav) as favor FROM Pictures GROUP BY creator ORDER BY creator"
+    sql = "SELECT creator, count(creator) as count, sum(count) as refer, sum(fav) as favor FROM Pictures GROUP BY creator ORDER BY " + self.orderby
     rows = self.__mysql.query(sql)
     list = self.makelist(rows)
     self.setPlaceHolder('list', list)
