@@ -57,7 +57,7 @@ class MainPage(WebPage) :
       refer = str(row[2])
       favor = str(row[3])
       anchor = "<a href=\"index.cgi?creator=" + creator + "\">" + creator + "</a>"
-      table_row = f"<tr><td>{anchor}</td><td>{count}</td><td>{refer}</td><td>{favor}</rd></tr>\n"
+      table_row = f"<tr><td>{anchor}</td><td class=\"number\">{count}</td><td class=\"number\">{refer}</td><td class=\"number\">{favor}</td></tr>\n"
       list += table_row
     return list
 
