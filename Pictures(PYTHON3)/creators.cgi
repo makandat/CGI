@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
+# creators.cgi 作者一覧  2019-05-15
 # -*- code=utf-8 -*-
 from WebPage import WebPage
 from MySQL import MySQL
@@ -25,6 +26,7 @@ class MainPage(WebPage) :
       self.all()
       self.setPlaceHolder('word', '---')
     else :
+      self.orderby = 'UPPER(creator)'
       self.all()
       self.setPlaceHolder('word', '---')
     self.setPlaceHolder("message", "クエリー OK")
