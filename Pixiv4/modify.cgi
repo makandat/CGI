@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
-#  Pixiv Clip by Python3 v4.0  2019-04-17
+#  Pixiv Clip by Python3 v4.10  2019-05-16
 #    作品お登録と修正 modify.cgi
 from WebPage import WebPage
 from MySQL import MySQL
@@ -12,6 +12,7 @@ class Pixiv4(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
+    self.setPlaceHolder('name', '')
     # 作者指定があるか
     if self.isParam('name') :
       self.setPlaceHolder('name', self.getParam('name'))
@@ -33,9 +34,24 @@ class Pixiv4(WebPage) :
 
   # データの挿入
   def insert(self) :
-    title = self.getParam('title')
-    creator = self.getParam('creator')
-    illust = self.getParam('illust')
+    if self.isParam('title') :
+      title = self.getParam('title')
+    else :
+      self.setPlaceHolder('message', 'タイトルが指定されていません。')
+      self.clearAll()
+      return
+    if self.isParam('creator') :
+      creator = self.getParam('creator')
+    else :
+      self.setPlaceHolder('message', '作者が指定されていません。')
+      self.clearAll()
+      return
+    if self.isParam('illust') :
+      illust = self.getParam('illust')
+    else :
+      self.setPlaceHolder('message', 'イラスト番号が指定されていません。')
+      self.clearAll()
+      return
     if title == "" or creator == "" or illust == "" :
       self.setPlaceHolder('message', 'エラー： 空欄の必須パラメータがあります。')
       self.setAll(('', title, creator, illust, original, tags, bindata))
@@ -49,6 +65,7 @@ class Pixiv4(WebPage) :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', title + ' を追加しました。')
       self.clearAll()
+      self.setPlaceHolder('creator', creator)
     except Exception as e :
       self.setPlaceHolder('message', 'エラー：' + str(e))
       self.setAll(('', title, creator, illust, Pixiv4.NoneToSpace(original), Pixiv4.NoneToSpace(tags), Pixiv4.NoneToSpace(bindata)))
@@ -58,12 +75,23 @@ class Pixiv4(WebPage) :
   def modify(self) :
     try :
       id = self.getParam('id')
-      title = self.getParam('title')
-      creator = self.getParam('creator')
-      illust = self.getParam('illust')
-      if title == "" or creator == "" or illust == "" :
-        self.setPlaceHolder('message', 'エラー： 空欄の必須パラメータがあります。')
-        self.setAll((id, title, creator, illust, original, tags, bindata))
+      if self.isParam('title') :
+        title = self.getParam('title')
+      else :
+        self.setPlaceHolder('message', 'タイトルが指定されていません。')
+        self.clearAll()
+        return
+      if self.isParam('creator') :
+        creator = self.getParam('creator')
+      else :
+        self.setPlaceHolder('message', '作者が指定されていません。')
+        self.clearAll()
+        return
+      if self.isParam('illust') :
+        illust = self.getParam('illust')
+      else :
+        self.setPlaceHolder('message', 'イラスト番号が指定されていません。')
+        self.clearAll()
         return
       original = self.getParam('original')
       tags = self.getParam('tags')
@@ -90,6 +118,7 @@ class Pixiv4(WebPage) :
       else :
         row = rows[0]
         self.setAll((id, row[1], row[2], row[3], Pixiv4.NoneToSpace(row[4]), Pixiv4.NoneToSpace(row[5]), Pixiv4.NoneToSpace(row[6])))
+      self.setPlaceHolder('creator', row[2])
     else :
       self.setPlaceHolder('message', 'エラー：id を指定してください。')
       self.clearAll()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-#  Pixiv Clip by Python3 v4.0  2019-04-17
+#!C:\Program Files (x86)\Python37\python.exe
+#  Pixiv Clip by Python3 v4.10  2019-05-16
 #    Pixiv のイラストを管理するアプリ。
 from WebPage import WebPage
 from MySQL import MySQL
@@ -11,6 +12,7 @@ class Pixiv4(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
+    self.setPlaceHolder('name', 'Unknown')
     if self.isParam('creator') :
       creator = self.getParam('creator')
       self.setPlaceHolder('creator', creator)

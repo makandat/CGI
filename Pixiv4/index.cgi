@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
-#  Pixiv Clip by Python3 v4.05  2019-05-08
+#  Pixiv Clip by Python3 v4.10  2019-05-16
 #    Pixiv のイラストを管理するアプリ。
 from WebPage import WebPage
 from MySQL import MySQL
@@ -41,7 +41,7 @@ class Pixiv4(WebPage) :
         self.setCookie('view', 'detail')
         self.view = 'detail'
         self.setPlaceHolder('view', 'icons')       
-        # 作者一覧を詳細ン表示する。
+        # 作者一覧を詳細表示する。
         self.showCreators()
     else :
       # 作者一覧を詳細表示する。
@@ -52,7 +52,7 @@ class Pixiv4(WebPage) :
   def showCreators(self, creator="") :
     # 作者と登録数を得る。
     if creator == "" :
-      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By count DESC"
+      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
     else :
       sql = f"SELECT creator, count(creator) AS count FROM Pixiv3 WHERE creator LIKE '{creator}' GROUP BY creator ORDER By creator"
     rows = self.__mysql.query(sql)
@@ -95,7 +95,7 @@ class Pixiv4(WebPage) :
   def showIcons(self, creator="") :
     # 作者と登録数を得る。
     if creator == "" :
-      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By creator"
+      sql = "SELECT creator, count(creator) AS count FROM Pixiv3 GROUP BY creator ORDER By count DESC"
     else :
       sql = f"SELECT creator, count(creator) AS count FROM Pixiv3 WHERE creator LIKE '{creator}' GROUP BY creator ORDER By creator"
     rows = self.__mysql.query(sql)
