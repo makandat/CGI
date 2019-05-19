@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
-# slideview.cgi フォルダ内画像のスライド表示  2019-05-10
+# slideview.cgi フォルダ内画像のスライド表示  2019-05-19 画像幅のバグフィックス
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs
@@ -39,7 +39,6 @@ class MainPage(page.WebPage) :
       else :
         # 画像調整指定なし(width=なし)
         self.adjust = self.getCookie('adjust_width')
-      self.showPicture(folder, slide)
       parts = folder.split('/')
       n = len(parts) - 1
       self.setPlaceHolder('title', parts[n])
@@ -51,6 +50,7 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('title', 'スライド表示')
       self.setPlaceHolder('filename', '')
       self.setCookie('adjust_width', '0')
+    self.showPicture(folder, slide)
     return
 
 
@@ -96,10 +96,10 @@ class MainPage(page.WebPage) :
     self.setPlaceHolder('filename', '')
     self.setPlaceHolder('filename', filePath)
     self.setCookie('current_image', str(current))
-    if self.adjust == '0' :
-      self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
-    else :
+    if self.adjust == '1' :
       self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;width:100%;\" />")
+    else :
+      self.setPlaceHolder('picture', f"<img src=\"getImage.cgi?path={filePath}\" style=\"padding:10px;\" />")
     self.setPlaceHolder('path', filePath)
     return
 
