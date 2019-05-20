@@ -9,10 +9,17 @@ td {
   padding:3px;
   font-size:10pt;
 }
+#table1 {
+  margin-left:auto;
+  margin-right:auto;
+  (*table1*)
+}
 </style>
 <script src="/js/jquery.min.js"></script>
 <script>
-
+function adjust_window() {
+  $('img').css('width', '100%');
+}
 </script>
 </head>
 
@@ -23,8 +30,11 @@ td {
   <a href="/">HOME</a>&nbsp;/&nbsp;
   <a href="index.cgi">もどる</a>&nbsp;/&nbsp;
   <a href="listpics.cgi?id=(*album*)" style="(*display*)">サムネール表示</a>&nbsp;/&nbsp;
+  <a href="show_items.cgi?id=(*album*)&pictures=1">一括表示</a>&nbsp;/&nbsp;
+  <a href="show_items.cgi?id=(*album*)">詳細表示</a>&nbsp;/&nbsp;
   <a href="modify_album.cgi">アルバムの作成・修正</a>&nbsp;/&nbsp;
-  <a href="modify_item.cgi">画像の追加・修正</a>
+  <a href="modify_item.cgi">画像の追加・修正</a>&nbsp;/&nbsp;
+  <a href="javascript:adjust_window();">画像の幅をウィンドウに合わせる</a>
  </div>
 </div>
 <br />
@@ -32,10 +42,13 @@ td {
 (*message*)
 </div>
 <br />
-<table style="margin-left:auto;margin-right:auto;">
+<table id="table1">
 <tr><th>id</th><th>アルバム</th><th>タイトル</th><th>パス</th><th>作者</th><th>情報</th><th>お気に入り</th><th>イメージ</th></tr>
 (*content*)
 </table>
+<div>
+(*pictures*)
+</div>
 
 
 <p>&nbsp;</p>
