@@ -16,11 +16,10 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    Common.init_logger("C:/temp/Logger.log")
+    #Common.init_logger("C:/temp/Logger.log")
     self.__mysql = MySQL()
     try :
       if self.isParam('insert') :
-        Common.log("insert/update")
         # 挿入または修正の時
         date = self.getParam('date')
         if date == "" :
@@ -45,7 +44,6 @@ class MainPage(WebPage) :
         self.setPlaceHolder('message', "クエリー OK " + self.getParam('date'))
         self.clearForm()
       elif self.isParam('confirm') :
-        Common.log("confirm")
         # データ確認の時
         id = self.getParam('id')
         if id == "" :
@@ -66,7 +64,6 @@ class MainPage(WebPage) :
         self.setPlaceHolder('profit', profit)
         self.setPlaceHolder('message', "")
       else :
-        Common.log("undefined")
         self.setPlaceHolder('message', "")
         self.clearForm()
     except Exception as e :
