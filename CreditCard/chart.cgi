@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!C:\Program Files (x86)\Python37\python.exe
 #  クレジットカード管理 データ入力
 from WebPage import WebPage
 from MySQL import MySQL
@@ -21,6 +22,7 @@ class ChartPage(WebPage) :
     else :
       self.setPlaceHolder('data', "")
       self.setPlaceHolder('message', "")
+      self.setPlaceHolder('average', "(?)")
     return
 
   # データを作成する。
