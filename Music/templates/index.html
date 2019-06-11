@@ -2,53 +2,23 @@
 <html lang="ja-jp">
 <head>
 <meta charset="utf-8" />
-<title>MySQL Music テーブル</title>
+<title>Music テーブル</title>
 <link rel="stylesheet" href="/css/default.css" />
 </head>
 
 <body style="margin-left:5%;margin-right:5%">
 <h1 style="text-align:center;color:crimson;padding:10px;">MySQL Music テーブル</h1>
-<div style="margin-left:10%;">
-  <a href="/">HOME</a>&nbsp;/&nbsp;
-  <a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;
-  <a href="index.cgi?reverse=yes">逆順で表示</a>&nbsp;/&nbsp;
-  <a href="filter.cgi">ワードフィルタ設定</a>&nbsp;/&nbsp;
-  <a href="index.cgi?fav=yes">お気に入り</a>&nbsp;/&nbsp;
-  <a href="mark.cgi">マーク種別指定</a>
-</div>
-<br />
-<div style="text-align:center;">
-  <div style="display:inline-block;">
-  <a href="#bottom">BOTTOM</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=first">先頭</a>&nbsp;
-  <a href="index.cgi?page=prev">前へ</a>&nbsp;
-  <a href="index.cgi?page=next">次へ</a>&nbsp;
-  <a href="index.cgi?page=last">最後</a>&nbsp;/&nbsp;&nbsp;
-  </div>
-  <form style="display:inline-block;">
-    <label>id <input type="text" name="id" id="id" size="8" />&nbsp;<button type="submit" name="submit" style="border-radius:4px;height:30px;">表示</button>
-  </form>
-</div>
-<br />
+<p style="margin-left:10%;"><a href="/">HOME</a>&nbsp;/&nbsp;<a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;<a href="filter.cgi">ワードフィルタ設定</a>&nbsp;/&nbsp;<a href="index.cgi?fav=yes">お気に入り</a>&nbsp;/&nbsp;<a href="mark.cgi">マーク種別指定</a></p>
 <p style="text-align:center;color:crimson;">(*filter*)</p>
 <br />
 <table style="width:95%">
-<tr><th>id</th><th>title</th><th>path</th><th>creator</th><th>series</th><th>mark</th><th>info</th><th>fav</th><th>count</th><th>bindata</th><th>alindex</th></tr>
+<tr><th>id</th><th>title</th><th>path</th><th>artist</th><th>series</th><th>mark</th><th>info</th><th>fav</th><th>count</th><th>bindata</th><th>alindex</th></tr>
 (*result*)
 </table>
 <br />
 <p style="text-align:center;color:blue;">
 (*message*)
 </p>
-<p>&nbsp;</p>
-<a id="bottom"></a>
-<div style="text-align:center;">
-  <a href="#top">TOP</a>&nbsp;/&nbsp;
-  <a href="index.cgi?page=first">先頭</a>&nbsp;
-  <a href="index.cgi?page=prev">前へ</a>&nbsp;
-  <a href="index.cgi?page=next">次へ</a>&nbsp;
-  <a href="index.cgi?page=last">最後</a>
-</div>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>

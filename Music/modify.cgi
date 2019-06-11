@@ -19,7 +19,7 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    #Common.init_logger('/var/www/data/Logger.log')
+    Common.init_logger('C:/temp/Logger.log')
     try :
       self.client = MySQL()
       if self.isParam('btnAdd') :
@@ -77,10 +77,15 @@ class MainPage(WebPage) :
       artist = MainPage.setNoneToEmpty(self.getParam('artist'))
       album = MainPage.setNoneToEmpty(self.getParam('album'))
       mark = MainPage.setNoneToEmpty(self.getParam('mark'))
+      Common.log(mark)
       info = MainPage.setNoneToEmpty(self.getParam('info'))
+      Common.log(info)
       fav = self.getParam('fav')
+      Common.log(str(fav))
       count = self.getParam('count')
+      Common.log(str(count))
       bindata = self.getParam('bindata')
+      Common.log(str(bindata))
       alindex = self.getParam('alindex')
       dict1 = {'id':id, 'title':title, 'path':path, 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'alindex':alindex}
       if title == "" or path == "" or title == None or path == None :
@@ -88,6 +93,7 @@ class MainPage(WebPage) :
         self.embed(dict1)
         return
       sql = INSERT.format(title, path, artist, album, mark, info, fav, count, bindata, alindex)
+      Common.log(sql)
       self.client.execute(sql)
       self.embed(dict1)
       self.setPlaceHolder('message', title + " 追加 OK")
