@@ -16,7 +16,6 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    Common.init_logger('C:/temp/Logger.log')
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
     self.setPlaceHolder('title', '全登録画像一覧')
