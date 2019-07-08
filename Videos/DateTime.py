@@ -1,4 +1,4 @@
-# -*- code=utf-8 -*-
+# -*- coding: utf-8 -*-
 # Version 1.10  2018-12-12
 import datetime as dt
 import time

@@ -1,11 +1,13 @@
-# coding:utf-8
-# Version 1.10  2019-01-12 bug fix
-#   参考 http://cgi.tutorial.codepoint.net/intro
+# -*- coding:utf-8 -*-
+# WebPage.py Version 1.17  2019-05-30 stripTag()
 import os, sys, io
 import cgi
+import re
 import locale
 import http.cookies as Cookie
 import urllib.parse
+if os.name != 'nt' :
+  from syslog import syslog
 
 #
 #  WebPage クラス
@@ -36,13 +38,15 @@ class WebPage :
     form = cgi.FieldStorage()
     for k in form.keys() :
       self.params[k] = form[k]
-    # クッキーを得る。
+    # クッキーを得る。※ 長いクッキーの処理ができないので注意。
     if "HTTP_COOKIE" in os.environ :
       cc = Cookie.SimpleCookie()
       cc.load(os.environ["HTTP_COOKIE"])
       for k, v in cc.items() :
         self.cookies[k] = v
-
+    else :
+      pass
+    return
   # コンテンツを送信する。
   def echo(self) :
     # クッキーをヘッダーに追加
@@ -63,32 +67,57 @@ class WebPage :
       print(s)
     print()
 
-  # クッキーを登録する。
-  def cookie(self, key, value) :
-    self.cookies[key] =value
+  # プレースホルダに値を設定する。
+  def setPlaceHolder(self, key, value) :
+    self.vars[key] = value
 
-  # cookie() のシノニム  v1.1 で追加
-  def setCookie(self, key, value) :
-    self.cookie(key, value)
+  # プレースホルダの値を得る。
+  def getPlaceHolder(self, key) :
+    if key in self.vars.keys() :
+      return self.vars[key]
+    else :
+      return ""
 
-  # クッキーの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
-  def getCookie(self, key) :
-    if key in self.cookies :
-      return self.cookies[key].value
-    else:
-      return ''
+  # 連想配列で与えられたキーと値をプレースホルダに値を設定する。
+  def embed(self, hashtable) :
+    for key, value in hashtable.items() :
+      self.vars[key] = value
+    return
 
-  # パラメータが存在するかどうかを返す。v1.1 で追加
+  # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
-    return key in self.params
-
-  # パラメータの値を返す。キーが存在しない場合は '' を返す。v1.1 で追加
-  def getParam(self, key) :
+    return key in self.params.keys()
+    
+  # 外部から来る引数の値を得る。
+  def getParam(self, key, default="") :
     if self.isParam(key) :
       return self.params[key].value
     else :
-      return ''
+      return default
 
+  # クッキー key の有無を返す。
+  def isCookie(self, key) :
+    return key in self.cookies.keys()
+    
+  # クッキーを得る。
+  def getCookie(self, key, default="") :
+    if self.isCookie(key) :
+      c = self.cookies[key]
+      if type(c) == str :
+        return c
+      else :
+        return c.value
+    else :
+      return default
+
+  # クッキーを登録する。
+  def setCookie(self, key, value) :
+    self.cookie(key, value)
+
+  # クッキーを登録する。(Alias)
+  def cookie(self, key, value) :
+    self.cookies[key] = value
+  
   # AppConf.ini を読む。
   def readConf(self) :
     self.conf = {}
@@ -134,8 +163,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, str) :
-    return "<" + name + ">" + str + "</" + name + ">"
+  def tag(name:str, s, attr="") -> str:
+    if s == None :
+      s = ""
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod
@@ -148,6 +184,12 @@ class WebPage :
     buff += "<tr>\n"
     return buff
 
+  # タグを取る。
+  @staticmethod
+  def stripTag(s) :
+    p = re.compile(r"<[^>]*?>")
+    return p.sub("", s)
+    
   # HTML エスケープ文字を変換
   @staticmethod
   def escape(str) :

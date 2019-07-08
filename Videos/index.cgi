@@ -43,6 +43,7 @@ class MainPage(WebPage) :
         self.setPlaceHolder('message', "０件のデータが検出されました。")
     except Exception as e:
       self.setPlaceHolder('message', "致命的エラーを検出。" + str(e))
+      self.embed({'filter':'', 'result':''})
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
@@ -58,7 +59,12 @@ class MainPage(WebPage) :
       tr.append(MainPage.NoneToSpace(row[6]))
       tr.append(row[7])
       tr.append(row[8])
-      tr.append(row[9])
+      bindata = row[9];
+      if bindata == 0 :
+        row9 = "0"
+      else :
+        row9 = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
+      tr.append(row9)
       tr.append(row[10])
       result += WebPage.table_row(tr) + "\n"
     return result
