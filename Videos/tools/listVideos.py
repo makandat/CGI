@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 from Py365Lib import Common, FileSystem as fs
 import pathlib
+import os
 
 # ビデオ拡張子一覧
-VExts = ['.mp4', '.avi', '.mpg', '.wmv', '.mov', '.mkv', '.flv']
+VExts = ['.mp4', '.avi', '.mpg', '.wmv', '.mov', '.mkv', '.flv', '.3gp']
 
 # Videos テーブルのフィールド
-VTF1 = "INSERT INTO Videos VALUES(NULL,'TITLE','"
-VTF2 = "','','','','', 0, 0, 0, 0);"
+VTF = "INSERT INTO Videos VALUES(NULL,'{0}','{1}','不明','','','', 0, 0, 0, 0);"
 
 # パラメータチェック
 if Common.count_args() == 0 :
@@ -19,13 +19,16 @@ else :
 if not fs.isDirectory(folder) :
   Common.stop(1, folder + " が見つかりません。")
 
-print('OK')
+#print('OK')
 
 # 再帰的にファイルを取得する。
 pobj = pathlib.Path(folder)  # Generator を取得
 files = pobj.glob('**/*.*')  # PosixPath のコレクション
 for f in files :
   if f.is_file() and fs.getExtension(f) in VExts :
-    print(VTF1 + str(f) + VTF2)
+    path = str(f).replace("\\", "/").replace("'", "''")
+    title = fs.getFileName(f).split('.')[0].replace("'", "''")
+    # SQL を表示 (リダイレクトを使ってファイル保存)
+    print(VTF.format(title, path))
 
-print("終わり")
+# print("終わり")
