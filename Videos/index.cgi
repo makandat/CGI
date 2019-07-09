@@ -3,20 +3,24 @@
 # -*- code=utf-8 -*-
 # MySQL Videos テーブル  ver1.50 2019-05-02
 from WebPage import WebPage
-import FileSystem as fsys
+import Common
 from MySQL import MySQL
+import math
 
 SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos'
+LIMIT = 100
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
+    #Common.init_logger("/home/user/log/Videos.log")
     try :
       rows = []
       self.__mysql = MySQL()
       self.setPlaceHolder('filter', "")
+      self.setPlaceHolder('page', "")
       if self.isParam('filter') :
         # フィルタ指定がある場合
         filter = self.getParam('filter')
@@ -34,8 +38,35 @@ class MainPage(WebPage) :
         rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
-        rows = self.__mysql.query(SELECT + " LIMIT 1000;")
-      self.setPlaceHolder('result', "")
+        if self.isParam('page') :
+          if not self.isCookie('page') :
+            self.page = 0
+          else :
+            self.page = int(self.getCookie('page'))
+          nPage = math.floor(self.__mysql.getValue("SELECT count(id) FROM Videos") / LIMIT) + 1
+          if self.getParam('page') == 'first' :
+            self.page = 0
+          elif self.getParam('page') == 'prev' :
+            if self.page > 0 :
+              self.page -= 1
+          elif self.getParam('page') == 'next' :
+            if self.page < nPage - 1 :
+              self.page += 1
+          elif self.getParam('page') == 'last' :
+            self.page = nPage - 1
+          else :
+            pass
+          self.setCookie('page', self.page)
+          self.setPlaceHolder('page', str(self.page+1) + "/" + str(nPage))
+          ids = self.__mysql.query("SELECT id FROM Videos ORDER BY id")
+          id0 = ids[self.page * LIMIT][0]
+          sql = SELECT + " WHERE id >= {0} ORDER BY id LIMIT {1}".format(id0, LIMIT)
+          rows = self.__mysql.query(sql)
+        else :
+          sql = SELECT + " ORDER BY id LIMIT {0}".format(LIMIT)
+          rows = self.__mysql.query(sql)
+          self.setCookie('page', '0')
+          self.setPlaceHolder('result', "")
       # クエリー
       self.setPlaceHolder('result', self.getResult(rows))
       self.setPlaceHolder('message', "クエリー OK")
