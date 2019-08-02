@@ -9,7 +9,8 @@ CREATE TABLE `Videos` (
   `info` varchar(100) DEFAULT NULL,
   `fav` char(1) DEFAULT '0',
   `count` int(8) DEFAULT '0',
-  `thumb` blob,
+  `bindata` int DEFAULT 0,
+  `album` int DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
