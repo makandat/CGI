@@ -7,17 +7,25 @@ class NewUserPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    if 'userid' in self.cookies.keys() :
-      if 'userid' in self.params.keys() :
-        # POST
-        self.users = Users()
-        self.users.update_password(self.params['userid'].value, self.params['password'].value)
-        self.vars['message'] = self.params['userid'].value + " のパスワードを更新しました。"
+    self.users = Users()
+    userc = self.getCookie('userid', '')
+    if userc == "" :
+      self.redirect('Logout.cgi', 0)     
+    if self.getMethod() == "POST" :
+      # POST
+      userp = self.getParam('userid', '')
+      if self.users.isValidUser(userp, userc, 1) :
+        password = self.getParam('password')
+        if len(password) < 5 :
+          self.setPlaceHolder('message', "エラー：パスワードが短すぎます。")
+          return
+        self.users.update_password(userp, password)
+        self.setPlaceHolder('message', userp + " のパスワードを更新しました。")
       else :
-        # GET
-        self.vars['message'] = ""
+        self.setPlaceHolder('message', "エラー：不正な操作です。")
     else :
-      self.redirect('Logout.cgi', 0)
+      # GET
+      self.setPlaceHolder('message', "")
 
 
 # 開始

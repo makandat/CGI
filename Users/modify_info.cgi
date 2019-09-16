@@ -7,17 +7,21 @@ class NewUserPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    if 'userid' in self.cookies.keys() :
-      if 'userid' in self.params.keys() :
+    self.users = Users()
+    userc = self.getCookie('userid', '')
+    if userc == "" :
+      self.redirect('Logout.cgi', 0)
+    if self.users.isValidUser(userc, userc, 2) :
+      if self.getMethod() == "POST" :
         # POST
-        self.users = Users()
-        self.users.modify_info(self.params['userid'].value, self.params['info'].value)
-        self.vars['message'] = self.params['userid'].value + " の情報を修正しました。"
+        userp = self.getParam('userid')
+        self.users.modify_info(userp, self.getParam('info'))
+        self.embed({"message":userp + " の情報を修正しました。", "userc":userc})
       else :
         # GET
-        self.vars['message'] = ""
+        self.embed({"message":"", "userc":userc})
     else :
-      self.redirect('Logout.cgi', 0)
+      self.embed({"message":"エラー：不正な操作です。(管理者のみが可能)", "userc":userc})
 
 
 # 開始

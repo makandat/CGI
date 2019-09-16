@@ -5,7 +5,7 @@ import Common
 import Users
 
 if Common.count_args() == 0 :
-  Common.stop(9, "パラメータとしてユーザIDを指定してください。")
+  Common.stop(9, "パラメータとしてユーザIDを指定してください。 $ reset_password.py user1")
 
 userid = Common.args(0)
 users = Users.Users()

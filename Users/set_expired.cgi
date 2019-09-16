@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#  ユーザ管理 新規ユーザ登録
+#  ユーザ管理 ユーザ有効期限を無効にする。
 from WebPage import WebPage
 from Users import Users
 
@@ -7,33 +7,40 @@ class ExpireUserPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    if 'userid' in self.cookies.keys() :
-      # ユーザ一覧を得る。
-      self.__users = Users()
-      self.listUsers()
-      if 'users' in self.params.keys() :
-        # POST
-        self.expire(self.params['users'].value)
-        self.vars['message'] = self.params['users'].value + " を無効にしました。"
-      else :
-        # GET
-        self.vars['message'] = ""
-    else :
+    userc = self.getCookie('userid', '')
+    if userc == "" :
       self.redirect('Logout.cgi', 0)
+    self.setPlaceHolder("userc", userc)
+    # ユーザ一覧を得る。
+    self.users = Users()
+    self.listUsers()
+    if self.getMethod() == 'POST' :
+      # POST
+      userp = self.getParam('users')
+      if self.users.isValidUser(userp, userc, 4) :
+        self.expire(self.getParam('users'))
+        self.setPlaceHolder('message', userp + " を無効にしました。")
+      else :
+        self.setPlaceHolder('message', "不正な操作です。(管理者のみが可能)")
+    else :
+      # GET
+      self.setPlaceHolder('message', "")
 
   # ユーザの無効化
   def expire(self, userid) :
-    self.__users.set_expired(userid)
+    self.users.set_expired(userid)
+    return
 
   # ユーザ一覧を得る。
   def listUsers(self) :
     buff = ""
-    rows = self.__users.query("SELECT userid FROM Users ORDER BY userid")
+    rows = self.users.query("SELECT userid FROM Users ORDER BY userid")
     for row in rows :
       buff += "<option>"
       buff += row[0]
       buff += "</option>\n"
-    self.vars['options'] = buff
+    self.setPlaceHolder('options', buff)
+    return
 
 # 開始
 wp = ExpireUserPage('templates/set_expired.html')

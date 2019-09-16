@@ -7,17 +7,25 @@ class NewUserPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    if 'userid' in self.cookies.keys() :
-      if 'userid' in self.params.keys() :
-        # POST
-        self.users = Users()
-        self.users.add_new(self.params['userid'].value, self.params['password'].value, self.params['info'].value)
-        self.vars['message'] = self.params['userid'].value + " を登録しました。"
-      else :
-        # GET
-        self.vars['message'] = ""
-    else :
+    userc = self.getCookie('userid', '')
+    self.setPlaceHolder("userc", userc)
+    if userc == "" :
       self.redirect('Logout.cgi', 0)
+    self.users = Users()
+    if self.getMethod() == "POST" :
+      # POST
+      if self.users.isValidUser(userc, userc, 3) :
+        userp = self.getParam('userid')
+        if self.users.exists(userp) :
+          self.setPlaceHolder('message', "エラー：すでに登録されています。")
+          return
+        self.users.add_new(userp, self.getParam('password'), self.getParam('info'))
+        self.setPlaceHolder('message', userp + " を登録しました。")
+      else :
+        self.setPlaceHolder('message', "エラー：不正な操作です。(管理者のみが可能)")
+    else :
+      # GET
+      self.setPlaceHolder('message', "")
 
 
 # 開始
