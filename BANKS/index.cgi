@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# 銀行預金管理 index.cgi 2019-05-04
+# 銀行預金管理 index.cgi  v1.10 2019-09-18
 from WebPage import WebPage
 from MySQL import MySQL
 import Text
@@ -86,6 +86,10 @@ class IndexPage(WebPage) :
     row2 = ['', 0, 0]
     rows = self.__mysql.query(SELECT2)
     for row in rows :
+      # 日付が同じものが4つ以上あるか?
+      n = self.__mysql.getValue(f"SELECT count(*) FROM BANKS WHERE DAY='{row[0]}'")
+      if n < 4:
+        continue
       row2[0] = row[0]
       row2[1] = Text.money(row[1])
       if a > 0 :
