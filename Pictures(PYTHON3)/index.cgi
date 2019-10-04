@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.60  2019-05-10
+#   index.cgi  Version 3.61  2019-10-05
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -265,8 +265,9 @@ class MainPage(WebPage) :
     self.setCookie('prev', id0)
     return result
 
-  # SQL を作る。
+  # SQL を作る。 # 2019-10-04
   def makeFilterSql(self, filter) :
+    filter = filter.replace("'", "''")
     sql = SELECT + f" WHERE `title` LIKE '%{filter}%' UNION "
     sql += SELECT + f" WHERE `path` LIKE '%{filter}%' UNION "
     sql += SELECT + f" WHERE `creator` LIKE '%{filter}%' UNION "
