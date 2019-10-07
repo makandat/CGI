@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.61  2019-10-05
+#   index.cgi  Version 3.62  2019-10-07 (creators.cgi)
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
 import Common
 import Text
-#from syslog import syslog
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
 LIMIT = 200
@@ -18,7 +17,6 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    #Common.init_logger("/home/user/temp/Logger.log")
     self.setPlaceHolder('result', "")
     self.setPlaceHolder('images', "")
     self.setPlaceHolder('view', "icons")

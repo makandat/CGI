@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
-# creators.cgi 作者一覧  2019-05-15
+# creators.cgi 作者一覧  2019-10-07
 # -*- code=utf-8 -*-
 from WebPage import WebPage
 from MySQL import MySQL
@@ -15,7 +15,6 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    # Common.init_logger("C:/temp/PyLogger.log")
     self.orderby = 'count'
     self.__mysql = MySQL()
     if self.isParam('filter') :
@@ -58,7 +57,7 @@ class MainPage(WebPage) :
       count = str(row[1])
       refer = str(row[2])
       favor = str(row[3])
-      anchor = "<a href=\"index.cgi?creator=" + creator + "\">" + creator + "</a>"
+      anchor = "<a href=\"index.cgi?creator=" + creator.replace("'", "''") + "\">" + creator + "</a>"
       table_row = f"<tr><td>{anchor}</td><td class=\"number\">{count}</td><td class=\"number\">{refer}</td><td class=\"number\">{favor}</td></tr>\n"
       list += table_row
     return list
