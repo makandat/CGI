@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# Videos テーブルのデータ追加・修正 modify.cgi
+# Videos テーブルのデータ追加・修正 modify.cgi  ver1.60 2019-10-08
 #   MySQL を利用
 from WebPage import WebPage
 import FileSystem as fs
@@ -11,7 +11,7 @@ import Text
 #from syslog import syslog
 
 SELECT = "SELECT title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos WHERE id = {0}"
-INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count, bindata, album) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9})"
+INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count, bindata, album, folder) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}')"
 UPDATE = "UPDATE Videos SET title='{1}', path='{2}', creator='{3}', series='{4}', mark='{5}', info='{6}', fav={7}, count={8}, bindata={9}, album={10} WHERE id={0};"
 
 # CGI WebPage クラス
@@ -82,11 +82,12 @@ class MainPage(WebPage) :
       count = self.getParam('count')
       bindata = self.getParam('bindata')
       album = self.getParam('album')
+      folder = '1' if fs.isDirectory(self.getParam('path')) else '0';
       if title == "" or path == "" :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
         return
-      sql = INSERT.format(title, path, creator, series, mark, info, fav, count, bindata, album)
+      sql = INSERT.format(title, path, creator, series, mark, info, fav, count, bindata, album, folder)
       self.client.execute(sql)
       self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
       self.setPlaceHolder('message', title + " 追加 OK")

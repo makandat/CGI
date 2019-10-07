@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# MySQL Videos テーブル  ver1.50 2019-05-02
+# MySQL Videos テーブル  ver1.60 2019-10-08  folder フィールド追加対応
 from WebPage import WebPage
 import Common
 from MySQL import MySQL
 import math
 
-SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos'
+SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count, bindata, album, folder FROM Videos'
 LIMIT = 100
 
 # CGI WebPage クラス
@@ -35,6 +35,13 @@ class MainPage(WebPage) :
         # mark 指定がある場合
         mark = self.getParam('mark')
         sql = SELECT + f" WHERE mark = '{mark}'"
+        rows = self.__mysql.query(sql)
+      elif self.isParam('folder') :
+        onlyfolder = self.getParam('folder')
+        if onlyfolder == "0" :
+          sql = SELECT
+        else :
+          sql = SELECT + f" WHERE folder = '1'"
         rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
@@ -97,6 +104,7 @@ class MainPage(WebPage) :
         row9 = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
       tr.append(row9)
       tr.append(row[10])
+      tr.append(row[11])
       result += WebPage.table_row(tr) + "\n"
     return result
 
