@@ -24,6 +24,16 @@
   <a href="mark.cgi">マーク種別指定</a>&nbsp;/&nbsp;
   <a href="query.cgi">詳細検索</a>&nbsp;/&nbsp;
   <a href="index.cgi?view=(*view*)">アイコン・詳細表示</a>&nbsp;/&nbsp;
+  <a href="index.cgi?dir=prev&id=(*prev*)"><svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+   <title>polygon</title>
+   <polygon points="15 0 15 15 0 7" style="fill:gray;stroke:black;stroke-width:1;fill-opacity:1" />
+  </svg>
+  前</a>&nbsp;|&nbsp;
+  <a href="index.cgi?dir=next&id=(*next*)">次 
+   <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>polygon</title>
+    <polygon points="0 0 0 15 15 7" style="fill:gray;stroke:black;stroke-width:1;fill-opacity:1" />
+   </svg></a>
   <form style="display:inline;border:dotted thin silver;padding:5px;">
     <label> 並び　<input type="radio" name="orderby" value="ASC" (*ASCchecked*) />昇順</label>
     <label>　<input type="radio" name="orderby" value="DESC" (*DESCchecked*) />降順</label>
@@ -42,7 +52,17 @@
 <p style="text-align:center;color:magenta;">
 (*message*)
 </p>
-<p style="text-align:center;"><a href="#top">TOP</a>&nbsp;/&nbsp;<a href="index.cgi?dir=prev&id=(*prev*)">&lt; 前</a>&nbsp;|&nbsp;<a href="index.cgi?dir=next&id=(*next*)">次 &gt;</a></p>
+<p style="text-align:center;"><a href="#top">TOP</a>&nbsp;/&nbsp;<a href="index.cgi?dir=prev&id=(*prev*)">
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<title>polygon</title>
+<polygon points="15 0 15 15 0 7" style="fill:gray;stroke:black;stroke-width:1;fill-opacity:1" />
+</svg>
+ 前</a>&nbsp;|&nbsp;<a href="index.cgi?dir=next&id=(*next*)">次 
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<title>polygon</title>
+<polygon points="0 0 0 15 15 7" style="fill:gray;stroke:black;stroke-width:1;fill-opacity:1" />
+</svg>
+</a></p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>
