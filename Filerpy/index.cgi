@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#  Filerpy index.cgi  v1.01 2019-04-23
+#  Filerpy index.cgi  v1.02 2019-10-14
 from WebPage import WebPage
 import os
 import FileSystem as fs
@@ -59,23 +59,26 @@ class FilerPage(WebPage) :
     self.listFolder(favfolder, sortby=self.orderby, order=self.reverse)
     return
 
-  # 指定されたディレクトリを表示
+  # 指定されたディレクトリを表示 v1.02 (try .. except 追加)
   def showFolder(self, folder) :
-    if folder == "" :
-      # 空欄ならホームディレクトリ
-      folder = self.home;
-    elif folder == ".." :
-      # ".." なら上のディレクトリ
-      folder = fs.getParentDirectory(self.current_folder)
-    elif folder.startswith('~') :
-      # "~" で始まっていたらホームディレクトリに置き換える。
-      folder = folder.replace('~', self.home)
-    else :
-      pass
-    self.setCookie('current_folder', folder)
-    self.current_folder = folder
-    self.setPlaceHolder('folder', folder)
-    self.listFolder(folder, sortby=self.orderby, order=self.reverse)
+    try :
+      if folder == "" :
+        # 空欄ならホームディレクトリ
+        folder = self.home;
+      elif folder == ".." :
+        # ".." なら上のディレクトリ
+        folder = fs.getParentDirectory(self.current_folder)
+      elif folder.startswith('~') :
+        # "~" で始まっていたらホームディレクトリに置き換える。
+        folder = folder.replace('~', self.home)
+      else :
+        pass
+      self.setCookie('current_folder', folder)
+      self.current_folder = folder
+      self.setPlaceHolder('folder', folder)
+      self.listFolder(folder, sortby=self.orderby, order=self.reverse)
+    except :
+      self.setPlaceHolder("content", "致命的エラー：参照が許可されていない可能性があります。")
     return
 
   # 「表示設定」を適用する。
@@ -135,6 +138,7 @@ class FilerPage(WebPage) :
       buff += WebPage.table_row(li) + "\n"
     # ファイル一覧一覧
     files = fs.listFiles(folder)
+    #fs.writeAllText('/var/www/data/Logger.log', "listFolder({0})={1}\n".format(folder, len(files)), True)
     filelist = self.makeFileList(files, False)
     sfilelist = self.sortlist(filelist, sortby, order)
     # HTML テーブルに変換
