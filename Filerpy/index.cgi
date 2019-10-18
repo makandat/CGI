@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-#  Filerpy index.cgi  v1.02 2019-10-14
-from WebPage import WebPage
+#  Filerpy index.cgi  v1.02 2019-10-18
 import os
+import base64
+from WebPage import WebPage
 import FileSystem as fs
 import Text
 import Common
 
-VERSION = "1.0"
+VERSION = "1.02"
 
 # ウェブページ (Filerpy index.cgi)
 class FilerPage(WebPage) :
@@ -32,7 +33,7 @@ class FilerPage(WebPage) :
     # self.hiddenfile, self.orderby, self.reverse を初期化する。
     self.getFilter()
     # self.current_folder を初期化する。
-    self.getCurrentFolder()
+    self.current_folder = self.home
     # ポストバックか?
     if self.isParam("place") :
       # SELECT の選択項目を表示する。
@@ -53,32 +54,24 @@ class FilerPage(WebPage) :
   # お気に入りのディレクトリを表示 (SELECT 選択項目)
   def showFavPlace(self) :
     favfolder = self.getParam('place')
-    self.setCookie('current_folder', favfolder)
-    self.current_folder = favfolder
+    self.setCurrentFolder(favfolder)
     self.setPlaceHolder('folder', favfolder)
     self.listFolder(favfolder, sortby=self.orderby, order=self.reverse)
     return
 
   # 指定されたディレクトリを表示 v1.02 (try .. except 追加)
   def showFolder(self, folder) :
-    try :
-      if folder == "" :
-        # 空欄ならホームディレクトリ
-        folder = self.home;
-      elif folder == ".." :
-        # ".." なら上のディレクトリ
-        folder = fs.getParentDirectory(self.current_folder)
-      elif folder.startswith('~') :
-        # "~" で始まっていたらホームディレクトリに置き換える。
-        folder = folder.replace('~', self.home)
-      else :
-        pass
-      self.setCookie('current_folder', folder)
-      self.current_folder = folder
-      self.setPlaceHolder('folder', folder)
-      self.listFolder(folder, sortby=self.orderby, order=self.reverse)
-    except :
-      self.setPlaceHolder("content", "致命的エラー：参照が許可されていない可能性があります。")
+    if folder == "" :
+      # 空欄ならホームディレクトリ
+      folder = self.home;
+    elif folder.startswith('~') :
+      # "~" で始まっていたらホームディレクトリに置き換える。
+      folder = folder.replace('~', self.home)
+    else :
+      pass
+    self.setCurrentFolder(folder)
+    self.setPlaceHolder('folder', folder)
+    self.listFolder(folder, sortby=self.orderby, order=self.reverse)
     return
 
   # 「表示設定」を適用する。
@@ -105,10 +98,7 @@ class FilerPage(WebPage) :
     self.setCookie('orderby', self.orderby)
     self.setCookie('reverse', self.reverse)
     # 現在のフォルダを表示
-    if self.isCookie('current_folder') :
-      self.current_folder = self.getCookie('current_folder')
-    else :
-      self.current_folder = self.home
+    self.current_folder = self.current_folder
     self.listFolder(self.current_folder, sortby=self.orderby, order=self.reverse)
     return
     
@@ -138,7 +128,6 @@ class FilerPage(WebPage) :
       buff += WebPage.table_row(li) + "\n"
     # ファイル一覧一覧
     files = fs.listFiles(folder)
-    #fs.writeAllText('/var/www/data/Logger.log', "listFolder({0})={1}\n".format(folder, len(files)), True)
     filelist = self.makeFileList(files, False)
     sfilelist = self.sortlist(filelist, sortby, order)
     # HTML テーブルに変換
@@ -181,15 +170,29 @@ class FilerPage(WebPage) :
       self.reverse = 'asc'
       self.setCookie('reverse', 'asc')
     return
-
-  # 現在のフォルダを得る。
-  def getCurrentFolder(self) :
-    if self.isCookie('current_folder') :
-      self.current_folder = self.getCookie('current_folder')
-    else :
-      self.current_folder = self.home
-      self.setCookie('current_folder', self.home)
+    
+  # パラメータ folder から current_folder, (*folder*), (*parent*) を設定する。
+  def setCurrentFolder(self, folder) :
+    self.current_folder = folder
+    self.setPlaceHolder("folder", folder)
+    self.setPlaceHolder("folder_link", self.add_folderlink(folder))
+    parent = fs.getParentDirectory(folder, 5)  # リンクをそのまま使用する。
+    self.setPlaceHolder("parent", parent)
     return
+
+
+  # フォルダの各部へジャンプできるようにハイパーリンクを貼る。
+  def add_folderlink(self, folder) :
+    new_folder = ""
+    parts = folder.split("/")
+    link = ""
+    for p in parts :
+      link += p
+      q = '<a href="index.cgi?folder={0}">'.format(link) + p + '</a>'
+      new_folder += q
+      new_folder += "/"
+      link += "/"
+    return new_folder
 
   # ファイルまたはディレクトリの属性を含むリストを作成する。
   def makeFileList(self, files:list, dir = False) -> list:

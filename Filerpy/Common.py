@@ -1,13 +1,17 @@
-# -*- code=utf-8 -*-
-#   ver 2.21  2019-02-22
+# -*- coding: utf-8 -*-
+# Common.py
+#   ver 2.51  2019-06-16
 import sys
+import linecache
 import os
 import subprocess
 import logging
-import syslog
+if not os.name == 'nt' :
+  import syslog
 import time
 import json
 from typing import List, Any, Callable
+from pprint import pprint
 
 # ログファイルの名前
 LOGFILE = 'Py365Lib.log'
@@ -44,7 +48,7 @@ StrList = List[str]
 
 
 # ロガー初期化
-def init_logger(filename:str=None) -> None:
+def init_logger(filename=None):
   global logger
   if filename == None :
     filename = LOGFILE
@@ -79,7 +83,7 @@ def count_args() -> int:
   return len(sys.argv) - 1
 
 # プログラムの実行を停止する。
-def stop(code:int = 0, message:str ="", color:int=ESC_FG_RED) -> None :
+def stop(code:int = 0, message:str ="", color:str="") -> None :
   if message != "" :
     esc_print(color, message)
   exit(code)
@@ -94,11 +98,21 @@ def shell(cmd:StrList) -> str:
 
 # ログ情報出力
 def log(msg:str) -> None:
-  logger.info(msg)
+  logger.info(str(msg))
 
 # ログエラー出力
 def error(msg:str) -> None:
-  logger.error(msg)
+  logger.error(str(msg))
+
+# 例外発生時の詳細情報
+def errorInfo() :
+  exc_type, exc_obj, tb = sys.exc_info()
+  f = tb.tb_frame
+  lineno = tb.tb_lineno
+  filename = f.f_code.co_filename
+  linecache.checkcache(filename)
+  line = linecache.getline(filename, lineno, f.f_globals)
+  return (filename, lineno, line.strip(), exc_obj)
 
 # 変数が有効かどうか
 def isset(v:Any) -> bool:
@@ -114,15 +128,15 @@ def is_str(x:Any) -> bool:
 
 # 変数が整数かどうか
 def is_int(x:Any) -> bool:
-  return (type(x) is str)
+  return (type(x) is int)
 
 # 変数が浮動小数点数かどうか
 def is_float(x:Any) -> bool:
-  return (type(x) is str)
+  return (type(x) is float)
 
 # 変数がブール数かどうか
 def is_bool(x:Any) -> bool:
-  return (type(x) is str)
+  return (type(x) is bool)
 
 # syslog
 def syslog_out(msg: str) -> None:
@@ -155,7 +169,7 @@ def from_bytes(b:bytes) -> str :
 
 # エスケープシーケンス出力
 def esc_print(code:Any, text:str, reset:bool=True) -> None:
-  if is_str(code) :
+  if is_str(code) and code != "" :
     if code == "red" :
       code = ESC_FG_RED
     elif code == "green" :
@@ -204,6 +218,21 @@ def from_json(jsonText:str) -> Any:
 def to_json(obj: Any) -> str:
   text = json.dumps(obj, indent=4)
   return text
+
+# ファイル内容を表示する。
+def printFile(filePath, code="utf-8") :
+  try :
+    with open(filePath, "r", encoding=code) as f :
+      text = f.read()
+      print(text)
+  except :
+    print("ファイルを開けません。")
+  return
+
+# 配列や連想配列を表示する。
+def printArray(arr) :
+  pprint(arr, indent=2, width=150)
+  return    
 
 # メインとして実行しようとしたとき
 if __name__ == "__main__" :

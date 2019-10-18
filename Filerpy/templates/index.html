@@ -43,17 +43,18 @@ function push(path) {
  <div style="display:inline-block;">
   <a href="/">HOME</a>&nbsp;/&nbsp;
   <a href="javascript:location.reload();">Reload</a>&nbsp;/&nbsp;
-  <a href="index.cgi?folder=..">上のディレクトリ</a>&nbsp;/&nbsp;
+  <a href="index.cgi?folder=(*parent*)">上のディレクトリ</a>&nbsp;/&nbsp;
   <a href="filter.cgi">表示設定</a>&nbsp;/&nbsp;
   <a href="pathmemo.cgi" target="_blank">記憶パス一覧</a>
  </div>
  <form style="margin-left:5%;display:inline-block;">
-   <label>場所 <select name="places">(*places*)</select></label>&nbsp;
-   <label>フォルダ <input type="text" name="folder" value="(*folder*)" /></label>&nbsp;
+   <label>場所 <select name="places" style="border-radius:4px;height:32px;width:180px;">(*places*)</select></label>&nbsp;
+   <label>フォルダ <input type="text" name="folder" value="(*folder*)" size="40" /></label>&nbsp;
    <input type="button" id="transfer" value=" 移動 "/ >
  </form>
 </div>
-<h3>(*folder*)</h3>
+<p style="text-align:center;font-size:10pt;">番号(id) をクリックするとそのパスが記憶され、「記憶パス一覧」メニューで表示できます。</p>
+<h3>(*folder_link*)</h3>
 <div class="content">
 (*content*)
 </div>

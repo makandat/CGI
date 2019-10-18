@@ -1,12 +1,13 @@
-# coding:utf-8
-# Version 1.20  2019-04-23 
-#   参考 http://cgi.tutorial.codepoint.net/intro
+# -*- coding:utf-8 -*-
+# WebPage.py Version 1.80  2019-09-15 getMethod()
 import os, sys, io
 import cgi
+import re
 import locale
 import http.cookies as Cookie
 import urllib.parse
-import re
+if os.name != 'nt' :
+  from syslog import syslog
 
 #
 #  WebPage クラス
@@ -37,12 +38,15 @@ class WebPage :
     form = cgi.FieldStorage()
     for k in form.keys() :
       self.params[k] = form[k]
-    # クッキーを得る。
+    # クッキーを得る。※ 長いクッキーの処理ができないので注意。
     if "HTTP_COOKIE" in os.environ :
       cc = Cookie.SimpleCookie()
       cc.load(os.environ["HTTP_COOKIE"])
       for k, v in cc.items() :
         self.cookies[k] = v
+    else :
+      pass
+    return
 
   # コンテンツを送信する。
   def echo(self) :
@@ -68,23 +72,36 @@ class WebPage :
   def setPlaceHolder(self, key, value) :
     self.vars[key] = value
 
+  # プレースホルダの値を得る。
+  def getPlaceHolder(self, key) :
+    if key in self.vars.keys() :
+      return self.vars[key]
+    else :
+      return ""
+
+  # 連想配列で与えられたキーと値をプレースホルダに値を設定する。
+  def embed(self, hashtable) :
+    for key, value in hashtable.items() :
+      self.vars[key] = value
+    return
+
   # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
     return key in self.params.keys()
     
   # 外部から来る引数の値を得る。
-  def getParam(self, key) :
+  def getParam(self, key, default="") :
     if self.isParam(key) :
       return self.params[key].value
     else :
-      return ''
+      return default
 
   # クッキー key の有無を返す。
   def isCookie(self, key) :
     return key in self.cookies.keys()
     
   # クッキーを得る。
-  def getCookie(self, key) :
+  def getCookie(self, key, default="") :
     if self.isCookie(key) :
       c = self.cookies[key]
       if type(c) == str :
@@ -92,7 +109,7 @@ class WebPage :
       else :
         return c.value
     else :
-      return ''
+      return default
 
   # クッキーを登録する。
   def setCookie(self, key, value) :
@@ -100,7 +117,7 @@ class WebPage :
 
   # クッキーを登録する。(Alias)
   def cookie(self, key, value) :
-      self.cookies[key] = value
+    self.cookies[key] = value
   
   # AppConf.ini を読む。
   def readConf(self) :
@@ -147,10 +164,15 @@ class WebPage :
 
   # タグ作成
   @staticmethod
-  def tag(name, s) :
+  def tag(name:str, s, attr="") -> str:
     if s == None :
       s = ""
-    return "<" + name + ">" + str(s) + "</" + name + ">"
+    ss = str(s)
+    if attr == "" :
+      tag = f"<{name}>{ss}</{name}>"
+    else :
+      tag = f"<{name} {attr}>{ss}</{name}>"
+    return tag
 
   # テーブル行を作成
   @staticmethod
@@ -163,15 +185,16 @@ class WebPage :
     buff += "<tr>\n"
     return buff
 
+  # タグを取る。
+  @staticmethod
+  def stripTag(s) :
+    p = re.compile(r"<[^>]*?>")
+    return p.sub("", s)
+    
   # HTML エスケープ文字を変換
   @staticmethod
   def escape(str) :
     return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-
-  # タグで囲まれた要素からタグを取り去る。
-  @staticmethod
-  def stripTag(element) :
-    return re.sub(r"<[^>]*?>", "", element)
 
   # 画像を送信する。
   @staticmethod
@@ -201,10 +224,7 @@ class WebPage :
     print("Content-Type: text/plain\n")
     print(str)
 
-  # PDF を送信する。
-  @staticmethod
-  def sendPDF(file) :
-    with open(file, "rb") as f :
-      b = f.read()
-    buff = b"Content-Type: application/pdf\n\n" + b
-    sys.stdout.buffer.write(buff)
+  # HTTP メソッドを返す。
+  def getMethod(self) :
+    return os.environ["REQUEST_METHOD"]
+

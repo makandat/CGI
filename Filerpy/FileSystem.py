@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 # FileSystem.py
-# Version 1.22  2019-04-24
+# Version 1.25  2019-10-18
 import os, io, sys
 import shutil
 import glob
 from pathlib import Path
 import tempfile
-import pwd
-import grp
+if os.name != 'nt' :
+  import pwd  # Windows ではエラーになる。
+  import grp  # Windows ではエラーになる。
 import csv
 import json
 from typing import Callable, List, Dict, Any
@@ -16,19 +18,19 @@ StrList = List[str]
 
 
 # テキストファイルを読んでその内容を返す。
-def readAllText(file: str) -> str :
-  f = open(file, mode="r", buffering=-1, encoding="utf8")
+def readAllText(file: str, encode='utf-8') -> str :
+  f = open(file, mode="r", buffering=-1, encoding=encode)
   s = f.read()
   f.close()
   return s
 
 # テキストをファイルに書く。
-def writeAllText(file: str, text: str, append:bool=False) -> None:
+def writeAllText(file: str, text: str, append:bool=False, encode='utf-8') -> None:
   if append == True :
-    with open(file, "a", encoding="utf-8") as f :
+    with open(file, "a", encoding=encode) as f :
       f.write(text)
   else :
-    with open(file, "w", encoding="utf-8") as f :
+    with open(file, "w", encoding=encode) as f :
       f.write(text)
   return
 
@@ -43,8 +45,8 @@ def readLines(file: str, encode='utf-8') :
   return lines
     
 # ファイルを１行づつ読んで callback で処理する。
-def readAllLines(file: str, callback: Callable) -> None:
-  with open(file) as f :
+def readAllLines(file: str, callback: Callable, encode='utf-8') -> None:
+  with open(file, mode='r', encoding=encode) as f :
     for line in f:
       callback(line.rstrip())
   return
@@ -168,23 +170,41 @@ def grep(str:str, file:str) -> List:
   return result
 
 # 指定したワイルドカードでディレクトリ内を検索する。
-def listFiles(dir:str, wildcard:str="*") -> List:
+def listFiles(dir:str, wildcard:str="*", asstr=False) -> List:
   diru8 = dir.encode('utf-8')
   list = glob.glob(diru8 + b"/" + wildcard.encode('utf-8'))
   result = []
   for item in list :
     if os.path.isfile(item) :
+      if asstr :
+        item = item.decode('utf-8')
       result.append(item)
   return result
 
+# 指定したフォルダ内のオブジェクト再帰的に検索する。
+def listFilesRecursively(dir:str, wildcard:str="*", asstr=False) -> List :
+  diru8 = dir.encode('utf-8')
+  list = glob.glob(diru8 + b"/**/" + wildcard.encode('utf-8'), recursive=True)
+  result = []
+  for item in list :
+    if os.path.isfile(item) :
+      if asstr :
+        item = item.decode('utf-8')
+      result.append(item)
+  return result
+  
+  
+
 # ディレクトリ一覧を得る。
-def listDirectories(dir:str) -> List:
+def listDirectories(dir:str, asstr=False) -> List:
   diru8 = dir.encode('utf-8')
   list = os.listdir(diru8)
   result = []
   for item in list :
     fpath = bytearray(diru8) + b"/" + item
     if os.path.isdir(fpath) :
+      if asstr :
+        fpath = fpath.decode('utf-8')
       result.append(fpath)
   return result
 
@@ -215,10 +235,18 @@ def getAbsolutePath(path:str) -> str:
   return os.path.abspath(path)
 
 # 親のディレクトリを得る。
-def getParentDirectory(path:str) -> str:
-  #return Path(path).parent.name
-  (head,tail) = os.path.split(path)
-  return head
+def getParentDirectory(path:str, method=0) -> str:
+  if method == 0 :
+    return Path(path).parent.name
+  elif method == 1 :
+    (head, tail) = os.path.split(path)
+    return head
+  else :
+    parts = path.split('/')
+    parts.pop()
+    parent = "/".join(parts)
+    return parent
+    
   
 # フルパスの中から一番下のディレクトリを得る。
 def getThisDirectory(path:str) -> str :
@@ -278,3 +306,11 @@ def writeJson(path:str, data:Any, pretty:bool=False) -> None:
   with open(path, "w") as f :
     f.write(str)
   return
+
+
+# ファイル名の先頭が "~" ならホームディレクトリに変換する。
+def tilder(path:str) ->str :
+  if path.startswith('~') :
+    return path.replace('~', getHomeDirectory())
+  else :
+    return path
