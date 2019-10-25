@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.70  2019-10-25 (listpics.cgi)
+#   index.cgi  Version 3.71  2019-10-25 (listpics.cgi)
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -10,6 +10,7 @@ import Text
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
 LIMIT = 200
+VERSION = 3.71
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -24,6 +25,7 @@ class MainPage(WebPage) :
     try :
       rows = []
       sql = ""
+      self.setPlaceHolder('version', VERSION)
       self.setPlaceHolder('filter', "")
       self.setPlaceHolder('start_id', "")
       self.__mysql = MySQL()
