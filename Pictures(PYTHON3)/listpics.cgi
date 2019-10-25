@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
-# Pictures テーブル フォルダ内画像一覧
+# Pictures テーブル フォルダ内画像一覧  Version 3.70  2019-10-25
 #   MySQL を利用
 from WebPage import WebPage
 import FileSystem as fs
@@ -20,8 +20,10 @@ class MainPage(WebPage) :
     if self.isParam('id') :
       id = self.getParam('id')
       folder = self.getPath(id)
+      self.setPlaceHolder('id', id)
       self.setPlaceHolder('folder', folder)
-      self.setPlaceHolder('creator', MainPage.getCreator(folder));
+      self.setPlaceHolder('creator', self.getCreator(id));
+      self.setPlaceHolder('title', self.getTitle(id));
       self.setPlaceHolder('pictures', self.getPictures(folder))
       self.incCount(id)
       self.setPlaceHolder('id', id)
@@ -47,12 +49,16 @@ class MainPage(WebPage) :
     else :
       self.setPlaceHolder('message', '')
     files2 = sorted(files)
+    i = 1
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
+      size = fs.getFileSize(fn) 
+      udate = fs.getLastWrite(fn) 
       if MainPage.isPicture(fn) :
         buff += "<figure>"
-        buff += f"<img src=\"getImage.cgi?path={fn}\" /><figcaption>{fn}</figcaption>"
+        buff += "<img src=\"getImage.cgi?path={1}\" /><figcaption><span style='color:black;font-weight:bold;'>{0:04d} {1} </span><span style='color:gray;'>(updated:{2}, size:{3})</span></figcaption>".format(i, fn, udate, size)
         buff += "</figure>\n"
+        i += 1
       else :
         pass
     return buff
@@ -70,12 +76,15 @@ class MainPage(WebPage) :
     ext = Text.tolower(fs.getExtension(path))
     return (ext == '.jpg' or ext == '.png' or ext == '.gif')
 
-  @staticmethod
-  def getCreator(folder) :
-    parts = folder.split('/')
-    n = len(parts) - 1
-    return parts[n]
-
+  # 作者を得る。
+  def getCreator(self, id) :
+    creator = self.__mysql.getValue(f"SELECT creator FROM Pictures WHERE id={id}") 
+    return creator
+    
+  # タイトルを得る。
+  def getTitle(self, id) :
+    title = self.__mysql.getValue(f"SELECT title FROM Pictures WHERE id={id}") 
+    return title
 
 
 

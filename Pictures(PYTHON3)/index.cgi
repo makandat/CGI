@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.62  2019-10-07 (creators.cgi)
+#   index.cgi  Version 3.70  2019-10-25 (listpics.cgi)
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs

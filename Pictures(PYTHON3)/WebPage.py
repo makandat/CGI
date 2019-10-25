@@ -1,12 +1,13 @@
-# coding:utf-8
-# WebPage.py Version 1.16  2019-05-08 getCookie(key, default=""), getParam((key, default="") default 追加
+# -*- coding:utf-8 -*-
+# WebPage.py Version 1.80  2019-09-15 getMethod()
 import os, sys, io
 import cgi
+import re
 import locale
 import http.cookies as Cookie
 import urllib.parse
-#from syslog import syslog
-import Common
+if os.name != 'nt' :
+  from syslog import syslog
 
 #
 #  WebPage クラス
@@ -16,7 +17,6 @@ class WebPage :
         
     # コンストラクタ
   def __init__(self, template="") :
-    #Common.init_logger('C:/temp/Logger.log')
     self.headers = ["Content-Type: text/html"] # HTTP ヘッダーのリスト
     self.vars =    {}  # HTML 埋め込み変数
     self.params =  {}  # HTTP パラメータ
@@ -47,6 +47,7 @@ class WebPage :
     else :
       pass
     return
+
   # コンテンツを送信する。
   def echo(self) :
     # クッキーをヘッダーに追加
@@ -184,6 +185,12 @@ class WebPage :
     buff += "<tr>\n"
     return buff
 
+  # タグを取る。
+  @staticmethod
+  def stripTag(s) :
+    p = re.compile(r"<[^>]*?>")
+    return p.sub("", s)
+    
   # HTML エスケープ文字を変換
   @staticmethod
   def escape(str) :
@@ -216,3 +223,8 @@ class WebPage :
   def sendText(str) :
     print("Content-Type: text/plain\n")
     print(str)
+
+  # HTTP メソッドを返す。
+  def getMethod(self) :
+    return os.environ["REQUEST_METHOD"]
+
