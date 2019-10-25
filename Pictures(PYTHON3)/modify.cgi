@@ -1,11 +1,11 @@
-#!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!/usr/bin/python3
 # -*- code=utf-8 -*-
-# Pictures テーブルのデータ追加・修正  v1.04  2019-04-18
+# Pictures テーブルのデータ追加・修正  v3.72  2019-10-26
 #   MySQL を利用
-import WebPage as page
+from WebPage import WebPage
 import FileSystem as fs
-import MySQL
+from MySQL import MySQL
 import Common
 import Text
 #from syslog import syslog
@@ -16,14 +16,16 @@ INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bi
 UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav={6}, count={7}, bindata={8} WHERE id={0};"
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
     #Common.init_logger('C:/temp/Logger.log')
     try :
-      self.client = MySQL.MySQL()
-      if self.isParam('btnAdd') :
+      self.client = MySQL()
+      if self.isParam('id') and not (self.isParam('btnAdd') or self.isParam('btnQuery')) :
+        self.query()
+      elif self.isParam('btnAdd') :
         # 追加・修正ボタンのとき
         if self.isParam('id') :
           # id が指定されている場合
@@ -33,7 +35,12 @@ class MainPage(page.WebPage) :
           self.add()
       elif self.isParam('btnQuery') :
         # データ確認ボタンの時
-        self.query()
+        if self.isParam('id') :
+          self.query()
+        else :
+          # id が指定されていない場合
+          self.clearAll()
+          self.setPlaceHolder('message', "id が指定されていません。")
       else :
         # その他の場合
         self.clearAll()
@@ -45,7 +52,6 @@ class MainPage(page.WebPage) :
 
   # データ修正
   def modify(self) :
-    rb = True
     try :
       id = self.getParam('id')
       title = Text.replace("'", "''", self.getParam('title'))
@@ -82,15 +88,14 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('fav', str(fav))
       self.setPlaceHolder('count', str(count))
       self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
-      self.setPlaceHolder('message', f"修正 OK.  <a href=\"listpics.cgi?id={id}\">見る</a>")
+      self.setPlaceHolder('message', f"id={id} 修正 OK.  <a href=\"listpics.cgi?id={id}\">見る</a>")
     except Exception as e:
-      self.setPlaceHolder('message', "修正 NG : " + str(e))
+      self.setPlaceHolder('message', f"id={id} 修正 NG : " + str(e))
       self.clearAll()
     return
 
   # データ追加
   def add(self) :
-    rb = True
     try :
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
@@ -158,9 +163,9 @@ class MainPage(page.WebPage) :
         row = rows[0]
         id = self.getParam('id')
         self.setPlaceHolder('id', id)
-        self.setPlaceHolder('title', row[0])
-        self.setPlaceHolder('creator', row[1])
-        self.setPlaceHolder('path', row[2])
+        self.setPlaceHolder('title', row[0].replace("'", '&#39'))
+        self.setPlaceHolder('creator', row[1].replace("'", '&#39'))
+        self.setPlaceHolder('path', row[2].replace("'", '&#39'))
         self.setPlaceHolder('mark', MainPage.setNoneToEmpty(row[3]))
         self.setPlaceHolder('info', MainPage.setNoneToEmpty(row[4]))
         self.setPlaceHolder('fav', row[5])
