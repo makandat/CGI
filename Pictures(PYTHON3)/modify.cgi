@@ -1,5 +1,5 @@
-#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/python3
+#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 # Pictures テーブルのデータ追加・修正  v3.72  2019-10-26
 #   MySQL を利用
