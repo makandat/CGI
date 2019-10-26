@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.72  2019-10-26 (modify.cgi)
+#   index.cgi  Version 3.73  2019-10-27 (listpics.html)
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -10,7 +10,7 @@ import Text
 
 SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
 LIMIT = 200
-VERSION = 3.72
+VERSION = 3.73
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
