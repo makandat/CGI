@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#  Filerpy index.cgi  v1.02 2019-10-18
+#  Filerpy index.cgi  v1.03 2019-10-29
 import os
 import base64
 from WebPage import WebPage
@@ -7,7 +7,7 @@ import FileSystem as fs
 import Text
 import Common
 
-VERSION = "1.02"
+VERSION = "1.03"
 
 # ウェブページ (Filerpy index.cgi)
 class FilerPage(WebPage) :
@@ -35,12 +35,13 @@ class FilerPage(WebPage) :
     # self.current_folder を初期化する。
     self.current_folder = self.home
     # ポストバックか?
+    self.setPlaceHolder('folder_link', '')
     if self.isParam("place") :
       # SELECT の選択項目を表示する。
       self.showFavPlace()
     elif self.isParam("folder") :
       # パラメータで指定されたフォルダを表示する。
-      folder = self.getParam('folder')
+      folder = self.getParam('folder', '')
       self.showFolder(folder)
     elif self.isParam('filter') :
       # 表示設定
