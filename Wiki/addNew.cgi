@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# WIKI addNew.cgi  v1.00 2019-10-27
+#!C:\Program Files (x86)\Python37\python.exe
+# WIKI addNew.cgi  v1.01 2019-10-31
 from WebPage import WebPage
 from MySQL import MySQL
 from DateTime import DateTime
@@ -23,7 +24,7 @@ class IndexPage(WebPage) :
     title = self.getParam("title", "")
     dt = DateTime()
     date = dt.toString()
-    content = self.getParam("content", "").replace("\n", "\\n")
+    content = self.getParam("content", "").replace("\\", "\\\\").replace("\n", "\\n")
     info = self.getParam("info", "")
     doc_type = self.getParam("type", "")
     revision = self.getParam("revision", "0")

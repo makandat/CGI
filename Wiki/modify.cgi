@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# WIKI modify.cgi  v1.00 2019-10-27
+#!C:\Program Files (x86)\Python37\python.exe
+# WIKI modify.cgi  v1.01 2019-10-31
 from WebPage import WebPage
 from MySQL import MySQL
 from DateTime import DateTime
@@ -15,7 +16,7 @@ class ModifyPage(WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL()
-    #Common.init_logger("/home/user/log/modify.log")
+    #Common.init_logger("c:/temp/modify.log")
     #form = cgi.FieldStorage()
     #ids = form["pid"]
     if self.getMethod() == "POST" :
@@ -35,7 +36,7 @@ class ModifyPage(WebPage) :
       row = rows[0]
       title = row[1]
       date = row[2]
-      content = row[3].replace("\\n", "\n")
+      content = row[3].replace("\\n", "\n").replace("\x0d\x0a", "\x0a")
       info = row[4]
       revision = row[5]
       doctype = row[6]
@@ -49,7 +50,7 @@ class ModifyPage(WebPage) :
   def update(self, id) :
     title = self.getParam("title")
     content = self.getParam("content")
-    content1 = content.replace("\n", "\\n")
+    content1 = content.replace("\\", "\\\\").replace("\n", "\\n")
     info = self.getParam("info")
     revision = self.getParam("revision")
     doctype = self.getParam("type")
