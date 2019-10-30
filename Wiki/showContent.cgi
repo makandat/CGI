@@ -15,7 +15,7 @@ class ShowPage(WebPage) :
   def __init__(self, template) :
     super().__init__(template)
     self.__mysql = MySQL()
-    Common.init_logger("/home/user/log/showContent.log")
+    # Common.init_logger("/home/user/log/showContent.log")
     if self.isParam("id") :
       id = self.getParam("id")
       rows = self.__mysql.query(SELECT.format(id))
