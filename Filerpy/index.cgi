@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-#  Filerpy index.cgi  v1.03 2019-10-29
+#  Filerpy index.cgi  v1.04 2019-11-04
 import os
-import base64
 from WebPage import WebPage
 import FileSystem as fs
 import Text
 import Common
 
-VERSION = "1.03"
+VERSION = "1.04"
 
 # ウェブページ (Filerpy index.cgi)
 class FilerPage(WebPage) :
   # コンストラクタ
   def __init__(self, template="") :
     super().__init__(template)
-    #Common.init_logger('/var/www/data/Logger.log')
+    Common.init_logger('/var/www/data/Logger.log')
     self.setPlaceHolder('title', 'Filerpy <span style="color:navy;font-size:20pt;">linux v' + VERSION + '</span>')
     self.setPlaceHolder('message', '')
     # AppConf.ini のデータを得る。
@@ -42,9 +41,18 @@ class FilerPage(WebPage) :
     elif self.isParam("folder") :
       # パラメータで指定されたフォルダを表示する。
       folder = self.getParam('folder', '')
+      self.current_folder = folder
+      self.setPlaceHolder("folder", folder)
+      self.setPlaceHolder("current_folder", folder)
+      self.setPlaceHolder('folder_link', folder)
       self.showFolder(folder)
-    elif self.isParam('filter') :
+    elif self.isParam('btn_filter') :
       # 表示設定
+      self.current_folder = self.getParam("current_folder")
+      self.setPlaceHolder("parent", fs.getParentDirectory(self.current_folder, 5))
+      self.setPlaceHolder("folder", self.current_folder)
+      self.setPlaceHolder("current_folder", self.current_folder)
+      self.setPlaceHolder('folder_link', self.current_folder)
       self.setFilter()
     else :
       # ホームディレクトリを表示
@@ -57,6 +65,7 @@ class FilerPage(WebPage) :
     favfolder = self.getParam('place')
     self.setCurrentFolder(favfolder)
     self.setPlaceHolder('folder', favfolder)
+    self.setPlaceHolder("current_folder", favfolder)
     self.listFolder(favfolder, sortby=self.orderby, order=self.reverse)
     return
 
@@ -77,7 +86,6 @@ class FilerPage(WebPage) :
 
   # 「表示設定」を適用する。
   def setFilter(self) :
-    self.setPlaceHolder('folder', self.current_folder)
     # 隠しファイルの表示
     if self.isParam('hiddenfile') :
       hiddenfile = self.getParam('hiddenfile')
@@ -99,7 +107,7 @@ class FilerPage(WebPage) :
     self.setCookie('orderby', self.orderby)
     self.setCookie('reverse', self.reverse)
     # 現在のフォルダを表示
-    self.current_folder = self.current_folder
+    Common.log("self.current_folder = " + self.current_folder)
     self.listFolder(self.current_folder, sortby=self.orderby, order=self.reverse)
     return
     
@@ -146,6 +154,7 @@ class FilerPage(WebPage) :
 
   # クッキーの表示フィルタを得る。(self.hiddenfile, self.orderby, self.reverse)
   def getFilter(self) :
+    self.current_folder = self.getParam("current_folder")
     if self.isCookie('hiddenfile') :
       if self.getCookie('hiddenfile') == '1' :
         # 隠しファイルを表示しない
@@ -176,6 +185,7 @@ class FilerPage(WebPage) :
   def setCurrentFolder(self, folder) :
     self.current_folder = folder
     self.setPlaceHolder("folder", folder)
+    self.setPlaceHolder("current_folder", folder)
     self.setPlaceHolder("folder_link", self.add_folderlink(folder))
     parent = fs.getParentDirectory(folder, 5)  # リンクをそのまま使用する。
     self.setPlaceHolder("parent", parent)

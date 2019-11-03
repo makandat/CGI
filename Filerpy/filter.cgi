@@ -30,6 +30,9 @@ class MainPage(WebPage) :
       self.reverse = "asc"
     # HTML value にクッキーの値を設定する。
     self.setValues()
+    # 現在のフォルダを取得
+    current_folder = self.getParam("current_folder")
+    self.setPlaceHolder("current_folder", current_folder)
     return
 
   # HTML value にクッキーの値を設定する。
