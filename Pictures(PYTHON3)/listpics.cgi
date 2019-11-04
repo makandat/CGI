@@ -24,7 +24,10 @@ class MainPage(WebPage) :
       self.setPlaceHolder('folder', folder)
       self.setPlaceHolder('creator', self.getCreator(id));
       self.setPlaceHolder('title', self.getTitle(id));
-      self.setPlaceHolder('pictures', self.getPictures(folder))
+      reverse = False
+      if self.isParam("reverse") :
+        reverse = True if self.getParam("reverse") == "1" else False
+      self.setPlaceHolder('pictures', self.getPictures(folder, reverse))
       self.incCount(id)
       self.setPlaceHolder('id', id)
       if self.getPlaceHolder('message') == "" :
@@ -41,14 +44,14 @@ class MainPage(WebPage) :
     return path
 
   # 画像ファイル一覧を得る。
-  def getPictures(self, folder) :
+  def getPictures(self, folder, reverse=False) :
     buff = ""
     files = os.listdir(folder.encode('utf8'))
     if len(files) == 0 :
       self.setPlaceHolder('message', 'このフォルダにはファイルがありません。')
     else :
       self.setPlaceHolder('message', '')
-    files2 = sorted(files)
+    files2 = sorted(files, reverse=reverse)
     i = 1
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
