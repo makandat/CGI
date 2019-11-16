@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   show_items.cgi 2019-05-20
+#   show_items.cgi 2019-11-04
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -18,6 +18,7 @@ class MainPage(WebPage) :
     super().__init__(template)
     self.__mysql = MySQL()
     self.setPlaceHolder('message', '')
+    self.setPlaceHolder('pictures', '')
     self.setPlaceHolder('title', '全登録画像一覧')
     if self.isParam('id') :
       id = int(self.getParam('id'))
@@ -45,7 +46,7 @@ class MainPage(WebPage) :
       self.setPlaceHolder('table1', 'display:none;')
     for row in rows :
       if picture :
-        pictures += "<div style=\"margin-bottom:16px;\"><img src=\"getImage.cgi?path={0}\" /><br />{0}</div>".format(row[3])
+        pictures += "<div style=\"margin-bottom:16px;\"><img src=\"getImage.cgi?path={1}\" /><br />id:{0} {1}</div>".format(row[0], row[3])
       else :
         tr = "<tr>"
         tr += WebPage.tag("td", row[0])  # id
