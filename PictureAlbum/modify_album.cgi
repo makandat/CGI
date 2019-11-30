@@ -26,8 +26,16 @@ class MainPage(WebPage) :
       else :
         self.modify(id)
     elif self.isParam('query') :
-      id = self.getParam('id')
-      self.query(id)
+      if self.isParam('id') :
+        id = self.getParam('id')
+        try:
+          self.query(id)
+        except :
+          self.setPlaceHolder('message', 'エラー： 致命的なエラーを検出。')
+          self.clear()
+      else :
+        self.setPlaceHolder('message', 'エラー： id が空欄です。')
+        self.clear()
     else :
       self.clear()
     return

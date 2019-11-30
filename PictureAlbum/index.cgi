@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 1.00
+#   index.cgi  Version 1.10  2019-11-30
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -9,7 +9,7 @@ import Common
 import Text
 #from syslog import syslog
 
-VERSION = "1.0"
+VERSION = "1.1"
 LIMIT = 200
 
 # CGI WebPage クラス
@@ -64,7 +64,7 @@ class MainPage(WebPage) :
         id = row[0]
         name = row[1]
         tr += WebPage.tag('td', id, "style='text-align:center;'")   # id
-        tr += WebPage.tag('td', f"<a href=\"show_items.cgi?id={id}\">{name}</a>")  # name
+        tr += WebPage.tag('td', f"<a href=\"show_items.cgi?id={id}&pictures=1\" target=\"_blank\">{name}</a>")  # name
         n = self.__mysql.getValue(f"SELECT COUNT(album) FROM PictureAlbum GROUP BY album HAVING album={id}")
         if n == None :
           n = 0
