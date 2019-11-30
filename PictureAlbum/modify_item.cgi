@@ -30,8 +30,8 @@ class MainPage(WebPage) :
         try:
           self.query()
         except:
-        self.setPlaceHolder('message', 'エラー： 致命的なエラーを検出。')
-        self.clear()
+          self.setPlaceHolder('message', 'エラー： 致命的なエラーを検出。')
+          self.clear()
       else :
         self.setPlaceHolder('message', 'エラー： id が空欄です。')
         self.clear()
