@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
-# creators.cgi 作者一覧  2019-10-07
+# creators.cgi 作者一覧  2019-12-15
 # -*- code=utf-8 -*-
 from WebPage import WebPage
 from MySQL import MySQL
@@ -57,7 +57,7 @@ class MainPage(WebPage) :
       count = str(row[1])
       refer = str(row[2])
       favor = str(row[3])
-      anchor = "<a href=\"index.cgi?creator=" + creator.replace("'", "''") + "\">" + creator + "</a>"
+      anchor = "<a href=\"index.cgi?creator=" + creator.replace("'", "''") + "\" target=\"_blank\">" + creator + "</a>"
       table_row = f"<tr><td>{anchor}</td><td class=\"number\">{count}</td><td class=\"number\">{refer}</td><td class=\"number\">{favor}</td></tr>\n"
       list += table_row
     return list
