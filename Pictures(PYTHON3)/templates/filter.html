@@ -19,17 +19,71 @@ input[type="text"] {
    border-radius:4px;
    height:22px;
  }
-
 </style>
+<script src="/js/jquery.min.js"></script>
+<script>
+  var storage = localStorage;
+  var hist = "";
+  
+  // 履歴クリアメニュー
+  function clearHistory() {
+    storage.clear();
+    $("#history").html("");
+    alert("履歴をクリアしました。");
+  }
+  
+  // 履歴表示
+  function showHistory(hist) {
+    let s = "";
+    let words = hist.split(':');
+    words.sort();
+    for (let w of words) {
+      if (w == "") {
+      }
+      else {
+        s += "<li>";
+        s += w;
+        s += "</li>\n";
+      }
+    }
+    $("#history").html(s);
+  }
+  
+  // ページがロードされたとき
+  $(()=>{
+    if (storage.getItem("history") == undefined) {
+      // 何もしない。
+    }
+    else {
+      hist = storage.getItem("history");
+      // 履歴を表示
+      showHistory(hist);
+    }
+    $("form").submit(()=>{
+      let filter = $("#filter").val();
+      if (filter == undefined || filter == "") {
+        // 空欄なのでエラーにする。
+        alert("検索語が空欄です。");
+        return false;
+      }
+      else {
+        hist += filter + ":";
+        storage.setItem("history", hist);
+        return true;
+      }
+    });
+  });
+</script>
 </head>
 
 <body style="margin-left:5%;margin-right:5%">
-<h1 style="text-align:center;color:darkslateblue;padding:10px;">MySQL Pictures テーブル ワードフィルタ設定</h1>
-<p style="margin-left:10%;"><a href="/">HOME</a>&nbsp;/&nbsp;<a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;<a href="index.cgi">もどる</a></p>
+<h1 style="text-align:center;color:darkslateblue;padding:10px;">Pictures テーブル ワードフィルタ設定</h1>
+<p style="margin-left:10%;"><a href="/">HOME</a>&nbsp;/&nbsp;<a href="modify.cgi">追加・修正ページ</a>&nbsp;/&nbsp;<a href="index.cgi">もどる</a>
+&nbsp;/&nbsp;<a href="javascript:clearHistory()">履歴クリア</a></p>
 <br />
 <form method="POST" action="index.cgi">
 <table>
-<tr><td>フィルタ</td><td><input type="text" name="filter" size="100" autofocus /></td></tr>
+<tr><td>フィルタ</td><td><input type="text" id="filter" name="filter" size="100" autofocus /></td></tr>
 <tr><td></td><td><input type="submit" value="　設定　" style="margin-left:10%;" /></td></tr>
 </table>
 </form>
@@ -37,6 +91,9 @@ input[type="text"] {
 <p style="text-align:center;color:blue;">
 (*message*)
 </p>
+<br />
+<h3 style="margin-left:20%;">検索履歴</h3>
+<ul id="history" style="margin-left:20%;list-item-type:none;"></ul>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>
