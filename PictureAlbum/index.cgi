@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 1.10  2019-11-30
+#   index.cgi  Version 1.20  2020-02-24
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -9,7 +9,7 @@ import Common
 import Text
 #from syslog import syslog
 
-VERSION = "1.1"
+VERSION = "1.2"
 LIMIT = 200
 
 # CGI WebPage クラス
@@ -83,7 +83,7 @@ class MainPage(WebPage) :
 
   # アルバム一覧をアイコンで表示する。
   def showIcons(self) :
-    sql = "SELECT id, name, 0, mark, info, bindata FROM Album WHERE mark='picture' ORDER BY id"
+    sql = "SELECT id, name, 0, mark, info, bindata, picturesid FROM Album WHERE mark='picture' ORDER BY id"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'アルバムが登録されていません。')

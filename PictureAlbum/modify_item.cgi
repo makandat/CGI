@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   modify_album.cgi  Version 1.00
+#   modify_album.cgi  Version 1.20
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -49,6 +49,7 @@ class MainPage(WebPage) :
     self.setPlaceHolder('info', '')
     self.setPlaceHolder('fav', '0')
     self.setPlaceHolder('bindata', '0')
+    self.setPlaceHolder('picturesid', '0')
     return
 
   # フォームのコントロールをパラメータで値を設定する。
@@ -72,6 +73,11 @@ class MainPage(WebPage) :
     else :
       bindata = '0'
     self.setPlaceHolder('bindata', bindata)
+    if self.isParam('picturesid') :
+      picturesid = self.getParam('picturesid')
+    else :
+      picturesid = '0'
+    self.setPlaceHolder('picturesid', picturesid)
     return
 
   # データ挿入
@@ -114,7 +120,10 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    sql = f"INSERT INTO PictureAlbum(album,title,path,creator,info,fav,bindata) VALUES('{album}','{title}','{path}','{creator}','{info}', {fav}, {bindata})"
+    picturesid = self.getParam('picturesid')
+    if picturesid == '' :
+      picturesid = 0
+    sql = f"INSERT INTO PictureAlbum(album,title,path,creator,info,fav,bindata,picturesid) VALUES('{album}','{title}','{path}','{creator}','{info}', {fav}, {bindata}, {picturesid})"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{title} をテーブル PictureAlbum に挿入しました。")
@@ -164,7 +173,10 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    sql = f"UPDATE PictureAlbum SET album='{album}', title='{title}', path='{path}', creator='{creator}', info='{info}', fav={fav}, bindata={bindata} WHERE id={id}"
+    picturesid = self.getParam('picturesid')
+    if picturesid == '' :
+      picturesid = 0
+    sql = f"UPDATE PictureAlbum SET album='{album}', title='{title}', path='{path}', creator='{creator}', info='{info}', fav={fav}, bindata={bindata}, picturesid={picturesid} WHERE id={id}"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"id={id} のデータを更新しました。")
@@ -179,7 +191,7 @@ class MainPage(WebPage) :
       self.clear()
       return
     id = self.getParam('id')
-    sql = f"SELECT album,title,path,creator,info,fav,bindata FROM PictureAlbum WHERE id={id}"
+    sql = f"SELECT album,title,path,creator,info,fav,bindata,picturesid FROM PictureAlbum WHERE id={id}"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'id が正しくありません。データがありません。')
@@ -194,6 +206,7 @@ class MainPage(WebPage) :
     self.setPlaceHolder('info', row[4])
     self.setPlaceHolder('fav', row[5])
     self.setPlaceHolder('bindata', row[6])
+    self.setPlaceHolder('picturesid', row[7])
     return
 
 # 実行開始

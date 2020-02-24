@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
-# Pictures テーブル フォルダ内画像一覧
+# Pictures テーブル フォルダ内画像一覧  v1.20
 #   MySQL を利用
 from WebPage import WebPage
 import FileSystem as fs
@@ -37,7 +37,7 @@ class MainPage(WebPage) :
   # 画像ファイル一覧を得る。
   def getPictures(self, album) :
     buff = ""
-    sql = f"SELECT title, path FROM PictureAlbum WHERE album={album}"
+    sql = f"SELECT title, path, picturesid FROM PictureAlbum WHERE album={album}"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'このアルバムには画像がありません。')
@@ -47,7 +47,11 @@ class MainPage(WebPage) :
     for row in rows :
       path = row[1]
       title = row[0]
-      buff += f"<a href=\"slideview.cgi?album={album}&slide={i}\" target=\"_blank\"><img src=\"getImage.cgi?path={path}\" alt=\"{title}\" style=\"width:20%;padding:6px;\" /></a>"
+      picturesid = row[2]
+      if picturesid == None or picturesid == 0 :
+        buff += f"<a href=\"slideview.cgi?album={album}&slide={i}\" target=\"_blank\"><img src=\"getImage.cgi?path={path}\" alt=\"{title}\" style=\"width:20%;padding:6px;\" /></a>"
+      else :
+        buff += f"<a href=\"/cgi-bin/Pictures/thumbview.cgi?id={picturesid}\" target=\"_blank\"><img src=\"getImage.cgi?path={path}\" alt=\"{title}\" style=\"width:20%;padding:6px;border:solid 2px blue;\" /></a>"
       i += 1
     self.setPlaceHolder('pictures', buff)
     return

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   show_items.cgi 2019-11-04
+#   show_items.cgi v1.20 2020-02-24
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -32,7 +32,7 @@ class MainPage(WebPage) :
 
   # 画像一覧を表示する。
   def showPictures(self, id=0, picture=False) :
-    sql = "SELECT P.id, P.album, P.title, P.path, P.creator, P.info, P.fav, P.bindata, A.name FROM PictureAlbum P INNER JOIN Album A ON A.id=P.album"
+    sql = "SELECT P.id, P.album, P.title, P.path, P.creator, P.info, P.fav, P.bindata, P.picturesid AS pid, A.name FROM PictureAlbum P INNER JOIN Album A ON A.id=P.album"
     if id > 0 :
       sql += f" WHERE album={id}"
     rows = self.__mysql.query(sql)
@@ -46,7 +46,11 @@ class MainPage(WebPage) :
       self.setPlaceHolder('table1', 'display:none;')
     for row in rows :
       if picture :
-        pictures += "<div style=\"margin-bottom:16px;\"><img src=\"getImage.cgi?path={1}\" /><br />id:{0} {1}</div>".format(row[0], row[3])
+        pid = row[8]
+        if pid == None or pid == 0 :
+          pictures += "<div style=\"margin-bottom:16px;\"><img src=\"getImage.cgi?path={1}\" /><br />id:{0} {1}</div>".format(row[0], row[3])
+        else :
+          pictures += "<div style=\"margin-bottom:16px;\"><a href=\"/cgi-bin/Pictures/listpics.cgi?id={2}\" target=\"_blank\"><img src=\"getImage.cgi?path={1}\" /></a><br />id:{0} {1}</div>".format(row[0], row[3], row[8])
       else :
         tr = "<tr>"
         tr += WebPage.tag("td", row[0])  # id
