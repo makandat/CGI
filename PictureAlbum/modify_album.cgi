@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   modify_album.cgi  Version 1.00
+#   modify_album.cgi  Version 1.25
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -50,6 +50,7 @@ class MainPage(WebPage) :
     self.setPlaceHolder('other', '')
     self.setPlaceHolder('info', '')
     self.setPlaceHolder('bindata', '0')
+    self.setPlaceHolder('groupname', '')
     return
 
   def setValues(self) :
@@ -66,7 +67,11 @@ class MainPage(WebPage) :
       bindata = self.getParam('bindata')
     else :
       bindata = '0'
-    self.setPlaceHolder('bindata', bindata)
+    if self.isParam('groupname') :
+      groupname = self.getParam('groupname')
+    else :
+      groupname = ''
+    self.setPlaceHolder('groupname', groupname)
     return
 
   # データ挿入
@@ -81,7 +86,8 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    sql = f"INSERT INTO Album(name, mark, info, bindata) VALUES('{name}', '{mark}', '{info}', {bindata})"
+    groupname = self.getParam('groupname')
+    sql = f"INSERT INTO Album(name, mark, info, bindata, groupname) VALUES('{name}', '{mark}', '{info}', {bindata}, '{groupname}')"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{name} が挿入されました。")
@@ -103,7 +109,8 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata} WHERE id={id}"
+    info = self.getParam('groupname')
+    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata}, groupname='{groupname}' WHERE id={id}"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{name} が修正されました。")
@@ -115,7 +122,7 @@ class MainPage(WebPage) :
 
   # データ確認
   def query(self, id) :
-    sql = f"SELECT id, name, mark, info, bindata FROM Album WHERE id={id}"
+    sql = f"SELECT id, name, mark, info, bindata, groupname FROM Album WHERE id={id}"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'データがありません。正しい id を入力してください。')
@@ -128,6 +135,11 @@ class MainPage(WebPage) :
       self.setPlaceHolder('mark', row[2])
       self.setPlaceHolder('info', row[3])
       self.setPlaceHolder('bindata', row[4])
+      if row[5] == None :
+        groupname = ""
+      else :
+        groupname = row[5]
+      self.setPlaceHolder('groupname', groupname)
     return
     
 # 実行開始
