@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
 #   modify_album.cgi  Version 1.25
 from WebPage import WebPage
@@ -109,7 +110,7 @@ class MainPage(WebPage) :
     bindata = self.getParam('bindata')
     if bindata == '' :
       bindata = 0
-    info = self.getParam('groupname')
+    groupname = self.getParam('groupname')
     sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata}, groupname='{groupname}' WHERE id={id}"
     try :
       self.__mysql.execute(sql)

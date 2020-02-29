@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 1.25  2020-02-26
+#   index.cgi  Version 1.30  2020-02-29
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -9,7 +9,7 @@ import Common
 import Text
 #from syslog import syslog
 
-VERSION = "1.25"
+VERSION = "1.30"
 LIMIT = 200
 
 # CGI WebPage クラス
@@ -21,38 +21,30 @@ class MainPage(WebPage) :
     self.__mysql = MySQL()
     self.setPlaceHolder('title', '画像アルバム ' + VERSION)
     self.setPlaceHolder('message', '')
-    # アイコン・詳細表示設定
-    self.setPlaceHolder('view', 'detail')
-    if self.isCookie('view') :
-      self.view = self.getCookie('view')
-      self.setPlaceHolder('view', 'icons' if self.view == 'detail' else 'detail')
+    # グループ名一覧取得
+    self.getGroupNames()
+    # グループ名パラメータ取得と設定
+    if self.isParam("groupname") :
+      self.groupname = self.getParam("groupname")
+      self.setCookie('groupname', self.groupname)
     else :
-      self.view = 'detail'
-      self.setCookie('view', 'detail')
-    # アルバム内容を表示
-    if self.isParam('view') :
-      view = self.getParam('view')
-      if view == 'icons' :
-        self.setCookie('view', 'icons')
-        self.view = 'icons'
-        self.setPlaceHolder('view', 'detail')
-        # アルバム一覧をアイコン表示する。
-        self.showIcons()
+      if self.isCookie('groupname') :
+        self.groupname = self.getCookie('groupname')
       else :
-        self.setCookie('view', 'detail')
-        self.view = 'detail'
-        self.setPlaceHolder('view', 'icons')       
-        # アルバム一覧を詳細表示する。
-        self.showAlbums()
-    else :
-      self.view = "detail"
-      self.setCookie('view', 'detail')
-      self.showAlbums()
+        self.groupname = 'ALL'
+        self.setCookie('groupname', 'ALL')
+    # アルバム内容を表示
+    self.showAlbums()
     return
 
   # アルバム一覧を表示する。
   def showAlbums(self) :
-    sql = "SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' ORDER BY id"
+    if self.groupname == "ALL" :
+      sql = "SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' ORDER BY id"
+    elif self.groupname == "NONAME" :
+      sql = "SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' AND ISNULL(groupname) ORDER BY id"
+    else :
+      sql = f"SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' AND groupname = '{self.groupname}' ORDER BY id"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'アルバムが登録されていません。')
@@ -86,32 +78,23 @@ class MainPage(WebPage) :
       self.setPlaceHolder('content', content)
     return
 
-  # アルバム一覧をアイコンで表示する。
-  def showIcons(self) :
-    sql = "SELECT id, name, 0, mark, info, bindata, picturesid FROM Album WHERE mark='picture' ORDER BY id"
+
+  # グループ名一覧取得
+  def getGroupNames(self) :
+    sql = "SELECT DISTINCT groupname FROM album"
+    s = ""
     rows = self.__mysql.query(sql)
-    if len(rows) == 0 :
-      self.setPlaceHolder('message', 'アルバムが登録されていません。')
-      self.setPlaceHolder('content', '')
-    else :
-      content = "<div>\n"
-      for row in rows :
-        id = row[0]
-        name = row[1]
-        bindata = row[5]
-        content += "<div style=\"display:inline-block;width:15%;\">"
-        if bindata == None or bindata == 0 :
-          img = "<img src=\"/img/NoImage.jpg\" />"
-        else :
-          img = f"<img src=\"extract.cgi?id={bindata}\" />"
-          imglink = WebPage.tag('a', img, f"href=\"show_items.cgi?id={id}\"")
-        content += WebPage.tag('div', imglink, "style=\"text-align:center;\"")
-        content += WebPage.tag('div', Text.left(name, 18), "style=\"font-size:10pt;\"")
-        content += "</div>\n"
-      content += "</div>\n"
-      self.setPlaceHolder('content', content)
+    for row in rows :
+      gn = str(row[0])
+      if gn == "" or gn == None :
+        pass
+      else :
+        s += "<option>"
+        s += gn
+        s += "</option>\n"
+    self.setPlaceHolder("groupnames", s)
     return
-        
+
 # 実行開始
 wp = MainPage('templates/index.html')
 wp.echo()

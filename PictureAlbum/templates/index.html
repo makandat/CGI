@@ -13,7 +13,14 @@
 </style>
 <script src="/js/jquery.min.js"></script>
 <script>
-
+$(function() {
+  $("#groupnames").change(function() {
+    var gn = $("#groupnames").val()
+    if (gn.startsWith("---") == false) {
+      window.location.href = "index.cgi?groupname=" + gn
+    }
+  });
+});
 </script>
 </head>
 
@@ -24,9 +31,16 @@
   <a href="/">HOME</a>&nbsp;/&nbsp;
   <a href="modify_album.cgi" target="_blank">アルバムの作成・修正</a>&nbsp;/&nbsp;
   <a href="modify_item.cgi" target="_blank">画像の追加・修正</a>&nbsp;/&nbsp;
+<!--
   <a href="show_items.cgi">全登録画像の一覧</a>&nbsp;/&nbsp;
   <a href="show_unregitems.cgi">未登録画像の一覧</a>&nbsp;/&nbsp;
-  <a href="index.cgi?view=(*view*)">アイコン・詳細表示</a>
+  <a href="index.cgi?view=(*view*)">アイコン・詳細表示</a>&nbsp;/&nbsp;
+-->
+  グループ&nbsp;<select name="groupnames" id="groupnames">
+  <option>---------</option>
+  <option value="ALL">すべて</option>
+  <option value="NONAME">無名</option>
+(*groupnames*)</select>
  </div>
 </div>
 <br />
