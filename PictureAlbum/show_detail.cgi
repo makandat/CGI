@@ -24,15 +24,15 @@ class MainPage(WebPage) :
       id = int(self.getParam('id'))
       self.setPlaceHolder('album', id)
       self.setPlaceHolder('display', '')
-      self.showPictures(id, self.isParam('pictures'))
+      self.showPictures(id)
     else :
       self.setPlaceHolder('display', 'display:none;')
       self.showPictures()
     return
 
   # 画像一覧を表示する。
-  def showPictures(self, id=0, picture=False) :
-    sql = "SELECT P.id, P.album, P.title, P.path, P.creator, P.info, P.fav, P.bindata, P.picturesid AS pid, A.name FROM PictureAlbum P INNER JOIN Album A ON A.id=P.album"
+  def showPictures(self, id=0) :
+    sql = "SELECT P.id, P.album, P.title, P.path, P.creator, P.info, P.bindata, P.picturesid AS pid, A.name FROM PictureAlbum P INNER JOIN Album A ON A.id=P.album"
     if id > 0 :
       sql += f" WHERE album={id}"
     rows = self.__mysql.query(sql)
@@ -41,31 +41,20 @@ class MainPage(WebPage) :
       self.setPlaceHolder('content', '')
       return
     content = ""
-    pictures = ""
-    if picture :
-      self.setPlaceHolder('table1', 'display:none;')
     for row in rows :
-      if picture :
-        pid = row[8]
-        if pid == None or pid == 0 :
-          pictures += "<div style=\"margin-bottom:16px;\"><img src=\"getImage.cgi?path={1}\" /><br />id:{0} {1}</div>".format(row[0], row[3])
-        else :
-          pictures += "<div style=\"margin-bottom:16px;\"><a href=\"/cgi-bin/Pictures/listpics.cgi?id={2}\" target=\"_blank\"><img src=\"getImage.cgi?path={1}\" /></a><br />id:{0} {1}</div>".format(row[0], row[3], row[8])
-      else :
-        tr = "<tr>"
-        tr += WebPage.tag("td", row[0])  # id
-        album = str(row[1]) + " (" + row[8] + ")"
-        tr += WebPage.tag("td", album)  # album
-        tr += WebPage.tag("td", row[2])  # title
-        tr += WebPage.tag("td", MainPage.makeLink(row[3]))  # path
-        tr += WebPage.tag("td", row[4])  # creator
-        tr += WebPage.tag("td", row[5])  # info
-        tr += WebPage.tag("td", row[6])  # fav
-        tr += WebPage.tag("td", row[7])  # bindata
-        tr += "</tr>\n"
-        content += tr
+      tr = "<tr>"
+      tr += WebPage.tag("td", row[0])  # id
+      album = str(row[1]) + " (" + row[8] + ")"
+      tr += WebPage.tag("td", album)  # album
+      tr += WebPage.tag("td", row[2])  # title
+      tr += WebPage.tag("td", MainPage.makeLink(row[3]))  # path
+      tr += WebPage.tag("td", row[4])  # creator
+      tr += WebPage.tag("td", row[5])  # info
+      tr += WebPage.tag("td", row[6])  # fav
+      tr += WebPage.tag("td", row[7])  # bindata
+      tr += "</tr>\n"
+      content += tr
     self.setPlaceHolder('content', content)
-    self.setPlaceHolder('pictures', pictures)
     if id > 0 :
       albumName = self.getAlbumName(id)
       self.setPlaceHolder('title', 'アルバム#' + str(id) + ' "' + albumName + '"画像一覧')
@@ -88,5 +77,5 @@ class MainPage(WebPage) :
 
 
 # 実行開始
-wp = MainPage('templates/show_items.html')
+wp = MainPage('templates/show_detail.html')
 wp.echo()

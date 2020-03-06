@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
+#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 1.30  2020-02-29
+#   index.cgi  Version 1.40  2020-03-06
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -9,7 +9,7 @@ import Common
 import Text
 #from syslog import syslog
 
-VERSION = "1.30"
+VERSION = "1.40"
 LIMIT = 200
 
 # CGI WebPage クラス
