@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!/usr/bin/env python3
 # -*- code=utf-8 -*-
-#   modify_album.cgi  Version 1.20
+#   modify_album.cgi  Version 1.50
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -123,7 +123,7 @@ class MainPage(WebPage) :
     picturesid = self.getParam('picturesid')
     if picturesid == '' :
       picturesid = 0
-    sql = f"INSERT INTO PictureAlbum(album,title,path,creator,info,fav,bindata,picturesid) VALUES('{album}','{title}','{path}','{creator}','{info}', {fav}, {bindata}, {picturesid})"
+    sql = f"INSERT INTO PictureAlbum(album,title,path,creator,info,fav,bindata,picturesid,`date`) VALUES('{album}','{title}','{path}','{creator}','{info}', {fav}, {bindata}, {picturesid}, CURRENT_DATE())"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{title} をテーブル PictureAlbum に挿入しました。")
@@ -176,7 +176,7 @@ class MainPage(WebPage) :
     picturesid = self.getParam('picturesid')
     if picturesid == '' :
       picturesid = 0
-    sql = f"UPDATE PictureAlbum SET album='{album}', title='{title}', path='{path}', creator='{creator}', info='{info}', fav={fav}, bindata={bindata}, picturesid={picturesid} WHERE id={id}"
+    sql = f"UPDATE PictureAlbum SET album='{album}', title='{title}', path='{path}', creator='{creator}', info='{info}', fav={fav}, bindata={bindata}, picturesid={picturesid}, `date`=CURRENT_DATE() WHERE id={id}"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"id={id} のデータを更新しました。")

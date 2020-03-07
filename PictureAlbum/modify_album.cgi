@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 #!C:\Program Files\Python3\python.exe
+#!/usr/bin/env python3
 # -*- code=utf-8 -*-
-#   modify_album.cgi  Version 1.25
+#   modify_album.cgi  Version 1.50
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
-import Common
+import Common, DateTime
 #from syslog import syslog
 
 LIMIT = 200
@@ -88,7 +88,9 @@ class MainPage(WebPage) :
     if bindata == '' :
       bindata = 0
     groupname = self.getParam('groupname')
-    sql = f"INSERT INTO Album(name, mark, info, bindata, groupname) VALUES('{name}', '{mark}', '{info}', {bindata}, '{groupname}')"
+    dtime = DateTime.DateTime()
+    udate = dtime.toDateString()
+    sql = f"INSERT INTO Album(name, mark, info, bindata, groupname, `date`) VALUES('{name}', '{mark}', '{info}', {bindata}, '{groupname}', '{udate}')"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{name} が挿入されました。")
@@ -111,7 +113,9 @@ class MainPage(WebPage) :
     if bindata == '' :
       bindata = 0
     groupname = self.getParam('groupname')
-    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata}, groupname='{groupname}' WHERE id={id}"
+    dtime = DateTime.DateTime()
+    udate = dtime.toDateString()
+    sql = f"UPDATE Album SET name='{name}', mark='{mark}', info='{info}', bindata={bindata}, groupname='{groupname}', `date`='{udate}' WHERE id={id}"
     try :
       self.__mysql.execute(sql)
       self.setPlaceHolder('message', f"{name} が修正されました。")

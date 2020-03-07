@@ -1,7 +1,7 @@
+#!C:\Program Files (x86)\Python37\python.exe
 #!/usr/bin/env python3
-#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 1.40  2020-03-06
+#   index.cgi  Version 1.50  2020-03-07
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
@@ -9,7 +9,7 @@ import Common
 import Text
 #from syslog import syslog
 
-VERSION = "1.40"
+VERSION = "1.50"
 LIMIT = 200
 
 # CGI WebPage クラス
@@ -40,17 +40,17 @@ class MainPage(WebPage) :
   # アルバム一覧を表示する。
   def showAlbums(self) :
     if self.groupname == "ALL" :
-      sql = "SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' ORDER BY id"
+      sql = "SELECT id, name, 0, mark, info, bindata, groupname, `date` FROM Album WHERE mark='picture' ORDER BY id"
     elif self.groupname == "NONAME" :
-      sql = "SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' AND ISNULL(groupname) ORDER BY id"
+      sql = "SELECT id, name, 0, mark, info, bindata, groupname, `date` FROM Album WHERE mark='picture' AND ISNULL(groupname) ORDER BY id"
     else :
-      sql = f"SELECT id, name, 0, mark, info, bindata, groupname FROM Album WHERE mark='picture' AND groupname = '{self.groupname}' ORDER BY id"
+      sql = f"SELECT id, name, 0, mark, info, bindata, groupname, `date` FROM Album WHERE mark='picture' AND groupname = '{self.groupname}' ORDER BY id"
     rows = self.__mysql.query(sql)
     if len(rows) == 0 :
       self.setPlaceHolder('message', 'アルバムが登録されていません。')
       self.setPlaceHolder('content', '')
     else :
-      content = "<tr><th>アルバム番号</th><th>アルバム名</th><th>収録数</th><th>種別</th><th>情報</th><th>イメージ</th><th>グループ名</th></tr>\n"
+      content = "<tr><th>アルバム番号</th><th>アルバム名</th><th>収録数</th><th>種別</th><th>情報</th><th>イメージ</th><th>グループ名</th><th>更新日</th></tr>\n"
       for row in rows :
         tr = "<tr>"
         id = row[0]
@@ -69,10 +69,13 @@ class MainPage(WebPage) :
         else :
           tr += WebPage.tag('td', f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />")  # bindata
         groupName = row[6]  # groupname
-        tr += WebPage.tag('td', groupName)
         if groupName == None :
           groupName = ''
-        
+        tr += WebPage.tag('td', groupName)
+        udate = row[7] # date
+        if udate == None :
+          udate = ""
+        tr += WebPage.tag('td', udate)
         tr += "</tr>\n"
         content += tr
       self.setPlaceHolder('content', content)
