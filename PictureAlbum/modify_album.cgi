@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
 #!C:\Program Files\Python3\python.exe
-#!/usr/bin/env python3
 # -*- code=utf-8 -*-
 #   modify_album.cgi  Version 1.50
 from WebPage import WebPage
