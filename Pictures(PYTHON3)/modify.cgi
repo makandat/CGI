@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
 # Pictures テーブルのデータ追加・修正  v3.80  2020-03-07
 #   MySQL を利用
@@ -57,6 +58,7 @@ class MainPage(WebPage) :
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
       path = Text.replace("\\", "/", path)
+      path = Text.trim(path)
       creator = Text.replace("'", "''", self.getParam('creator'))
       mark = self.getParam('mark')
       info = self.getParam('info')
@@ -100,6 +102,7 @@ class MainPage(WebPage) :
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
       path = Text.replace("\\", "/", path)
+      path = Text.trim(path)
       if self.checkPath(path) == False :
         self.clearAll()
         return

@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 #!C:\Program Files (x86)\Python37\python.exe
+#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
-#   index.cgi  Version 3.80  2020-03-07 (modify.cgi)
+#   index.cgi  Version 3.80  2020-03-20 (index.cgi)
 from WebPage import WebPage
 from MySQL import MySQL
 import FileSystem as fs
 import Common
 import Text
 
-SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata FROM Pictures'
+SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata, date FROM Pictures'
 LIMIT = 200
-VERSION = 3.80
+VERSION = 3.85
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -105,15 +106,21 @@ class MainPage(WebPage) :
         if view == 'detail' :
           self.view = 'detail'
           self.setPlaceHolder('view', 'icons')
-        else :
+        elif view == 'icons':
           self.view = 'icons'
           self.setPlaceHolder('view', 'detail')
+        else:
+          self.view = 'detail'
         current = int(self.getCookie('next', '0'))
         order = self.getCookie('order', 'DESC')
-        if order == 'ASC' :
+        if order == 'ASC' and view != "newest" :
           sql = SELECT + " WHERE id > {0} ORDER BY id LIMIT {1}".format(current, LIMIT)
-        else :
+        elif order == 'DESC' and view != "newest" :
           sql = SELECT + " WHERE id < {0} ORDER BY id DESC LIMIT {1}".format(current + LIMIT, LIMIT)
+        elif view == 'newest' :
+          sql = SELECT + " ORDER BY `date` DESC LIMIT {0}".format(LIMIT)
+        else :
+          pass
         rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
@@ -192,7 +199,7 @@ class MainPage(WebPage) :
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
-    result = "<tr><th>id</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th><th>イメージ</th></tr>"
+    result = "<tr><th>id</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th><th>イメージ</th><th>日付</th></tr>"
     id0 = 0
     id = 0
     for row in rows :
@@ -207,6 +214,7 @@ class MainPage(WebPage) :
       fav = str(row[6])
       count = str(row[7])
       bindata = str(row[8])
+      date1 = str(row[9])
       row2 = list()
       #row2.append(f"<a href=\"modify.cgi?id={id}\">{id}</a>")
       row2.append(id)
@@ -228,6 +236,7 @@ class MainPage(WebPage) :
       else :
         link = f"<img src=\"extract.cgi?id={bindata}\" alt=\"{bindata}\" />"
         row2.append(link)
+      row2.append(date1)
       result += WebPage.table_row(row2) + "\n"
     self.setPlaceHolder('next', id)
     self.setPlaceHolder('prev', id0)
