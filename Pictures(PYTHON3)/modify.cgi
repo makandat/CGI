@@ -2,7 +2,7 @@
 #!C:\Program Files (x86)\Python37\python.exe
 #!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
-# Pictures テーブルのデータ追加・修正  v3.80  2020-03-07
+# Pictures テーブルのデータ追加・修正  v3.86  2020-03-29
 #   MySQL を利用
 from WebPage import WebPage
 import FileSystem as fs
@@ -12,8 +12,8 @@ import Text
 #from syslog import syslog
 
 SELECT = "SELECT title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
-INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, `date`) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, CURRENT_DATE())"
-INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata, `date`) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, CURRENT_DATE())"
+INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, `date`, sn) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, CURRENT_DATE(), {7})"
+INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata, `date`, sn) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, CURRENT_DATE(), {8})"
 UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav={6}, count={7}, bindata={8}, `date`=CURRENT_DATE() WHERE id={0};"
 
 # CGI WebPage クラス
@@ -112,6 +112,7 @@ class MainPage(WebPage) :
       fav = self.getParam('fav')
       count = self.getParam('count')
       bindata = self.getParam('bindata')
+      sn = self.getNextSN()
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
@@ -125,9 +126,9 @@ class MainPage(WebPage) :
         self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
       if bindata == '' :
-        sql = INSERT.format(title, creator, path, mark, info, fav, count)
+        sql = INSERT.format(title, creator, path, mark, info, fav, count, sn)
       else :
-        sql = INSERT2.format(title, creator, path, mark, info, fav, count, bindata)
+        sql = INSERT2.format(title, creator, path, mark, info, fav, count, bindata, sn)
       self.client.execute(sql)
       self.setPlaceHolder('id', "")
       self.setPlaceHolder('title', title)
@@ -145,6 +146,10 @@ class MainPage(WebPage) :
       self.clearAll()
     return
 
+  # 次の sn を得る。
+  def getNextSN(self) :
+    sn = self.client.getValue("SELECT max(sn) FROM Pictures")
+    return sn + 1
 
   # パスのチェック
   def checkPath(self, path) :
