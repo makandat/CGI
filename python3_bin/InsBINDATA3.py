@@ -12,7 +12,10 @@ import os, math
 
 # 定数定義
 NEWSIZE = 64
-SAVEDIR = "/home/user/Pictures/Small" # 注意：Windows では変更が必要
+if Common.is_windows() :
+  SAVEDIR = "c:/temp/" # 注意：Windows では変更が必要
+else :
+  SAVEDIR = "/home/user/Pictures/Small" # 注意：Windows では変更が必要
 INSERT = "INSERT INTO BINDATA(`title`, `original`, `datatype`, `data`, `info`, `size`) VALUES('{0}', '{1}', '{2}', {3}, '', {4})"
 UPDATE = "UPDATE {0} SET bindata = {1} WHERE id = {2}"
 
