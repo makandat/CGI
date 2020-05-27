@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
-# WIKI addNew.cgi  v1.01 2019-10-31
+# WIKI addNew.cgi  v1.2.0 2020-05-27
 from WebPage import WebPage
 from MySQL import MySQL
 from DateTime import DateTime
@@ -16,7 +15,7 @@ class IndexPage(WebPage) :
       # 投稿する。
       self.postWiki()
     else :
-      self.embed({"title":"", "date":"", "content":"", "info":"", "type":"", "revision":"0", "message":""})
+      self.embed({"title":"", "date":"", "content":"", "info":"", "type":"", "revision":"0", "message":"", "hidden":"0"})
     return
     
   # ウィキを投稿する。
@@ -28,7 +27,7 @@ class IndexPage(WebPage) :
     info = self.getParam("info", "")
     doc_type = self.getParam("type", "")
     revision = self.getParam("revision", "0")
-    self.embed({"title":title, "date":date, "content":content, "info":info, "type":doc_type, "revision":revision})
+    self.embed({"title":title, "date":date, "content":content, "info":info, "type":doc_type, "revision":revision, "hidden":"0"})
     if title == "" or content == "" :
       self.setPlaceHolder("message", "ERROR: Title or content must not be empty.")
     else :

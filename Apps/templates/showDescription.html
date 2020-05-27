@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>(*title*)</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      #content {
+        padding:10px;
+        /* border: solid thin silver; */
+        width:80%;
+        margin-left:auto;
+        margin-right:auto;
+        padding-bottom:40px;
+      }
+      h2, h3, h4, h5 {
+        color: black;
+        border-left: 0px;
+      }
+      h2 {
+        border-bottom: solid thin silver;
+      }
+    </style>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/marked.js"></script>
+    <script>
+      $(() => {
+         let content = $("#content").text();
+         let new_content = marked(content);
+         $("#content").html(new_content);
+      });
+    </script>
+  </head>
+
+  <body>
+   <h1>(*title*)</h1>
+   <div class="menubar"><a href="/">ホーム</a>&nbsp;|&nbsp;<a href="javascript:window.close()">閉じる</a>
+   </div>
+   <br />
+   <p class="message">(*message*)</p>
+   <br />
+   <div id="content">
+   (*content*)
+   </div>
+   <p>&nbsp;</p>
+   <p style="text-align:center;"><a href="#top">TOP</a></p>
+   <p>&nbsp;</p>
+   <p>&nbsp;</p>
+  </body>
+</html>

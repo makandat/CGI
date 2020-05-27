@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# WIKI index.cgi  v1.00 2019-10-27
+# WIKI index.cgi  v1.2.0 2020-05-27
 from WebPage import WebPage
 from MySQL import MySQL
 
@@ -46,10 +46,10 @@ class IndexPage(WebPage) :
       id = row[0]
       if i == 0 :
         buff += "<td style=\"text-align:center;\">"
-        buff += f"<a href=\"modify.cgi?id={id}\">{id}</a>"
+        buff += f"<a href=\"modify.cgi?id={id}\" target=\"_blank\">{id}</a>"
       elif i == 1 :
         buff += "<td>"
-        buff += f"<a href=\"showContent.cgi?id={id}\">{row[1]}</a>"
+        buff += f"<a href=\"showContent.cgi?id={id}\" target=\"_blank\">{row[1]}</a>"
       else :
         buff += "<td>"
         buff += str(row[i])
