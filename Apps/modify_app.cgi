@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 #  Apps/modify_app.cgi
 import WebPage as cgi
 import MySQL as my
