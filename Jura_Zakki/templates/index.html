@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>Jura_Zakki</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="/js/jquery.min.js"></script>
+        <script>
+            $(() => {
+                $("#btnFind").click(() =>{
+                    let word = $("#findWord").val();
+                    if (word == "") {
+                        alert("検索ワードが空欄です。");
+                        return;
+                    }
+                    location.href = "/cgi-bin/Jura_Zakki/index.cgi?word=" + word;
+                });
+            })
+        </script>
+    </head>
+
+    <body>
+        <!-- ヘッダー -->
+        <header>
+            <h1>Jura Zakki</h1>
+        </header>
+
+        <!-- メニュー -->
+        <nav class="menu"><a href="/">HOME</a>&nbsp;/&nbsp;<a href="modify.cgi">記事の追加・修正</a>
+            &nbsp;/&nbsp;<a href="/cgi-bin/Jura_Zakki/index.cgi">表示リセット</a>
+            &nbsp;/&nbsp;<a href="/cgi-bin/Jura_Zakki/index.cgi?reverse=1">逆順で表示</a>
+            &nbsp;/&nbsp;ワード検索：<input type="text" id="findWord" size="40" />&nbsp;<input type="button" id="btnFind" value=" 検索 " />
+        </nav>
+
+        <!-- 内容一覧 -->
+        <article style="margin-top:40px;">
+            <table>
+                <tr><th>id</th><th>タイトル</th><th>分類</th><th>タグ</th><th>登録日</th></tr>
+                (*content*)
+            </table>
+        </article>
+
+        <!-- フッター -->
+        <footer>
+            <p>&nbsp;</p>
+            <p style="text-align:center;"><a href="#top">TOP</a></p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+        </footer>
+    </body>
+</html>
