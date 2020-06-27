@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
-#!C:\Program Files\Python3\python.exe
 # -*- code=utf-8 -*-
 # Pictures テーブルのデータ追加・修正  v3.86  2020-03-29
 #   MySQL を利用
@@ -21,7 +19,7 @@ class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    #Common.init_logger('C:/temp/Logger.log')
+    #Common.init_logger('/home/user/logs/Pictures.log')
     try :
       self.client = MySQL()
       if self.isParam('id') and not (self.isParam('btnAdd') or self.isParam('btnQuery')) :
@@ -99,6 +97,7 @@ class MainPage(WebPage) :
   # データ追加
   def add(self) :
     try :
+      #Common.log("add(self)")
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
       path = Text.replace("\\", "/", path)
@@ -112,7 +111,9 @@ class MainPage(WebPage) :
       fav = self.getParam('fav')
       count = self.getParam('count')
       bindata = self.getParam('bindata')
+      #Common.log("sn = self.getNextSN()")
       sn = self.getNextSN()
+      #Common.log("sn="+str(sn))
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
@@ -129,6 +130,7 @@ class MainPage(WebPage) :
         sql = INSERT.format(title, creator, path, mark, info, fav, count, sn)
       else :
         sql = INSERT2.format(title, creator, path, mark, info, fav, count, bindata, sn)
+      #Common.log(sql)
       self.client.execute(sql)
       self.setPlaceHolder('id', "")
       self.setPlaceHolder('title', title)
@@ -149,6 +151,8 @@ class MainPage(WebPage) :
   # 次の sn を得る。
   def getNextSN(self) :
     sn = self.client.getValue("SELECT max(sn) FROM Pictures")
+    if sn == None :
+      return 1
     return sn + 1
 
   # パスのチェック

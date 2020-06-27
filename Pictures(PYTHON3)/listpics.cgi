@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # Pictures テーブル フォルダ内画像一覧  Version 3.73  2019-10-27
 #   MySQL を利用
