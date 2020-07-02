@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # WIKI modify.cgi  v1.2.0 2020-05-27
 from WebPage import WebPage
 from MySQL import MySQL

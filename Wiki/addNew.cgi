@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # WIKI addNew.cgi  v1.2.0 2020-05-27
 from WebPage import WebPage
 from MySQL import MySQL
@@ -33,7 +33,7 @@ class IndexPage(WebPage) :
     else :
       sql = "INSERT INTO Wiki VALUES(null, '{0}', null, '{1}', '{2}', '{3}', '0', '{4}', '{5}')".format(title, date, content, info, doc_type, revision)
       self.__mysql.execute(sql)
-      self.setPlaceHolder("message", "Succeeded to insert the content.")
+      self.setPlaceHolder("message", "新規投稿の追加に成功しました。")
     return  
     
 # 応答を返す。

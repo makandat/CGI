@@ -6,7 +6,16 @@
  <link rel="stylesheet" href="/css/style.css" />
  <script src="/js/jquery.min.js"></script>
  <style>
-   pre {
+   pre.content {
+     border: solid thin gray;
+     padding: 6px;
+     font-size: 10pt;
+     background-color: white-smoke;
+     border-radius:6px;
+     box-shadow:0px 0px 6px 3px #2795ec;
+   }
+
+   div.content {
      border: solid thin gray;
      padding: 6px;
      font-size: 10pt;
@@ -44,7 +53,8 @@
  <div class="section">
    <p class="message">(*message*)</p>
    <div>(*prop*)</div>
-   <pre>(*content*)</pre>
+   <pre style="display:(*display_pre*)" class="content">(*content*)</pre>
+   <div style="display:(*display_div*);" class="content">(*content*)</div>
  </div>
  <p>&nbsp;</p>
  <p style="text-align:center;"><a href="#top">TOP</a></p>
