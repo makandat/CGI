@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
-# MySQL Videos テーブル  ver1.60 2019-10-08  folder フィールド追加対応
+# MySQL Videos テーブル  ver1.70 2020-07-12  ビデオ表示機能追加
 from WebPage import WebPage
 import Common
 from MySQL import MySQL
@@ -90,7 +89,8 @@ class MainPage(WebPage) :
       tr = []
       tr.append(row[0])
       tr.append(row[1])
-      tr.append(row[2])
+      show = f"<a href=\"show_video.cgi?path={row[2]}\">{row[2]}</a>"
+      tr.append(show)
       tr.append(MainPage.NoneToSpace(row[3]))
       tr.append(MainPage.NoneToSpace(row[4]))
       tr.append(MainPage.NoneToSpace(row[5]))
