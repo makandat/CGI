@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-#  HTML ファイルのひな型を作成する。
+#  HTML ファイルのひな型を作成する。 v1.1
 from Py365Lib import Common, FileSystem as fs
 
 HTML_Simple = '''<!DOCTYPE html>
@@ -132,6 +132,67 @@ HTML_Bootstrap4 = '''<!DOCTYPE html>
 </html>
 '''
 
+HTML_Bootstrap4H = '''<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>(*title*)</title>
+ <link rel="stylesheet" href="/css/style2.css" />
+ <!-- Bootstrapの CSS 読み込み -->
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ <link rel="stylesheet" href="/css/style2.css">
+ <!-- highlight.js -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/vs.min.css">
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/highlight.min.js"></script>
+ <script>hljs.initHighlightingOnLoad();</script>
+ <style></style>
+ <script>
+   $(() => {
+
+   });
+ </script>
+</head>
+
+<body>
+  <!-- ヘッダー -->
+  <header class="container" style="padding:24px;">
+   <h1 id="header">(*title*)</h1>
+   <h5>Updated on (*date*)</h5>
+   <hr />
+  </header>
+
+  <!-- Bootstrap コンテナ -->
+  <div class="container">
+
+    <!-- 行 -->
+    <div class="row">
+      <div class="col-sm"></div>
+      <div class="col-sm"></div>
+    </div>
+  </div>
+
+  <!-- コンテナの終わり -->
+  </div>
+
+  <!-- フッター -->
+  <footer>
+   <p>&nbsp;</p>
+   <p style="text-align:center;"><a href="#top">TOP</a></p>
+   <p>&nbsp;</p>
+   <p>&nbsp;</p>
+  </footer>
+
+  <!-- BootstrapのJS読み込み -->
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+'''
+
+
 HTML_Vue = '''
 <!DOCTYPE html>
 <html>
@@ -187,7 +248,8 @@ if Common.count_args() < 2 :
   print("1: HTML5 のシンプルなページ")
   print("2: HTML5 のシンプルなページ + jQuery + Highlight.js")
   print("3: Bootstrap4 のページ")
-  print("4: Vue.js のページ")
+  print("4: Bootstrap4 のページ + Highlight.js ")
+  print("5: Vue.js のページ")
   pagen = int(Common.readline("番号入力 > "))
 else :
   pagen = int(Common.args(1))
@@ -208,6 +270,8 @@ with open(filePath, "w", encoding="utf-8") as f :
     f.write(HTML_Highlight)
   elif pagen == 3 :
     f.write(HTML_Bootstrap4)
+  elif pagen == 4 :
+    f.write(HTML_Bootstrap4H)
   else :
     f.write(HTML_Vue)
 
