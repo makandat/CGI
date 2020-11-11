@@ -36,5 +36,8 @@ for f in only_files :
     newest_date = file_date
     newest_file = f
 # 結果を表示する。
-bytes = "{:,}".format(sum_of_sizes)
-print(f"{path} total {bytes} bytes {datetime.datetime.fromtimestamp(oldest_date)} {datetime.datetime.fromtimestamp(newest_date)}")
+if sum_of_sizes == 0 :
+  print(path + " ファイルがありません。")
+else :
+  bytes = "{:,}".format(sum_of_sizes)
+  print(f"{path} total {bytes} bytes {datetime.datetime.fromtimestamp(oldest_date)} {datetime.datetime.fromtimestamp(newest_date)}")
