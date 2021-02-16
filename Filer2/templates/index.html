@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>(*title*)</title>
+<style>
+h1 {
+  text-align:center;
+  color:#404040;
+  padding:6px;
+  border: solid 10px silver;
+  background-color: #f0f0f0;
+  border-radius: 0.5em;
+}
+table, td, th {
+  border: solid thin black;
+  border-collapse: collapse;
+}
+a:link, a:visited {
+  color: dodgerblue;
+  text-decoration: none;
+}
+
+</style>
+<script
+ src="https://code.jquery.com/jquery-2.2.3.min.js"
+ integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+  crossorigin="anonymous">
+</script>
+<script>
+$(document).ready(function() {
+  $('#folderSelect').change(function() {
+    folder = $('#folderSelect').val();
+    location.href = "index.php?path=" + folder;
+  });
+});
+</script>
+</head>
+
+<body style="margin-left:4%;margin-right:4%;">
+<h1>(*title*)</h1>
+<p style="text-align:center;"><a href="/">HOME</a></p>
+
+<div style="background-color:#f0f0f0;padding:3px;">
+Current Directory:
+&nbsp;
+<span style="color:blue;">(*current*)</span>
+</div>
+<div style="padding:6px;margin-left:5%;width:300px;float:left;">
+Bookmark:
+<select id="folderSelect" style="height:32px;border-radius:6px;">
+ (*dirlist*)
+</select>
+</div>
+
+<div style="float:left;padding:6px;">
+ <form>
+  Filter:&nbsp;<input type="text" name="filter" value="(*filter*)" style="height:32px;border-radius:6px;" />
+   <input type="submit" style="width:50px;height:38px;border-radius:6px;" />
+   <input type="hidden" name="path" value="(*path*)" />
+ </form>
+</div>
+<div style="clear:left;"></div>
+
+
+<div style="margin-top:20px;border:solid thin silver;padding:4px;">(*files*)</div>
+
+<div style="margin-top:20px;color:gree;">(*debug*)</div>
+
+<p>&nbsp;</p>
+<p style="text-align:center;"><a href="#top">TOP</a></p>
+<p>&nbsp;</p>
+</body>
+</html>
