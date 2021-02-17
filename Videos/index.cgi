@@ -1,6 +1,8 @@
+#!C:/python3/python.exe
 #!/usr/bin/env python3
 # -*- code=utf-8 -*-
 # MySQL Videos テーブル  ver1.70 2020-07-12  ビデオ表示機能追加
+# MySQL Videos テーブル  ver1.80 2021-02-17  降順・昇順機能追加
 from WebPage import WebPage
 import Common
 from MySQL import MySQL
@@ -42,6 +44,15 @@ class MainPage(WebPage) :
         else :
           sql = SELECT + f" WHERE folder = '1'"
         rows = self.__mysql.query(sql)
+      elif self.isParam('desc') :
+        desc = self.getParam('desc')
+        if desc == '1':
+          sql = SELECT + " ORDER BY id DESC"
+          self.setCookie('desc', '1')
+        else :
+          sql = SELECT + " ORDER BY id ASC"
+          self.setCookie('desc', '0')
+        rows = self.__mysql.query(sql)
       else :
         # フィルタ指定がない(通常の)場合
         if self.isParam('page') :
@@ -64,7 +75,10 @@ class MainPage(WebPage) :
             pass
           self.setCookie('page', self.page)
           self.setPlaceHolder('page', str(self.page+1) + "/" + str(nPage))
-          ids = self.__mysql.query("SELECT id FROM Videos ORDER BY id")
+          sql = "SELECT id FROM Videos ORDER BY id"
+          if self.isCookie('desc') == True and self.getCookie('desc') == '1' :
+           sql += " DESC"
+          ids = self.__mysql.query(sql)
           id0 = ids[self.page * LIMIT][0]
           sql = SELECT + " WHERE id >= {0} ORDER BY id LIMIT {1}".format(id0, LIMIT)
           rows = self.__mysql.query(sql)
