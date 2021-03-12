@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- showfolder.ejs -->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title><%= title %></title>
+        <link rel='stylesheet' href='/css/style.css' />
+        <script src="/js/jquery.min.js"></script>
+        <style>
+            .item {
+                margin-bottom: 16px;
+                font-size:smaller;
+            }
+            .number {
+                color:forestgreen;
+                font-weight: bold;
+            }
+        </style>
+        <script>
+            var separator = ";";
+
+            // 画像幅修正
+            function adjustWidth() {
+               $('img').each(function() {
+                   let imgwidth = $(this).prop('naturalWidth');
+                   if (imgwidth > window.innerWidth) {
+                      $(this).css('width', '95%');
+                   }
+               });
+            }
+
+            // パスリストを表示
+            function show_pathlist() {
+                var path_array = localStorage.image_pathlist.split(separator);
+                var str = "";
+                for (let i = 0; i < path_array.length; i++) {
+                  if (path_array[i] != "") {
+                    str += ("<li>" + path_array[i] + "</li>\n");
+                  }
+                }
+                $('.message').text('');
+                $('#pathlist').html(str);
+            }
+              
+            // パスリストをクリア
+            function clear_pathlist() {
+                localStorage.image_pathlist = "";
+                $('#pathlist').html("");
+            }
+            
+            // 画像がクリックされたとき、ローカルストレージにそのパスを追加
+            $(function() {
+                var src;
+                var p;
+                var path;
+                localStorage.image_pathlist = "";
+                $('img').click(function() {
+                  src = $(this).attr('src');
+                  p = src.split('=');
+                  path = p[1] + separator;
+                  localStorage.image_pathlist += path;
+            　  });
+            });
+        </script>
+    </head>
+
+    <body>
+        <h1><%= title %> <span style="color:navy;font-size:20pt;">(id: <%= id %>)</span></h1>
+        <div class="menu">
+            <a href="javascript:window.close()"><img src="/img/close2.png"> 閉じる</a>&nbsp;/&nbsp;
+            <a href="/showfolder/thumbs?path=<%= dir %>"><img src="/img/thumbs2.png"> サムネール一覧</a>&nbsp;/&nbsp;
+            <a href="/showfolder/?path=<%= dir %>&reverse=1"><img src="/img/reverse2.png">逆順で表示</a>&nbsp;/&nbsp;
+            <a href="javascript:adjustWidth()"><img src="/img/compress2.png"> 幅の大きい画像の幅をウィンドウに合わせる</a>&nbsp;/&nbsp;
+            <a href="javascript:show_pathlist();"><img src="/img/list2.png" /> クリックした画像のパス一覧を表示</a>&nbsp;/&nbsp;
+            <a href="javascript:clear_pathlist();"><img src="/img/clear2.png"> パス一覧をクリアする</a>
+        </div>
+        <br />
+        <p class="message"><%= message %></p>
+        <ul id="pathlist" style="margin-left:10%;font-size:smaller;color:darkgray;"></ul>
+        <br />
+        <% let i = 1; %>
+        <% for (let p of files) { %>
+            <% let url = `/getimage?path=${p}`; %>
+            <div class="item"><img src="<%= url %>"><br /><span class="number">(<%= i %> / <%= files.length %>)</span>&nbsp;&nbsp;&nbsp;<%= p %></div>
+            <% i += 1; %>
+        <% } %>
+
+        
+        <!-- フッター -->
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#top">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+
+    </body>
+</html>

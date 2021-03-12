@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<!-- フォルダ内のサムネール画像を表示する。-->
+<head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <body>
+        <h1><%= title %></h1>
+        <div class="menu">
+            <a href="/" target="_blank"><img src="/img/home.png" /> アルバム一覧</a>&nbsp;/&nbsp;
+            <a href="/pictures" target="_blank"><img src="/img/folder.png" /> 画像フォルダ一覧</a>&nbsp;/&nbsp;
+            <a href="/pictures/folderImages/<%= id %>" target="_blank"><img src="/img/photo2.png"> 画像一覧として表示</a>
+        </div>
+        <br />
+        <p class="message"><%= message %></p>
+        <br />
+        <% for (let i = 0; i < results.length; i++) { %>
+            <% let url = `<a href="/pictures/navigate/?path=${results[i]}">` + `<img src="/sendImage/?path=${results[i]}" style="width:18%;margin-bottom:20px;">` + "</a>"; %>
+            <%- url %>
+
+        <% } %>
+
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>        
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>サムネール画像ツール</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <style>
+            div.app {
+                border: solid thin gray;
+                padding: 12px;
+                font-size: small;
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>サムネール画像ツール</h1>
+        <div class="menu">
+            <a href="javascript:window.close()"><img src="/img/close2.png"> 閉じる</a>&nbsp;&nbsp;
+        </div>
+        <br />
+
+        <!-- サムネール画像ツール app1 -->
+        <h2>サムネール画像インポート</h2>
+        <p>ImageMagick などで作成したサムネール画像を BINDATA テーブルに挿入または更新する。</p>
+        <div id="app1" class="app">
+            <div class="form_row">
+                <label>サムネール画像のパス<br /><input type="text" v-model="path1" size="120" /></label>
+            </div>
+            <div class="form_row">
+                <label>更新の場合、対象の id (空欄の場合は挿入となります)<br /><input type="number" v-model="id1" size="10" /></label>
+            </div>
+            <div class="form_row">
+                <input type="button"  id="button1" value=" 実行 " v-on:click="button1_click" />&nbsp;
+                <input type="button"  id="btnBindataId" value=" BINDATA テーブルの id を取得 " v-on:click="btnBindataId_click" />&nbsp;
+                <input type="button"  id="btnClear1" value=" クリア " v-on:click="btnClear1_click" />
+            </div>
+            <br />
+            <p class="message" v-text="message1"></p>
+        </div>
+        <br />
+
+        <!-- 機能強化版サムネール画像ツール app2 -->
+        <h2>画像からサムネールを作成しそれをインポート および Pictures テーブル更新</h2>
+        <p>もとの画像からサムネールを作成し、それを BINDATA テーブルにインポートし、Pictures テーブルの id で指定されたレコードを更新する。</p>
+        <div id="app2" class="app">
+            <div class="form_row">
+                <label>元画像のパス<br /><input type="text" v-model="path2" size="120" /></label>
+            </div>
+            <div class="form_row">
+                <label>Pictures テーブルの関連付ける id<br /><input type="text" v-model="id2" size="10" /></label>
+            </div>
+            <div class="form_row">
+                <input type="button"  id="button2" value=" 実行 " v-on:click="button2_click" />&nbsp;
+                <input type="button"  id="btnClear2" value=" クリア " v-on:click="btnClear2_click" />
+            </div>            
+            <br />
+            <p class="message" v-text="message2"></p>
+        </div>
+        <br />
+
+
+        <!-- Vue.js スクリプト -->
+        <script>
+            'use strict';
+            /* サムネール画像ツール */
+            const URL1 = "/tools/ins_bindata";
+            const URL12 = "/tools/upd_bindata";
+            const URL11 = "/tools/bindata_maxid";
+            var app1 = new Vue({
+                el: "#app1",
+                data: {
+                    path1: "",
+                    id1: "",
+                    message1: ""
+                },
+                methods: {
+                    button1_click: async () => {
+                        if (app1.path1 == "") {
+                            alert("パスが空欄です。");
+                            return;
+                        }
+                        if (app1.id1) {
+                            // 更新
+                            const qs = new URLSearchParams({'path':app1.path1, 'id':app1.id1});
+                            let reqstr = URL12 + `?${qs}`;
+                            let p = (await fetch(reqstr)).text();
+                            p.then(text=>app1.message1 = text).catch(err=>app1.message1 = "エラーを検出。");                                
+                        }
+                        else {
+                            // 挿入
+                            const qs = new URLSearchParams({'path':app1.path1});
+                            let reqstr = URL1 + `?${qs}`;
+                            let p = (await fetch(reqstr)).text();
+                            p.then(text=>app1.message1 = text).catch(err=>app1.message1 = "エラーを検出。");                                
+                        }
+                    },
+                    btnClear1_click: () => {
+                        app1.path1 = "";
+                        app1.message1 = "";
+                    },
+                    btnBindataId_click: async () => {
+                        let p = (await fetch(URL11)).text();
+                        p.then(n => app1.message1 = "BINDATA の最大 id は " + n + " です。").catch(err=>app1.message1 = "エラーを検出。");
+                    }
+                }
+            });
+
+            /* 機能強化版サムネール画像ツール */
+            const URL2 = "/tools/ins_bindata3";
+            var app2 = new Vue({
+                el: "#app2",
+                data: {
+                    path2: "",
+                    id2: "",
+                    message2: ""
+                },
+                methods: {
+                    button2_click: async () => {
+                        if (app2.path2 == "") {
+                            alert("パスが空欄です。");
+                            return;
+                        }
+                        if (app2.id2 == "" || isNaN(parseInt(app2.id2))) {
+                            alert("id が空欄または不正です。");
+                            return;
+                        }
+                        const qs = new URLSearchParams({'path':app2.path2, 'id':app2.id2});
+                        let reqstr = URL2 + `?${qs}`;
+                        let p = (await fetch(reqstr)).text();
+                        p.then(text=>app2.message2 = text).catch(err=>app2.message2 = "エラーを検出。");
+                    },
+                    btnClear2_click: () => {
+                        app2.path2 = "";
+                        app2.id2 = "";
+                        app2.message2 = "";
+                    }
+                }
+            });
+
+        </script>
+
+        <!-- フッター -->
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>    
+    </body>
+</html>        

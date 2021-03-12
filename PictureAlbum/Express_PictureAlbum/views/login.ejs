@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>LOGIN</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.13.0/js/md5.js"></script>
+    <style>
+        form {
+            margin-left:auto;
+            margin-right:auto;
+            border:solid thin gray;
+            background-color:whitesmoke;
+            padding:12px;
+            width:50%;
+            border-radius: 6px 6px;
+            box-shadow: 3px 3px 6px;
+        }
+        input[type="password"] {
+            border-radius: 4px;
+            padding: 4px;          
+        }
+        button {
+            border-radius: 5px;
+            background-color: lime;
+            height: 34px;
+        }
+        #userid {
+            ime-mode: inactive;
+        }
+        .caption {
+            margin-top:10px;
+        }
+        ul.radios {
+            list-style-type:none;
+            padding:6px;
+            border:solid thin gray;
+            width:50%;margin-top:0px;
+            border-radius:6px;
+            background-color: snow;
+        }
+    </style>
+    <script>
+        $(() => {
+            /* ログインボタン */
+            $('#btnLogin').click(() =>{
+                let password = md5($("#password").val());
+                $('#password').val(password);
+                $('#form1').submit();
+            });
+
+            /* ユーザ管理者ボタン */
+            $('#btnAdmin').click(() => {
+                let userid = $("#userid").val();
+                let password = md5($("#password").val());
+                location.href = `/users/admin?userid=${userid}&password=${password}`;    
+            });
+
+            /* クリア */
+            $("#btnClear").click(() => {
+                $('#password').val('');
+                $('#password').focus();
+            });
+        });
+    </script>
+</head>
+
+<body>
+  <h1><img src="/img/photo.png" /> 画像アルバム ログイン</h1>
+  <br />
+  <form id="form1" method="POST" action="/users/login">
+    <div class="form-row" style="margin-left:10%;">
+        <div class="caption">ユーザ ID</div>
+        <div><input type="text" name="userid" id="userid" size="50" value="<%= userid %>" autofocus /></div>
+    </div>
+    <div class="form-row" style="margin-left:10%;">
+        <div class="caption">パスワード</div>
+        <div><input type="password" name="password" id="password" size="50" value="<%= password %>" /></div>
+    </div>
+    <div class="form-row" style="margin-left:10%;">
+        <div class="caption">開くページ</div>
+        <ul class="radios">
+            <li><label><input type="radio" name="page" id="page0" value="AlbumGroup" /> アルバムグループ</label></li>
+            <li><label><input type="radio" name="page" id="page1" value="Album" /> アルバム一覧</label></li>
+            <li><label><input type="radio" name="page" id="page2" value="Pictures" checked /> 画像フォルダ一覧</label></li>
+            <li><label><input type="radio" name="page" id="page3" value="Videos" /> ビデオ一覧</label></li>
+        </ul>
+    </div>
+    <br />
+    <div class="form-row" style="margin-left:10%;">
+        <button type="button" name="btnLogin" id="btnLogin"><b>ログイン</b></button>&nbsp;
+        <input type="button" name="btnAdmin" id="btnAdmin" value=" ユーザ管理 (管理者のみ) " />&nbsp;
+        <input type="button" name="btnClear" id="btnClear" value=" パスワードクリア " />
+    </div>
+    <p class="message"><%= message %></p>
+  </form>
+
+</body>
+</html>

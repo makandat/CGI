@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>データインポートツール</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <style>
+            div.app {
+                border: solid thin gray;
+                padding: 12px;
+                font-size: small;
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>データインポートツール</h1>
+        <div class="menu">
+            <a href="javascript:window.close()"><img src="/img/close2.png"> 閉じる</a>&nbsp;&nbsp;
+        </div>
+        <br />
+
+        <!-- ファイルリストから PictureAlbum テーブルへのインポート app1 -->
+        <h2>ファイルリストから PictureAlbum or Videos テーブルへのインポート</h2>
+        <p style="margin-left:7%;color:indigo;font-size:small;">(ヒント) 画像の場合のみだが、画像一覧表示で画像をクリックすることにより作成した画像ファイル一覧を PictureAlbum テーブルにインポートする。</p>
+        <div id="app1" class="app">
+            <div class="form_row">
+                <label>ファイル一覧 (クリップボードから貼り付ける)<br /><textarea v-model="filelist" cols="150" rows="12"></textarea></label>
+            </div>
+            <div class="form_row">
+                <label>アルバム番号<br /><input type="number" v-model="album" size="10" placeholder="1234" /></label>
+            </div>
+            <div class="form_row">
+                対象のテーブル
+                <ul style="list-style-type:none;border:solid thin gray;padding:10px;width:160px;margin-top:0px;">
+                    <li><label><input type="radio" v-model="table" value="PictureAlbum" /> PictureAlbum</label></li>
+                    <li><label><input type="radio" v-model="table" value="Videos" /> Videos</label></li>
+                </ul>
+            </div>
+            <div class="form_row">
+                <input type="button" id="button1" value=" インポート " v-on:click="button1_click" />&nbsp;
+                <input type="button" id="btnClear1" value=" クリア " v-on:click="btnClear1_click" />
+            </div>
+            <br />
+            <p class="message" v-text="message1"></p>
+        </div>
+        <br />
+
+        <!-- 指定フォルダに含まれる動画/画像ファイルを Videos / PictureAlbum テーブルにインポート app2 -->
+        <h2>指定フォルダに含まれる動画ファイルを PictureAlbum or Videos テーブルにインポート</h2>
+        <div class="app" id="app2">
+            <div class="form_row">
+                フォルダのパス<br /><input type="text" v-model="folder" size="150" />
+            </div>
+            <div class="form_row">
+                アルバム番号<br /><input type="number" v-model="album" size="10" placeholder="1234" />
+            </div>
+            <div class="form_row">
+                対象のテーブル
+                <ul style="list-style-type:none;border:solid thin gray;padding:10px;width:160px;margin-top:0px;">
+                    <li><label><input type="radio" v-model="table" value="PictureAlbum" /> PictureAlbum</label></li>
+                    <li><label><input type="radio" v-model="table" value="Videos" /> Videos</label></li>
+                </ul>
+            </div>
+            <div class="form_row">
+                <input type="button" id="button2" value=" インポート " v-on:click="button2_click" />&nbsp;
+                <input type="button" id="btnClear2" value=" クリア " v-on:click="btnClear2_click" />
+            </div>
+            <br />
+            <p class="message" v-text="message2"></p>
+        </div>
+        
+        <!-- Vue.js スクリプト -->
+        <script>
+            'use strict';
+            /* app1 */
+            const URL1 ="/tools/import_filelist";
+            var app1 = new Vue({
+                el: "#app1",
+                data: {
+                    filelist: "",
+                    album: "",
+                    table:"PictureAlbum",
+                    message1: ""
+                },
+                methods: {
+                    button1_click: async () => {
+                        if (app1.filelist == "") {
+                            alert("ファイルリストが空です。");
+                            return;
+                        }
+                        if (app1.album == "") {
+                            alert("アルバム番号が空です。");
+                            return;
+                        }
+                        const method = "POST";
+                        const headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
+                        let body = JSON.stringify({'filelist':app1.filelist, 'album':app1.album, 'table':app1.table});
+                        let p = (await fetch(URL1, {method, headers, body})).text();
+                        p.then(value=>app1.message1 = value).catch(err=>app2.message2 = "エラーを検出。");
+                    },
+                    btnClear1_click: () => {
+                        app1.filelist = "";
+                        app1.message1 = "";
+                    }
+                }
+            });
+
+            /* app2 */
+            const URL2 ="/tools/import_folder";
+            var app2 = new Vue({
+                el: "#app2",
+                data: {
+                    folder: "",
+                    album: "",
+                    table: "Videos",
+                    message2: ""
+                },
+                methods: {
+                    button2_click: async () => {
+                        app2.message2 = "実行中！しばらくお待ちください。";
+                        if (app2.folder == "") {
+                            alert("フォルダのパスが空欄です。");
+                            return;
+                        }
+                        if (app2.album == "") {
+                            alert("アルバム番号が空欄です。");
+                            return;
+                        }
+                        let qs = new URLSearchParams({'folder':app2.folder, 'album':app2.album, 'table':app2.table});
+                        let reqstr = URL2 + `?${qs}`;
+                        let p = (await fetch(reqstr)).text();
+                        p.then(text => app2.message2 = text).catch(err => app2.message2 = "エラーを検出。");
+                    },
+                    btnClear2_click: () => {
+                        app2.folder = "";
+                        app2.album = "";
+                        app2.message2 = "";
+                    }
+                }
+            });
+        </script>
+
+        <!-- フッター -->
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>    
+    </body>
+</html>        

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ビデオの追加・更新</title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="/js/jquery.min.js"></script>
+    <style>
+        form {
+            margin-left:5%;
+            margin-right:5%;
+            font-size:small;
+            padding:16px;
+            border:solid thin skyblue;    
+        }
+    </style>
+    <script>
+      $(() => {
+          /* データ確認 */
+          $('#btnConfirm').click(() =>{
+            let id = $('#id').val();
+            if (id == "") {
+                alert("id が空欄です。");
+                return;
+            }
+            location.href = "/video/confirm/" + id;
+          });
+
+          /* クリア */
+          $('#btnClear').click(() => {
+            $("input[type='text']").val('');
+            $("#fav").val('0');
+            $("#bindata").val('0');
+          });
+      })
+    </script>
+  </head>
+  <body>
+    <h1>ビデオの追加・更新</h1>
+    <div class="menu">
+        <a href="javascript:window.close()"><img src="/img/close2.png" /> 閉じる</a>
+    </div>
+    <br /><p class="message"><%= message %></p><br />
+
+    <form id="form1" method="POST" action="/video/modify_video">
+        <div class="form_row">
+            id<br /><input type="number" name="id" id="id" size="10" value="<%= id %>" />
+        </div>
+        <div class="form_row">
+            アルバム番号 (album)<br /><input type="number" name="album" id="album" size="10" value="<%= album %>" />
+        </div>
+        <div class="form_row">
+            タイトル (title)<br /><input type="text" name="title" id="title" size="60" value="<%= title %>" />
+        </div>
+        <div class="form_row">
+            パス名 (path)<br /><input type="text" name="path" id="path" size="150" value="<%= path %>" />
+        </div>
+        <div class="form_row">
+            作者 (creator)<br /><input type="text" name="creator" id="creator" size="60" value="<%= creator %>" />
+        </div>
+        <div class="form_row">
+            シリーズ (series)<br /><input type="text" name="series" id="series" size="60" value="<%= series %>" />
+        </div>
+        <div class="form_row">
+            種別 (mark)<br /><input type="text" name="mark" id="mark" size="30" value="<%= mark %>" />
+        </div>
+        <div class="form_row">
+            情報 (info)<br /><input type="text" name="info" id="info" size="150" value="<%= info %>" />
+        </div>
+        <div class="form_row">
+            お気に入り (fav)<br /><input type="number" name="fav" id="fav" size="4" value="<%= fav %>" />
+        </div>
+        <div class="form_row">
+            イメージリンク (bindata)<br /><input type="number" name="bindata" id="bindata" size="10" value="<%= bindata %>" />
+        </div>
+        <div class="form_row">
+            <br /><input type="submit" id="btnSubmit" value=" 送信 " />&nbsp;
+            <input type="button" id="btnConfirm" value=" データ確認 " />&nbsp;
+            <input type="button" id="btnClear" value=" クリア " />
+        </div>
+    </form>
+
+    <p>&nbsp;</p>
+  </body>
+</html>

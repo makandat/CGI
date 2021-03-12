@@ -1,0 +1,133 @@
+h1 {
+  text-align: center;
+  color: mediumvioletred;
+  padding: 4px;
+  margin-top: 20px;
+  font-size: 3em;
+}
+
+h2 {
+  margin-top: 30px;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-bottom:6px;
+  color: orangered;
+  border-left: solid 20px crimson;
+}
+
+h3 {
+  margin-top:30px;
+  color: darkorange;
+}
+
+h4 {
+  margin-top: 10px;
+  color: indigo;
+}
+
+a:link, a:visited {
+  color: dodgerblue;
+  text-decoration: none;
+  font-family: "Meiryo UI","Meiryo";
+}
+
+body {
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.blk {
+  padding: 6px;
+}
+
+table, th, td {
+  border: solid thin gray;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 2px;
+  font-size: small;
+}
+
+th {
+  background-color: linen;
+  padding: 4px;
+}
+
+.menu {
+  border: dotted thin gray;
+  padding: 3px;
+  padding-left: 8px;
+  background-color: #d9f7fc;
+}
+
+.menubar {
+  border: dotted thin gray;
+  padding: 3px;
+  padding-left: 8px;
+  text-align:center;
+  background-color: #f0f0e0;
+}
+
+.quote {
+  margin-left: 7%;
+  padding: 6px;
+}
+
+
+.src {
+  font-size: small;
+  color: navy;
+  padding: 5px;
+  border: dotted thin gray;
+}
+
+.message {
+  text-align:center;
+  font-size:14pt;
+  color:indigo;
+}
+
+.form_row {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+input[type="text"] {
+  border-radius: 4px;
+  padding: 4px;
+}
+
+input[type="password"] {
+  border-radius: 4px;
+  padding: 4px;
+}
+
+input[type="number"] {
+  border-radius: 4px;
+  padding: 4px;
+}
+
+input[type="submit"] {
+  border-radius: 6px;
+  height: 32px;
+}
+
+input[type="submit"]:hover {
+  background-color: aquamarine;
+}
+
+input[type="button"] {
+  border-radius: 6px;
+  height: 32px;
+}
+
+input[type="button"]:hover {
+  background-color: lemonchiffon;
+}
+
+select {
+  border-radius: 6px;
+  height: 30px;
+}

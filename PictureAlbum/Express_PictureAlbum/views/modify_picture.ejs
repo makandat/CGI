@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- PictureAlbum テーブルのデータ挿入と更新 -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="/js/jquery.min.js"></script>
+    <!-- JavaScript -->
+    <script>
+      $(() => {
+        $("#confirm").click(() => {
+          let id = $('#id').val();
+          if (id == '') {
+            alert("正しく id を指定してください。")
+          }
+          else {
+            location.href = `/modify_picture/confirm/${id}`;
+          }
+        });
+
+        $("#clear").click(() => {
+          $("input[type='text']").val("");
+          $("input[type='number']").val("0");
+          $("#id").val("");
+        });
+      });
+    </script>
+    <style>
+      form {
+        font-size:small;
+        padding:16px;
+        border:solid thin darkred;
+        margin-left:5%;
+        margin-right:5%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HTML 本体 -->
+    <h1><%= title %></h1>
+    <!-- メニュー -->
+    <div class="menu">
+      <a href="javascript:window.close()"><img src="/img/close2.png" /> 閉じる</a>&nbsp;/&nbsp;
+      <a href="/help.html" target="_blank"><img src="/img/question2.png" /> ヘルプ</a>
+    </div>
+    <br />
+    <!-- メッセージ -->
+    <p class="message"><%= message %></p>
+    <br />
+    <!-- フォーム -->
+    <form method="POST" action="/modify_picture">
+      <div class="form_row">
+        番号 (id)<br />
+        <input type="number" name="id" id="id" size="10" value="<%= id %>" />
+      </div>
+      <div class="form_row">
+        アルバム番号<br />
+        <input type="number" name="album" id="album" size="10" value="<%= album %>" />
+      </div>
+      <div class="form_row">
+        タイトル<br />
+        <input type="text" name="name" id="name" size="100" value="<%= name %>" />
+      </div>
+      <div class="form_row">
+        作者<br />
+        <input type="text" name="creator" id="creator" size="50" value="<%= creator %>" />
+      </div>
+      <div class="form_row">
+        画像ファイルのパス名<br />
+        <input type="text" name="path" id="path" size="120" value="<%= path %>" autofocus />
+      </div>
+      <div class="form_row">
+        情報<br />
+        <input type="text" name="info" id="info" size="120" value="<%= info %>" />
+      </div>
+      <div class="form_row">
+        好き<br />
+        <input type="number" name="fav" id="fav" size="4" value="<%= fav%>" />
+      </div>
+      <div class="form_row">
+        イメージリンク<br />
+        <input type="number" name="bindata" id="bindata" size="10" value="<%= bindata %>" />
+      </div>
+      <div class="form_row">
+        Pictures ID<br />
+        <input type="number" name="picturesid" id="picturesid" size="10" value="<%= picturesid %>" />
+      </div>
+      <br />
+      <div class="form_row">
+        <input type="submit" name="submit" id="submit" value=" 追加・修正 " />&nbsp;
+        <input type="button" name="confirm" id="confirm" value=" データ確認 " />&nbsp;
+        <input type="button" name="clear" id="clear" value=" クリア " />&nbsp;
+      </div>
+    </form>
+    <br />
+    <p>注意：「データ確認」をもう一度、クリックすると Pictures ID を取得できます。</p>
+    <p>(使用方法) id が空欄の場合は「追加」になります。id が数の場合は、最初に「データ確認」を行い必要なデータを修正します。次に「追加・修正」ボタンクリックすると「修正」として機能します。</p>
+    <p>&nbsp;</p>
+    <p style="text-align:center;"><a href="#top">TOP</a></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </body>
+</html>

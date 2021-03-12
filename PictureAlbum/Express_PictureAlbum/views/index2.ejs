@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="/js/jquery.min.js"></script>
+    <style>
+      .version {
+        font-size: 20pt;
+        color:darkmagenta;
+      }
+      figure {
+        width:8%;
+        height:130px;
+        display:inline-block;
+      }
+      figcaption {
+        margin-top:0px;
+        font-size:smaller;
+        color:darkgray;
+      }
+    </style>
+    <script>
+      $(() => {
+        /* アルバムグループの選択 */
+        $("#groupname").change(() => {
+          let v = $("#groupname").val();
+          if (v.startsWith("----")) {
+            return;
+          }
+          else {
+            location.href = "/groupname?name=" + v;
+          }
+        });
+      })
+    </script>
+  </head>
+  <body>
+    <h1><%= title %><br /><span class="version">Version <%= version %></span></h1>
+    <div class="menu">
+      <a href="/icon"><img src="/img/refresh2.png" /> 表示リセット</a>&nbsp;/&nbsp;
+      <a href="/album_group.html"><img src="/img/thumbs2.png" /> アルバムグループ</a>&nbsp;/&nbsp;
+      <a href="/"><img src="/img/list2.png" /> 詳細表示</a>&nbsp;/&nbsp;
+      <a href="/modify_album" target="_blank" title="Album テーブルへの追加・更新"><img src="/img/form.png" /> アルバムの作成・修正</a>&nbsp;/&nbsp;
+      <a href="/modify_picture" target="_blank" title="PictureAlbum テーブルへの追加・更新"><img src="/img/form.png" /> 画像の追加・修正</a>&nbsp;/&nbsp;
+      <a href="/modify_folder" target="_blank" title="Pictures テーブルへの追加・更新"><img src="/img/form.png" /> 画像フォルダの追加・修正</a>&nbsp;/&nbsp;
+      <a href="/reverse"><img src="/img/reverse2.png" /> 逆順で表示</a>&nbsp;/&nbsp;
+      アルバムグループの選択　<select id="groupname">
+        <option>---------------</option>
+        <option value="ALL">すべて</option>
+        <option value="NONAME">名前なし</option>
+        <% for (let gname of albumgroups) { %>
+          <option><%= gname %></option>
+        <% } %>
+      </select>&nbsp;///&nbsp;
+      <a href="/pictalbum/details/?pictalbum=ALL" title="PictureAlbum テーブルの内容一覧" target="_blank"><img src="/img/photo2.png" /> アルバム画像一覧</a>&nbsp;/&nbsp;
+      <a href="/pictures" title="Pictures テーブルの内容一覧" target="_blank"><img src="/img/folder.png" /> 画像フォルダ一覧</a>&nbsp;/&nbsp;
+      <a href="/bindata" title="BINDATA テーブルの内容一覧" target="_blank"><img src="/img/thumbs2.png" /> サムネール画像一覧</a>&nbsp;/&nbsp;
+      <a href="/creators" title="Creators テーブルの内容一覧" target="_blank"><img src="/img/photo2.png" /> 作者一覧</a>&nbsp;/&nbsp;
+      <a href="/video" target="_blank"><img src="/img/video2.png" /> ビデオアルバムへ</a>&nbsp;/&nbsp;
+      <a href="/tool.html" target="_blank"><img src="/img/tool2.png" /> ツール</a>&nbsp;/&nbsp;
+      <a href="/help.html" target="_blank"><img src="/img/question2.png" /> ヘルプ</a>&nbsp;/&nbsp;
+      <a href="/users/logout"><img src="/img/logout2.png" /> ログアウト</a>
+    </div>
+    <br />
+    <p class="message"><%= message %></p>
+
+    <!-- アルバム一覧のアイコンを作成する。-->
+    <% for (let album of albums) { %>
+      <figure><a href="/pictalbum/?album=<%= album.id %>" target="_blank"><img src="<%= album.icon %>" /></a><figcaption><a href="/pictalbum/?album=<%= album.id %>" target="_blank"></a><%- album.caption %></a></figcaption></figure>
+    <% } %>
+
+
+    <!-- フッター -->
+    <p>&nbsp;</p>
+    <p style="text-align:center;"><a href="#">TOP</a></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </body>
+</html>

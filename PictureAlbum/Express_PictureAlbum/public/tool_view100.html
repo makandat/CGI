@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>テーブルデータ最新100件</title>
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <style>
+            div.app {
+                border: solid thin gray;
+                padding: 12px;
+                font-size: small;
+                margin-left:5%;
+                margin-right:5%;
+            }
+            table {
+                margin-left:auto;
+                margin-right:auto;
+                margin-bottom:40px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>テーブルデータ最新100件</h1>
+        <div class="menu">
+            <a href="javascript:window.close()"><img src="/img/close2.png"> 閉じる</a>&nbsp;&nbsp;
+        </div>
+        <br />
+        <div id="app1" class="app">
+            <div class="form_row" style="margin-left:10%;">
+                表示するテーブル<br />
+                <ul style="list-style-type:none;margin-top:0px;padding:6px;border:solid thin gray;width:30%;">
+                    <li><label><input type="radio" v-model="table" value="Pictures" /> Pictures</label></li>
+                    <li><label><input type="radio" v-model="table" value="PictureAlbum" /> PictureAlbum</label></li>
+                    <li><label><input type="radio" v-model="table" value="Album" /> Album</label></li>
+                    <li><label><input type="radio" v-model="table" value="BINDATA" /> BINDATA</label></li>
+                    <li><label><input type="radio" v-model="table" value="Creators" /> Creators</label></li>
+                    <li><label><input type="radio" v-model="table" value="PicturesManga" /> PictureManga</label></li>
+                    <li><label><input type="radio" v-model="table" value="PicturesHcg" /> PictureHcg</label></li>
+                    <li><label><input type="radio" v-model="table" value="PicturesDoujin" /> PictureDoujin</label></li>
+                    <li><label><input type="radio" v-model="table" value="PicturesPixiv" /> PicturePixiv</label></li>
+                    <li><label><input type="radio" v-model="table" value="PicturesTime" /> PictureTime</label></li>
+                    <li><label><input type="radio" v-model="table" value="Videos" /> Videos</label></li>
+                </ul>
+            </div>
+            <div class="form_row" style="margin-left:10%;">
+                <input type="button" id="button1" value=" 表示 " style="width:180px;" v-on:click="button1_click" />
+            </div>
+            <br />
+            <p id="message1" class="message" v-text="message1"></p>
+            <br />
+            <div id="content" v-html="content1"></div>
+        </div>
+
+        <script>
+            const URL1 = "/tools/view100"
+            var app1 = new Vue({
+                el: "#app1",
+                data: {
+                    table: "Pictures",
+                    message1: "",
+                    content1: ""
+                },
+                methods: {
+                    button1_click: async () => {
+                        const qs = new URLSearchParams({'table':app1.table});
+                        let reqstr = URL1 + `?${qs}`;
+                        let p = (await fetch(reqstr)).json();
+                        p.then((json) => {
+                            app1.message1 = json.message;
+                            app1.content1 = json.content;
+                        })
+                        .catch(err=>app1.message1 = "エラーを検出。");
+                    }
+                }
+            });
+        </script>
+        <!-- フッター -->
+        <p>&nbsp;</p>
+        <p style="text-align:center;"><a href="#">TOP</a></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+    </body>
+</html>

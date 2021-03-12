@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>画像アルバム for Express4 ヘルプ</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .block1 {
+          margin-top:10px;
+          margin-bottom:12px;
+          margin-left:3%;
+          margin-right:3%;
+      }
+      .block2 {
+        margin-top:10px;
+        margin-bottom:12px;
+        margin-left:3%;
+        margin-right:3%;
+      }
+      .src {
+        margin-left: 4%;
+        margin-right: 4%;
+        padding: 5px;
+      }
+  </style>
+  </head>
+
+  <body>
+    <!-- ヘッダー -->
+    <h1>画像アルバム for Express4 ヘルプ</h1>
+    <div class="menu"><a href="javascript:window.close();">閉じる</a></div>
+    <br />
+    <!-- 本文 -->
+    <div class="block1">
+      <h2>基本的なこと</h2>
+      <div class="block2">
+        <h3>要件</h3>
+        <ul>
+          <li>Node.js v10.x or upper</li>
+          <li>Express 4.x</li>
+          <li>jQuery v1.x or upper</li>
+          <li>MySQL v5.x or MariaDB v10.x</li>
+          <li>Not Internet Explorer</li>
+        </ul>
+      </div>
+      <div class="block2">
+        <h3>インストール</h3>
+        <p>基本的には PictureApbum フォルダをまるごとコピーすればよい。開発環境を最初から作る場合は、次のようにする。</p>
+        <ul>
+          <li>npx express-generator --view=ejs PictureAlbum</li>
+          <li>cd PictureAlbum</li>
+          <li>npm install</li>
+          <li>npm install mysql</li>
+          <li>npm install express-session</li>
+          <li>npm install serve-favicon</li>
+        </ul>
+      </div>
+    <div class="block2">
+      <h3>実行</h3>
+      <p>PictureAlbum フォルダへ移動して、次のようにすると実行できる。</p>
+      <pre class="src">npm start</pre>
+      <br />
+      <p>デバッグモードでは次のようにする。</p>
+      <pre class="src">(Linux の場合) DEBUG=PictureAlbum:* & npm start
+(Windows の場合) SET DEBUG=PictureAlbum:* & npm start</pre>
+      <br />
+      <p>ブラウザで http://localhost:3000 を開く。もし、ポートを変更する場合は、環境変数 PORT にポート番号を設定する。</p>
+      <pre class="src">PORT=3030
+DEBUG=PictureAlbum:* & npm start</pre>
+    </div>
+  </div>
+  <br />
+
+  <div class="block1">
+    <h2>ページ遷移</h2>
+    <img src="/img/PictureAlbum.svg" style="width:50%;margin-left:20%;" />
+    <p>&nbsp;</p>
+    <table style="width:80%;margin-left:5%;">
+      <tr><th>ページ</th><th>種別</th><th>ルート</th><th>ルータ</th><th>ビュー</th><th>備考</th></tr>
+      <tr><td>アルバム一覧表示</td><td>ルート</td><td>/</td><td>index.js</td><td>index.ejs</td><td>メインページ、Album テーブルの一覧表示</td></tr>
+      <tr><td>アルバム画像一覧表示</td><td>ルート</td><td>/pictalbum?album=...</td><td>pictalbum.js</td><td>pictalbum.ejs</td><td>メインページから表示、PictureAlbum テーブルの一覧表示</td></tr>
+      <tr><td>アルバムの作成・修正</td><td>ルート</td><td>/modify_album</td><td>modify_album.js</td><td>modify_album.ejs</td><td>Album テーブルの操作</td></tr>
+      <tr><td>画像の追加・修正</td><td>ルート</td><td>/modify_picture</td><td>modify_picture.js</td><td>modify_picture.ejs</td><td>PictureAlbum テーブルの操作</td></tr>
+      <tr><td>画像フォルダの追加・修正</td><td>ルート</td><td>/modify_folder</td><td>modify_folder.js</td><td>modify_folder.ejs</td><td>Pictures テーブルの操作</td></tr>
+      <tr><td>逆順で表示</td><td>ルート</td><td>/reverse</td><td>index.js</td><td>index.ejs</td><td>アルバム一覧表示の降順・昇順変更</td></tr>
+      <tr><td>アルバムグループの選択</td><td>ルート</td><td>/groupname?name=...</td><td>index.js</td><td>index.ejs</td><td>指定したアルバムグループのみ表示</td></tr>
+      <tr><td>画像フォルダ一覧</td><td>ルート</td><td>/pictures</td><td>pictures.js</td><td>pictures.ejs</td><td>画像フォルダ一覧表示 (Pictures テーブル)</td></tr>
+      <tr><td>サムネール画像一覧</td><td>ルート</td><td>/thumbs</td><td>bindata.js</td><td>bindata.ejs</td><td>BINDATA テーブルの内容一覧</td></tr>
+      <tr><td>ツール</td><td>静的ファイル</td><td></td><td></td><td></td><td>ツール類の説明と実行</td></tr>
+      <tr><td>ヘルプ</td><td>静的ファイル</td><td></td><td></td><td></td><td>このヘルプを表示する。</td></tr>
+    </table>
+  </div>
+  <br />
+
+  <div class="block1">
+    <h2>操作メニュー</h2>
+    <div class="block2">
+      <h3>アルバム一覧 (/)</h3>
+      <ul>
+        <li>表示リセット<br />id の降順で最新の状態を表示する。</li>
+        <li>アルバムの作成・修正<br />アルバムを新規に作成したり、既存のアルバム情報を修正する。</li>
+        <li>画像の追加・修正<br />PictureAlbum テーブルのアルバムに関連付けられた画像を追加したり修正する。Pictures ID を設定することで、Pictures テーブルに関連付けもできる。</li>
+        <li>画像フォルダの追加・修正<br />Pictures テーブルに画像フォルダを追加したり修正する。</li>
+        <li>逆順で表示<br />アルバム一覧表示を id の降順・昇順に切り替えて表示する。</li>
+        <li>アルバムグループの選択<br />アルバムのグループ名ごとに一覧を表示する。</li>
+        <li>画像フォルダ一覧<br />Pictures テーブルの内容一覧を表示する。</li>
+        <li>サムネール画像一覧<br />BINDATA テーブルの内容一覧を表示する。</li>
+        <li>ツール<br />各種ツール類の説明と実行</li>
+        <li>ヘルプ<br />このヘルプを開く。</li>
+      </ul>
+    </div>
+  </div>
+  <br />
+
+  <div class="block1">
+    <h2>データベース</h2>
+    <div class="block2">
+      <h3>接続情報</h3>
+      <p>スキーマは "user" である。データベースへの接続情報は mysql.json ファイルに保存しておく。</p>
+      <pre>(例) {"host":"localhost", "user":"user", "password":"********", "database":"user"}</pre>
+      <br />
+    </div>
+    <br />
+    <div class="block2">
+    <h3>テーブル</h3>
+    <table>
+      <tr><th>テーブル名</th><th>種別</th><th>機能</th><th>備考</th></tr>
+      <tr><td>Album</td><td>基本</td><td>アルバム管理</td><td></td></tr>
+      <tr><td>PictureAlbum</td><td>基本</td><td>アルバムに含まれる画像ファイルを管理するテーブル</td><td></td></tr>
+      <tr><td>Pictures</td><td>基本</td><td>アルバムとは直接関係ないものも含む画像フォルダ管理テーブル</td><td></td></tr>
+      <tr><td>BINDATA</td><td>基本</td><td>サムネール画像管理テーブル</td><td></td></tr>
+      <tr><td>PicturesManga</td><td>派生 (Pictures)</td><td>mark="MANGA" 条件で Pictures から抽出したテーブル</td><td>sn フィールドは連続化</td></tr>
+      <tr><td>PicturesHcg</td><td>派生 (Pictures)</td><td>mark="HCG" 条件で Pictures から抽出したテーブル</td><td>sn フィールドは連続化</td></tr>
+      <tr><td>PicturesDoujin</td><td>派生 (Pictures)</td><td>mark="DOUJIN" 条件で Pictures から抽出したテーブル</td><td>sn フィールドは連続化</td></tr>
+      <tr><td>PicturesPixiv</td><td>派生 (Pictures)</td><td>mark="PIXIV" 条件で Pictures から抽出したテーブル</td><td>sn フィールドは連続化</td></tr>
+      <tr><td>Creators</td><td>派生 (Pictures)</td><td>Pictures テーブルから作者 (creator) を取り出したテーブル</td><td></td></tr>
+      <tr><td>PicturesTime</td><td>派生 (Pictures)</td><td>date をキーに並べ替えを行ったテーブル</td><td>sn フィールドは連続化</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div>
+    <p>&nbsp;</p>
+    <p style="text-align:center;"><a href="#top">TOP</a></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </div>
+  </body>
+</html>
