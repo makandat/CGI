@@ -1,4 +1,4 @@
-#!C:/python3/python.exe
+#!C:/Python3/python.exe
 #!/usr/bin/env python3
 # -*- code=utf-8 -*-
 # MySQL Videos テーブル  ver1.70 2020-07-12  ビデオ表示機能追加
@@ -8,7 +8,7 @@ import Common
 from MySQL import MySQL
 import math
 
-SELECT = 'SELECT id, title, path, creator, series, mark, info, fav, count, bindata, album, folder FROM Videos'
+SELECT = 'SELECT id, title, path, media, series, mark, info, fav, count, bindata, album, folder FROM Videos'
 LIMIT = 100
 
 # CGI WebPage クラス

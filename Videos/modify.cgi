@@ -1,5 +1,5 @@
+#!C:\Program Files\Python3\python.exe
 #!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 # Videos テーブルのデータ追加・修正 modify.cgi  ver1.60 2019-10-08
 #   MySQL を利用
@@ -10,9 +10,9 @@ import Common
 import Text
 #from syslog import syslog
 
-SELECT = "SELECT title, path, creator, series, mark, info, fav, count, bindata, album FROM Videos WHERE id = {0}"
-INSERT = "INSERT INTO Videos(title, path, creator, series, mark, info, fav, count, bindata, album, folder) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}')"
-UPDATE = "UPDATE Videos SET title='{1}', path='{2}', creator='{3}', series='{4}', mark='{5}', info='{6}', fav={7}, count={8}, bindata={9}, album={10} WHERE id={0};"
+SELECT = "SELECT title, path, media, series, mark, info, fav, count, bindata, album FROM Videos WHERE id = {0}"
+INSERT = "INSERT INTO Videos(title, path, media, series, mark, info, fav, count, bindata, album, folder) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}')"
+UPDATE = "UPDATE Videos SET title='{1}', path='{2}', media='{3}', series='{4}', mark='{5}', info='{6}', fav={7}, count={8}, bindata={9}, album={10} WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -47,7 +47,7 @@ class MainPage(WebPage) :
       id = self.getParam('id')
       title = self.getParam('title')
       path = self.getParam('path').replace("\\", "/")
-      creator = self.getParam('creator')
+      media = self.getParam('media')
       series = self.getParam('series')
       mark = self.getParam('mark')
       info = self.getParam('info')
@@ -57,11 +57,11 @@ class MainPage(WebPage) :
       album = self.getParam('album')
       if title == "" or path == "" :
         self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
-        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
         return
-      sql = UPDATE.format(id, title, path, creator, series, mark, info, fav, count, bindata, album)
+      sql = UPDATE.format(id, title, path, media, series, mark, info, fav, count, bindata, album)
       self.client.execute(sql)
-      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
       self.setPlaceHolder('message', f"id={id} 修正 OK")
     except Exception as e:
       self.setPlaceHolder('message', "修正 NG : " + str(e))
@@ -74,7 +74,7 @@ class MainPage(WebPage) :
       id = ""
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("\\", "/", self.getParam('path'))
-      creator = self.getParam('creator')
+      media = self.getParam('media')
       series = self.getParam('series')
       mark = self.getParam('mark')
       info = self.getParam('info')
@@ -85,15 +85,15 @@ class MainPage(WebPage) :
       folder = '1' if fs.isDirectory(self.getParam('path')) else '0';
       if title == "" or path == "" :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
-        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+        self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
         return
-      sql = INSERT.format(title, path, creator, series, mark, info, fav, count, bindata, album, folder)
+      sql = INSERT.format(title, path, media, series, mark, info, fav, count, bindata, album, folder)
       self.client.execute(sql)
-      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
       self.setPlaceHolder('message', title + " 追加 OK")
     except Exception as e:
       self.setPlaceHolder('message', "追加 NG : " + str(e))
-      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
+      self.embed({'id':id, 'title':self.getParam('title'), 'path':self.getParam('path'), 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'album':album})
     return
 
   # データ取得
@@ -104,11 +104,11 @@ class MainPage(WebPage) :
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
-        creator = MainPage.setNoneToEmpty(row[2])
+        media = MainPage.setNoneToEmpty(row[2])
         series = MainPage.setNoneToEmpty(row[3])
         mark = MainPage.setNoneToEmpty(row[4])
         info = MainPage.setNoneToEmpty(row[5])
-        self.embed({'id':id, 'title':row[0], 'path':row[1], 'creator':creator, 'series':series, 'mark':mark, 'info':info, 'fav':row[6], 'count':row[7], 'bindata':row[8], 'album':row[9]})
+        self.embed({'id':id, 'title':row[0], 'path':row[1], 'media':media, 'series':series, 'mark':mark, 'info':info, 'fav':row[6], 'count':row[7], 'bindata':row[8], 'album':row[9]})
         self.setPlaceHolder('message', f"id={id} クエリー OK")
       else :
         self.clearAll(int(id))
@@ -123,7 +123,7 @@ class MainPage(WebPage) :
     id2 = str(id)
     if id < 0 :
       id2 = ""
-    self.embed({'id':id2, 'title':'', 'path':'', 'creator':'', 'series':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0, 'album':0})
+    self.embed({'id':id2, 'title':'', 'path':'', 'media':'', 'series':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0, 'album':0})
     return
     return
 
