@@ -14,7 +14,7 @@ if os.name != 'nt' :
 # ================
 class WebPage :
   APPCONF = "AppConf.ini"
-        
+
     # コンストラクタ
   def __init__(self, template="") :
     self.headers = ["Content-Type: text/html"] # HTTP ヘッダーのリスト
@@ -60,7 +60,7 @@ class WebPage :
     # HTML を送信
     print(self.html)
     return
-             
+
   # HTTP ヘッダーを送信する。
   def header(self) :
     for s in self.headers :
@@ -87,7 +87,7 @@ class WebPage :
   # パラメータ key があるかどうかを返す。
   def isParam(self, key) :
     return key in self.params.keys()
-    
+
   # 外部から来る引数の値を得る。
   def getParam(self, key, default="") :
     if self.isParam(key) :
@@ -98,7 +98,7 @@ class WebPage :
   # クッキー key の有無を返す。
   def isCookie(self, key) :
     return key in self.cookies.keys()
-    
+
   # クッキーを得る。
   def getCookie(self, key, default="") :
     if self.isCookie(key) :
@@ -117,7 +117,7 @@ class WebPage :
   # クッキーを登録する。(Alias)
   def cookie(self, key, value) :
     self.cookies[key] = value
-  
+
   # AppConf.ini を読む。
   def readConf(self) :
     self.conf = {}
@@ -189,7 +189,7 @@ class WebPage :
   def stripTag(s) :
     p = re.compile(r"<[^>]*?>")
     return p.sub("", s)
-    
+
   # HTML エスケープ文字を変換
   @staticmethod
   def escape(str) :
@@ -208,6 +208,15 @@ class WebPage :
     with open(file, "rb") as f :
       b = f.read()
     buff = b"Content-Type: image/" + type + b"\n\n" + b
+    #buff = b"Content-Type: image/png\n\n" + b
+    sys.stdout.buffer.write(buff)
+
+  # ビデオ (.mp4) を送信する。
+  @staticmethod
+  def sendMP4(file) :
+    with open(file, "rb") as f :
+      b = f.read()
+    buff = b"Content-Type: video/mp4\n\n" + b
     #buff = b"Content-Type: image/png\n\n" + b
     sys.stdout.buffer.write(buff)
 
