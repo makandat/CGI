@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 #  ディレクトリ一覧を Pictures テーブルへインポートする。
+#    Version 2.0
 from Py365Lib import Common, FileSystem as fs, MySQL
 
 # path からデータとSQLを作りPicturesテーブルに挿入する。
@@ -14,7 +15,7 @@ def InsertData(path) :
   else :
     title = "title"
     creator = "creator"
-  sql = f"INSERT INTO Pictures(TITLE, CREATOR, PATH, MARK, INFO, FAV, COUNT, BINDATA) VALUES('{title}', '{creator}', '{path}', '', '', 0, 0, 0)"
+  sql = f"INSERT INTO Pictures(`album`, title, creator, path, `mark`, info, fav, `count`, bindata, `date`) VALUES(0, '{title}', '{creator}', '{path}', '', '', 0, 0, 0, CURRENT_DATE())"
   print(sql)
   mysql.execute(sql)
   return
@@ -29,11 +30,14 @@ mysql = MySQL.MySQL()
 #  画像ファイルを含むサブディレクトリ一覧を得る。
 dirlist = fs.listDirectories(dir_parent, True)
 for dir in dirlist :
-  dirlist2 = fs.listDirectories(dir, True)
-  if len(dirlist2) == 0 :
-    InsertData(dir)
-  else :
-    for path in dirlist2 :
-      InsertData(path)
+  try:
+    dirlist2 = fs.listDirectories(dir, True)
+    if len(dirlist2) == 0 :
+      InsertData(dir)
+    else :
+      for path in dirlist2 :
+        InsertData(path)
+  except:
+    print(dir)
 print("Done.")
- 
+
