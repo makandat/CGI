@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #  再帰的にゴミファイル (Thumbs.db, Desktop.ini) を削除する。
 from Py365Lib import Common, FileSystem as fs
+import os
 
 # パラメータを得る。
 print("== 再帰的にゴミファイル (Thumbs.db, Desktop.ini) を削除する。==")
@@ -14,10 +15,15 @@ if a != "y" :
 
 # 実行する。
 files = fs.listFilesRecursively(folder, asstr=True)
+i = 0
 for f in files:
-  if fs.getFileName(f) == "Thumbs.db" or fs.getFileName(f) == "Desktop.ini" :
+  f = f.replace('\\', '/')
+  fn = fs.getFileName(f).lower()
+  if fn == "thumbs.db" or fn == "desktop.ini" :
     print("rm -v " + f)
+    os.remove(f)
+    i += 1
   else :
-    print(f)
+    print("Keeped " + f)
 
-print("終了。")
+print(f"{i} 個のファイルを削除しました。")
