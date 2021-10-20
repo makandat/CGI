@@ -1,5 +1,5 @@
+#!C:\python3\python.exe
 #!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
 # creators.cgi 作者一覧  2019-12-15
 # -*- code=utf-8 -*-
 from WebPage import WebPage

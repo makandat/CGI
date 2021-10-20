@@ -1,18 +1,17 @@
-#!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
+#!C:\python3\python.exe
 # -*- code=utf-8 -*-
-# Pictures テーブルの検索
+# Pictures テーブルの検索 query.cgi
 #   MySQL を利用
-import WebPage as page
+from WebPage import WebPage
 import FileSystem as fsys
-import MySQL
+from MySQL import MySQL
 
 # CGI WebPage クラス
-class MainPage(page.WebPage) :
+class MainPage(WebPage) :
   # コンストラクタ
   def __init__(self, template) :
     super().__init__(template)
-    self.__mysql = MySQL.MySQL()
+    self.__mysql = MySQL()
     self.makeCriteria()
     self.setPlaceHolder('message', '')
     return

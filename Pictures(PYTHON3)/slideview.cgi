@@ -1,7 +1,7 @@
+#!C:\python3\python.exe
 #!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
-# slideview.cgi フォルダ内画像のスライド表示  2019-05-19 画像幅のバグフィックス
+# slideview.cgi フォルダ内画像のスライド表示  2019-05-10
 #   MySQL を利用
 import WebPage as page
 import FileSystem as fs

@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
+#!C:\python3\python.exe
 # -*- code=utf-8 -*-
 # Pictures テーブルのマーク種別
 #   MySQL を利用

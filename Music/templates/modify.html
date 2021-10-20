@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <title>Music テーブルの追加・修正</title>
-<link rel="stylesheet" href="/css/default.css" />
+<link rel="stylesheet" href="/css/style.css" />
 <style>
  table, td, th {
    border-width:0px;
@@ -31,6 +31,7 @@
 $(document).ready(function() {
   $('#btnClear').click(function() {
     $('input[name="id"]').val("");
+    $('input[name="album"]').val("0");
     $('input[name="title"]').val("");
     $('input[name="path"]').val("");
     $('input[name="artist"]').val("");
@@ -63,17 +64,17 @@ $(document).ready(function() {
 
 <form method="POST">
 <table>
-<tr><td>番号 (id) </td><td><input type="text" name="id"  value='(*id*)' /></td></tr>
+<tr><td>番号 (id) </td><td><input type="number" name="id"  value='(*id*)' /></td></tr>
+<tr><td>アルバム </td><td><input type="text" name="album" size="10" value='(*album*)' /></td></tr>
 <tr><td>曲名 (title)</td><td><input type="text" name="title" size="80" value='(*title*)' /></td></tr>
 <tr><td>場所 (path)</td><td><input type="text" name="path" size="120"  value='(*path*)' /></td></tr>
 <tr><td>アーティスト (artist)</td><td><input type="text" name="artist" size="50" value='(*artist*)' /></td></tr>
-<tr><td>アルバム (album)</td><td><input type="text" name="album" size="50" value='(*album*)' /></td></tr>
+<tr><td>メディア</td><td><input type="text" name="media" size="30" value='(*media*)' /></td></tr>
 <tr><td>分類マーク (mark)</td><td><input type="text" name="mark" size="10" value='(*mark*)' /></td></tr>
 <tr><td>情報 (info)</td><td><input type="text" name="info" size="120" value='(*info*)' /></td></tr>
 <tr><td>お気に入り (fav)</td><td><input type="text" name="fav" size="4" value='(*fav*)' /></td></tr>
 <tr><td>演奏回数 (count)</td><td><input type="text" name="count" size="10" value='(*count*)' /></td></tr>
 <tr><td>画像インデックス </td><td><input type="text" name="bindata" size="10" value='(*bindata*)' /></td></tr>
-<tr><td>アルバムインデックス </td><td><input type="text" name="alindex" size="10" value='(*alindex*)' /></td></tr>
 <tr><td></td><td><input type="submit" value="追加・修正" name="btnAdd" />　<input type="submit" value="データ確認" name="btnQuery" />　<input type="button" id="btnClear" value="クリア" /></td></tr>
 </table>
 </form>

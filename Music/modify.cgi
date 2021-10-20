@@ -1,5 +1,5 @@
+#!C:\python3\python.exe
 #!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- code=utf-8 -*-
 # Music テーブルのデータ追加・修正 (modify.cgi)
 #   MySQL を利用
@@ -10,9 +10,9 @@ import Common
 import Text
 #from syslog import syslog
 
-SELECT = "SELECT title, path, artist, album, mark, info, fav, count, bindata, alindex FROM Music WHERE id = {0}"
-INSERT = "INSERT INTO Music(title, path, artist, album, mark, info, fav, count, bindata, alindex) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, {9})"
-UPDATE = "UPDATE Music SET title='{1}', path='{2}', artist='{3}', album='{4}', mark='{5}', info='{6}', fav='{7}', count={8}, bindata={9}, alindex={10} WHERE id={0};"
+SELECT = "SELECT album, title, path, artist, media, mark, info, fav, count, bindata, DATE_FORMAT(`date`, '%Y-%m-%d') FROM Music WHERE id = {0}"
+INSERT = "INSERT INTO Music(album, title, path, artist, media, mark, info, fav, count, bindata, `date`) VALUES({0}, '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, {9}, CURRENT_DATE())"
+UPDATE = "UPDATE Music SET album={1}, title='{2}', path='{3}', artist='{4}', media='{5}', mark='{6}', info='{7}', fav={8}, count={9}, bindata={10} WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -45,22 +45,22 @@ class MainPage(WebPage) :
   def modify(self) :
     try :
       id = self.getParam('id')
+      album = MainPage.setNoneToEmpty(self.getParam('album'))
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path').replace("\\", "/"))
       artist = MainPage.setNoneToEmpty(self.getParam('artist'))
-      album = MainPage.setNoneToEmpty(self.getParam('album'))
+      media = MainPage.setNoneToEmpty(self.getParam('media'))
       mark = MainPage.setNoneToEmpty(self.getParam('mark'))
       info = MainPage.setNoneToEmpty(self.getParam('info'))
-      fav = self.getParam('fav')
-      count = self.getParam('count')
-      bindata = self.getParam('bindata')
-      alindex = self.getParam('alindex')
-      dict1 = {'id':id, 'title':title, 'path':path, 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'alindex':alindex}
+      fav = self.getParam('fav', 0)
+      count = self.getParam('count', 0)
+      bindata = self.getParam('bindata', 0)
+      dict1 = {'id':id, 'album':album, 'title':title, 'path':path, 'artist':artist, 'media':media, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata}
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
         self.embed(dict1)
         return
-      sql = Text.format(UPDATE, id, title, path, artist, album, mark, info, fav, count, bindata, alindex)
+      sql = Text.format(UPDATE, id, album, title, path, artist, media, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.embed(dict1)
       self.setPlaceHolder('message', "id={0} 修正 OK".format(id))
@@ -72,28 +72,27 @@ class MainPage(WebPage) :
   def add(self) :
     try :
       id = ""
+      album = MainPage.setNoneToEmpty(self.getParam('album'))
       title = self.getParam('title').replace("'", "''")
       path = self.getParam('path').replace("\\", "/").replace("'", "''")
       artist = MainPage.setNoneToEmpty(self.getParam('artist'))
-      album = MainPage.setNoneToEmpty(self.getParam('album'))
       mark = MainPage.setNoneToEmpty(self.getParam('mark'))
-      Common.log(mark)
+      #Common.log(mark)
       info = MainPage.setNoneToEmpty(self.getParam('info'))
-      Common.log(info)
+      #Common.log(info)
       fav = self.getParam('fav')
-      Common.log(str(fav))
+      #Common.log(str(fav))
       count = self.getParam('count')
-      Common.log(str(count))
+      #Common.log(str(count))
       bindata = self.getParam('bindata')
-      Common.log(str(bindata))
-      alindex = self.getParam('alindex')
-      dict1 = {'id':id, 'title':title, 'path':path, 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata, 'alindex':alindex}
+      #Common.log(str(bindata))
+      dict1 = {'id':id, 'album':album, 'title':title, 'path':path, 'artist':artist, 'mark':mark, 'info':info, 'fav':fav, 'count':count, 'bindata':bindata}
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.embed(dict1)
         return
-      sql = INSERT.format(title, path, artist, album, mark, info, fav, count, bindata, alindex)
-      Common.log(sql)
+      sql = INSERT.format(album, title, path, artist, mark, info, fav, count, bindata)
+      #Common.log(sql)
       self.client.execute(sql)
       self.embed(dict1)
       self.setPlaceHolder('message', title + " 追加 OK")
@@ -110,11 +109,16 @@ class MainPage(WebPage) :
       rows = self.client.query(sql)
       if len(rows) > 0 :
         row = rows[0]
-        artist = MainPage.setNoneToEmpty(row[2])
-        album = MainPage.setNoneToEmpty(row[3])
-        mark = MainPage.setNoneToEmpty(row[4])
-        info = MainPage.setNoneToEmpty(row[5])
-        dict1 = {'id':id, 'title':row[0], 'path':row[1], 'artist':artist, 'album':album, 'mark':mark, 'info':info, 'fav':row[6], 'count':row[7], 'bindata':row[8], 'alindex':row[9]}
+        album = row[0]
+        title = row[1]
+        path = row[2]
+        artist = MainPage.setNoneToEmpty(row[3])
+        media = MainPage.setNoneToEmpty(row[4])
+        mark = MainPage.setNoneToEmpty(row[5])
+        info = MainPage.setNoneToEmpty(row[6])
+        fav = row[7]
+
+        dict1 = {'id':id, 'album':album, 'title':title, 'path':path, 'media':media, 'artist':artist, 'mark':mark, 'info':info, 'fav':fav, 'count':row[8], 'bindata':row[9]}
         self.embed(dict1)
         self.setPlaceHolder('message', "id={0} クエリー OK".format(id))
       else :
@@ -131,7 +135,7 @@ class MainPage(WebPage) :
       self.setPlaceHolder('id', "")
     else :
       self.setPlaceHolder('id', id)
-    dict1 = {'title':'', 'path':'', 'artist':'', 'album':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0, 'alindex':0}
+    dict1 = {'album':0, 'title':'', 'path':'', 'artist':'', 'media':'', 'mark':'', 'info':'', 'fav':0, 'count':0, 'bindata':0}
     self.embed(dict1)
     return
 

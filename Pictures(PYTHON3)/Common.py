@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 # Common.py
-#   ver 2.51  2019-06-16
-import sys
+#   ver 2.70  2021-09-18
+import sys, os, io, time, json
 import linecache
-import os
 import subprocess
 import logging
 if not os.name == 'nt' :
   import syslog
-import time
-import json
 from typing import List, Any, Callable
 from pprint import pprint
 
@@ -48,12 +45,12 @@ StrList = List[str]
 
 
 # ロガー初期化
-def init_logger(filename=None):
+def init_logger(filename=None, level=logging.DEBUG):
   global logger
   if filename == None :
     filename = LOGFILE
   logger = logging.getLogger('Py365Lib')
-  logger.setLevel(logging.DEBUG)
+  logger.setLevel(level)
   # ファイルハンドラを作成
   fh = logging.FileHandler(filename)
   fh.setLevel(logging.DEBUG)
@@ -90,11 +87,19 @@ def stop(code:int = 0, message:str ="", color:str="") -> None :
 
 # コマンドを起動する。(cmd は配列)
 def exec(cmd:StrList) -> int:
-  return subprocess.check_call(cmd)
+  if type(cmd) is str :
+    cmd_a = [cmd]
+  else :
+    cmd_a = cmd
+  return subprocess.check_call(cmd_a)
 
 # コマンドを起動して、その結果を返す。(cmd は配列)
 def shell(cmd:StrList) -> str:
-  return subprocess.check_output(args=cmd)
+  if type(cmd) is str :
+    cmd_a = [cmd]
+  else :
+    cmd_a = cmd
+  return subprocess.check_output(args=cmd_a)
 
 # ログ情報出力
 def log(msg:str) -> None:
@@ -232,8 +237,18 @@ def printFile(filePath, code="utf-8") :
 # 配列や連想配列を表示する。
 def printArray(arr) :
   pprint(arr, indent=2, width=150)
-  return    
+  return
 
+# オブジェクトの文字列表現を返す。
+def get_objstring(obj) :
+  buff = io.StringIO()
+  pprint(obj, stream=buff)
+  s = buff.getvalue()
+  return s
+
+
+# ----------------------------------------------------
 # メインとして実行しようとしたとき
+# ----------------------------------------------------
 if __name__ == "__main__" :
 	pass

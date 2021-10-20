@@ -1,3 +1,4 @@
+#!C:\python3\python.exe
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Pictures テーブル フォルダ内画像一覧  Version 3.73  2019-10-27
@@ -54,8 +55,8 @@ class MainPage(WebPage) :
     i = 1
     for f in files2 :
       fn = folder + "/" + f.decode('utf8')
-      size = fs.getFileSize(fn) 
-      udate = fs.getLastWrite(fn) 
+      size = fs.getFileSize(fn)
+      udate = fs.getLastWrite(fn)
       if MainPage.isPicture(fn) :
         buff += "<figure>"
         buff += "<img src=\"getImage.cgi?path={1}\" /><figcaption><span style='color:black;font-weight:bold;'>{0:04d} {1} </span><span style='color:gray;'>(updated:{2}, size:{3})</span></figcaption>".format(i, fn, udate, size)
@@ -80,12 +81,12 @@ class MainPage(WebPage) :
 
   # 作者を得る。
   def getCreator(self, id) :
-    creator = self.__mysql.getValue(f"SELECT creator FROM Pictures WHERE id={id}") 
+    creator = self.__mysql.getValue(f"SELECT creator FROM Pictures WHERE id={id}")
     return creator
-    
+
   # タイトルを得る。
   def getTitle(self, id) :
-    title = self.__mysql.getValue(f"SELECT title FROM Pictures WHERE id={id}") 
+    title = self.__mysql.getValue(f"SELECT title FROM Pictures WHERE id={id}")
     return title
 
 

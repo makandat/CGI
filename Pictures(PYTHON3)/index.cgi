@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-#!C:\Program Files (x86)\Python37\python.exe
-#!C:\Program Files\Python3\python.exe
+#!C:\python3\python.exe
+#!/usr/bin/python3
 # -*- code=utf-8 -*-
 #   index.cgi  Version 3.86  2020-03-29 (index.cgi)
 from WebPage import WebPage
@@ -9,9 +8,9 @@ import FileSystem as fs
 import Common
 import Text
 
-SELECT = 'SELECT id, title, creator, path, mark, info, fav, count, bindata, date FROM Pictures'
-LIMIT = 200
-VERSION = 3.86
+SELECT = 'SELECT id, album, title, creator, `path`, mark, info, fav, count, bindata, `date` FROM Pictures'
+LIMIT = 1000
+VERSION = 4.00
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -199,25 +198,27 @@ class MainPage(WebPage) :
 
   # クエリー結果を表にする。
   def getResult(self, rows) :
-    result = "<tr><th>id</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th><th>イメージ</th><th>日付</th></tr>"
+    result = "<tr><th>id</th><th>アルバム</th><th>タイトル</th><th>作者</th><th>パス名</th><th>マーク</th><th>情報</th><th>好き</th><th>参照回数</th><th>イメージ</th><th>日付</th></tr>"
     id0 = 0
     id = 0
     for row in rows :
       id = str(row[0])
       if id0 == 0 :
         id0 = id
-      title = row[1]
-      creator = row[2]
-      path = row[3]
-      mark = row[4]
-      info = row[5]
-      fav = str(row[6])
-      count = str(row[7])
-      bindata = str(row[8])
-      date1 = str(row[9])
+      album = str(row[1])
+      title = row[2]
+      creator = row[3]
+      path = row[4]
+      mark = row[5]
+      info = row[6]
+      fav = str(row[7])
+      count = str(row[8])
+      bindata = str(row[9])
+      date1 = str(row[10])
       row2 = list()
       #row2.append(f"<a href=\"modify.cgi?id={id}\">{id}</a>")
       row2.append(id)
+      row2.append(album)
       ext = fs.getExtension(path).upper()
       if ext == ".JPG" or ext == ".PNG" or ext == ".GIF" :
         row2.append("<a href=\"getImage.cgi?path={0}\" target=\"_blank\">{1}</a>".format(path, title))

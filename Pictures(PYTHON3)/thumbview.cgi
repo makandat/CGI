@@ -1,5 +1,5 @@
+#!C:\python3\python.exe
 #!/usr/bin/python3
-#!C:\Program Files (x86)\Python37\python.exe
 # -*- coding: utf-8 -*-
 # フォルダ内画像のサムネール一覧
 #   MySQL を利用
@@ -35,7 +35,7 @@ class MainPage(page.WebPage) :
       self.setPlaceHolder('pictures', '')
       self.setPlaceHolder('message', 'エラー： フォルダの id が指定されていない。')
       self.setPlaceHolder('title1', 'フォルダ内画像のサムネール一覧')
-    
+
   # id から path を得る。
   def getPath(self, id) :
     path = self.__mysql.getValue(f"SELECT `path` FROM Pictures WHERE id={id}")

@@ -1,5 +1,5 @@
-# -*- code=utf-8 -*-
-# Version 2.01  2019-04-23  Text クラス廃止
+# -*- coding: utf-8 -*-
+# Version 2.2  2020-06-26  insert 関数追加
 from typing import List, Tuple
 import re
 
@@ -118,11 +118,11 @@ def parseInt(s:str) -> int:
 def parseDouble(s:str) -> float:
  return float(s)
 
-# 256未満の整数を文字に変換する。
+# 整数を文字に変換する。
 def char(n:int) -> str:
  return chr(n)
 
-# 文字を256未満の整数に変換する。
+# 文字を整数に変換する。
 def asc(a:str) -> int:
   return ord(a)
 
@@ -162,3 +162,6 @@ def b2s(b: bytes) -> str :
 def s2b(s: str) -> bytes :
   return s.encode()
 
+# 文字列を指定位置に挿入する。
+def insert (source_str, insert_str, pos):
+  return source_str[:pos]+insert_str+source_str[pos:]

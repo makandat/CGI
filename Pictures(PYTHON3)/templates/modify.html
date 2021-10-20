@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <title>追加・修正 (MySQL Pictures テーブル)</title>
-<link rel="stylesheet" href="/css/default.css" />
+<link rel="stylesheet" href="/css/style.css" />
 <style>
  table, td, th {
    border-width:0px;
@@ -31,6 +31,7 @@
 $(document).ready(function() {
   $('#btnClear').click(function() {
     $('input[name="id"]').val("");
+    $('input[name="album"]').val("0");
     $('input[name="title"]').val("");
     $('input[name="creator"]').val("");
     $('input[name="path"]').val("");
@@ -62,6 +63,7 @@ $(document).ready(function() {
 <form method="POST">
 <table>
 <tr><td>番号 (id) </td><td><input type="text" name="id"  value='(*id*)' /></td></tr>
+<tr><td>アルバム (album) </td><td><input type="text" name="album"  value='(*album*)' /></td></tr>
 <tr><td>作品名 (title)</td><td><input type="text" name="title" size="80" value='(*title*)' /></td></tr>
 <tr><td>作者 (creator)</td><td><input type="text" name="creator" size="50" value='(*creator*)' /></td></tr>
 <tr><td>場所 (path)</td><td><input type="text" name="path" size="120"  value='(*path*)' /></td></tr>

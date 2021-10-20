@@ -1,3 +1,4 @@
+#!C:\python3\python.exe
 #!/usr/bin/python3
 # -*- code=utf-8 -*-
 # Pictures テーブルのデータ追加・修正  v3.86  2020-03-29
@@ -9,10 +10,10 @@ import Common
 import Text
 #from syslog import syslog
 
-SELECT = "SELECT title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
-INSERT = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, `date`, sn) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, CURRENT_DATE(), {7})"
-INSERT2 = "INSERT INTO Pictures(title, creator, path, mark, info, fav, count, bindata, `date`, sn) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, CURRENT_DATE(), {8})"
-UPDATE = "UPDATE Pictures SET title='{1}', creator='{2}', path='{3}', mark='{4}', info='{5}', fav={6}, count={7}, bindata={8}, `date`=CURRENT_DATE() WHERE id={0};"
+SELECT = "SELECT album, title, creator, path, mark, info, fav, count, bindata FROM Pictures WHERE id = {0}"
+INSERT = "INSERT INTO Pictures(album, title, creator, path, mark, info, fav, count, `date`, sn) VALUES({0}, '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, CURRENT_DATE(), {8})"
+INSERT2 = "INSERT INTO Pictures(album, title, creator, path, mark, info, fav, count, bindata, `date`, sn) VALUES({0}, '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, CURRENT_DATE(), {9})"
+UPDATE = "UPDATE Pictures SET album={1}, title='{2}', creator='{3}', path='{4}', mark='{5}', info='{6}', fav={7}, count={8}, bindata={9}, `date`=CURRENT_DATE() WHERE id={0};"
 
 # CGI WebPage クラス
 class MainPage(WebPage) :
@@ -53,6 +54,7 @@ class MainPage(WebPage) :
   def modify(self) :
     try :
       id = self.getParam('id')
+      album = self.getParam('album')
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
       path = Text.replace("\\", "/", path)
@@ -66,6 +68,7 @@ class MainPage(WebPage) :
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "修正 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
+        self.setPlaceHolder('album', album)
         self.setPlaceHolder('title', title)
         self.setPlaceHolder('creator', creator)
         self.setPlaceHolder('path', path)
@@ -77,9 +80,10 @@ class MainPage(WebPage) :
         return
       if bindata == '' :
         bindata = 0
-      sql = Text.format(UPDATE, id, title, creator, path, mark, info, fav, count, bindata)
+      sql = Text.format(UPDATE, id, album, title, creator, path, mark, info, fav, count, bindata)
       self.client.execute(sql)
       self.setPlaceHolder('id', id);
+      self.setPlaceHolder('album', album);
       self.setPlaceHolder('title', title)
       self.setPlaceHolder('creator', creator)
       self.setPlaceHolder('path', path)
@@ -98,6 +102,7 @@ class MainPage(WebPage) :
   def add(self) :
     try :
       #Common.log("add(self)")
+      album = self.getParam('album')
       title = Text.replace("'", "''", self.getParam('title'))
       path = Text.replace("'", "''", self.getParam('path'))
       path = Text.replace("\\", "/", path)
@@ -117,6 +122,7 @@ class MainPage(WebPage) :
       if title == "" or path == "" or title == None or path == None :
         self.setPlaceHolder('message', "追加 NG : タイトルまたはパスが空欄です。")
         self.setPlaceHolder('id', "")
+        self.setPlaceHolder('album', album)
         self.setPlaceHolder('title', title)
         self.setPlaceHolder('creator', creator)
         self.setPlaceHolder('path', path)
@@ -127,12 +133,13 @@ class MainPage(WebPage) :
         self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(bindata))
         return
       if bindata == '' :
-        sql = INSERT.format(title, creator, path, mark, info, fav, count, sn)
+        sql = INSERT.format(album, title, creator, path, mark, info, fav, count, sn)
       else :
-        sql = INSERT2.format(title, creator, path, mark, info, fav, count, bindata, sn)
+        sql = INSERT2.format(album, title, creator, path, mark, info, fav, count, bindata, sn)
       #Common.log(sql)
       self.client.execute(sql)
       self.setPlaceHolder('id', "")
+      self.setPlaceHolder('album', album)
       self.setPlaceHolder('title', title)
       self.setPlaceHolder('creator', creator)
       self.setPlaceHolder('path', path)
@@ -175,14 +182,15 @@ class MainPage(WebPage) :
         row = rows[0]
         id = self.getParam('id')
         self.setPlaceHolder('id', id)
-        self.setPlaceHolder('title', row[0].replace("'", '&#39'))
-        self.setPlaceHolder('creator', row[1].replace("'", '&#39'))
-        self.setPlaceHolder('path', row[2].replace("'", '&#39'))
-        self.setPlaceHolder('mark', MainPage.setNoneToEmpty(row[3]))
-        self.setPlaceHolder('info', MainPage.setNoneToEmpty(row[4]))
-        self.setPlaceHolder('fav', row[5])
-        self.setPlaceHolder('count', row[6])
-        self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(row[7]))
+        self.setPlaceHolder('album', row[0])
+        self.setPlaceHolder('title', row[1].replace("'", '&#39'))
+        self.setPlaceHolder('creator', row[2].replace("'", '&#39'))
+        self.setPlaceHolder('path', row[3].replace("'", '&#39'))
+        self.setPlaceHolder('mark', MainPage.setNoneToEmpty(row[4]))
+        self.setPlaceHolder('info', MainPage.setNoneToEmpty(row[5]))
+        self.setPlaceHolder('fav', row[6])
+        self.setPlaceHolder('count', row[7])
+        self.setPlaceHolder('bindata', MainPage.setNoneToEmpty(row[8]))
         self.setPlaceHolder('message', f"クエリー id={id} OK")
       else :
         self.clearAll(int(self.getParam('id')))
@@ -198,6 +206,7 @@ class MainPage(WebPage) :
       self.setPlaceHolder('id', "")
     else :
       self.setPlaceHolder('id', str(id))
+    self.setPlaceHolder('album', "0")
     self.setPlaceHolder('title', "")
     self.setPlaceHolder('path', "")
     self.setPlaceHolder('creator', "")
