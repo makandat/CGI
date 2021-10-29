@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#  Pillow/smalls.py
+#  Pillow/smalls.py v.1.1.0
 from PIL import Image, ImageFilter
 from Py365Lib import Common, FileSystem as fs
 
@@ -50,7 +50,10 @@ for f in files:
     #print(im.format, im.size, im.mode)
     im = im.convert('RGB')
     newsize = getImageSize(im)
-    newim = im.resize(newsize, Image.LANCZOS)
+    if im.size[0] > newsize[0] or im.size[1] > newsize[1] :
+      newim = im.resize(newsize, Image.LANCZOS)
+    else:
+      newim = im
     newPath = SAVEPATH + fs.getFileName(fn)
     if JPEG:
       newPath = newPath.replace(".png", ".jpg")
