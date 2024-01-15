@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>POST www-data Web service</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <script src="/js/JS365Lib3.js"></script>
+ <script>
+  const url = "/cgi-bin/CGI365Lib/v1_7/post_wwwdata.cgi";
+  
+  onPageLoad(() => {
+    // sqlite3 db path
+    const sqlite3_db = getStorageValue("sqlite3_db");
+    setValue("db", sqlite3_db);
+    // submitButton click
+    clickEvent("submitButton", async () => {
+      const db = getValue("db");
+      const command = getValue("command");
+      const message = await fetchPOST(url, {"db":db, "command":command});
+      setValue("message", message);
+      setStorageValue("sqlite3_db", db);
+    });
+  });
+ </script>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">POST www-data Web service</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v1_7/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+  <form id="form1" class="row mt-5">
+   <div class="mb-4">
+    <label class="form-control-label">sqlite3 db
+     <input type="text" id="db" class="form-control" size="80" />
+    </label>
+   </div>
+   <div class="mb-4">
+    <label class="form-control-label">command (non query SQL)
+     <input type="text" id="command" class="form-control" size="80" />
+    </label>
+   </div>
+   <div class="mb-4">
+    <button id="submitButton" class="btn btn-primary me-2" type="button">submit</button>
+   </div>
+   <div id="message" class="mt-4 fs-5 text-primary"></div>
+  </form>
+ </article>
+ 
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

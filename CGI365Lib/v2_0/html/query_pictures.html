@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>Query Pictures</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- JavaScript -->
+ <script src="/js/JS365Lib3.js"></script>
+ <script>
+  onPageLoad(() => {
+    clickEvent("buttonQuery", async () => {
+      const url = "/cgi-bin/CGI365Lib/v1_7/query_pictures.cgi";
+      const id = getValue("id");
+      if (id == "") {
+        alert("Error: id is empty.");
+        return;
+      }
+      //const data = await fetchGET(url + `?id=${id}`);
+      const data = await fetchGET(url, {"id":id});
+      const message = data.message;
+      setValue("message", message);
+      setValue("result", JSON.stringify(data));
+    });
+  });
+ </script>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="text-center p-5 border border-warning rounded bg-light">Query Pictures</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+  <form name="form1" class="row" onsubmit="return false;">
+   <div class="mb-4"><label class="label-form-control">id<input type="number" name="id" id="id" class="form-control" /></label></div>
+   <div class="mb-5"><button type="button" id="buttonQuery" class="btn btn-primary">query</button></div>
+   <div id="message" class="text-primary ms-5 mb-3 fs-5"></div>
+   <div id="result" class="ms-5" style="font-size:small"></div>
+  </form>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

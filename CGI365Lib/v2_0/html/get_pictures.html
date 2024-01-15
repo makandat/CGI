@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>Query Pictures</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- JavaScript -->
+ <script src="/js/JS365Lib3.js"></script>
+ <script>
+  onPageLoad(() => {
+    clickEvent("submitButton", async () => {
+      const url = "/cgi-bin/CGI365Lib/v1_7/get_pictures.cgi";
+      const criteria = escURL(getValue("criteria"), true);
+      const table = await fetchGET(url + `?criteria=${criteria}`);
+      insertHTML("result", table);
+    });
+  });
+ </script>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="text-center p-5 border border-warning rounded bg-light">Query Pictures</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+  <div class="row">
+   <div class="mb-4"><label class="label-form-control">criteria<input type="text" name="criteria" id="criteria" class="form-control" size="80" /></label></div>
+   <div class="mb-5"><button type="button" id="submitButton" class="btn btn-primary">submit</button></div>
+   <div id="result" class="ms-5" style="font-size:small"></div>
+  </div>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

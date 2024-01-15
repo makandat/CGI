@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>POST Form File Upload</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+ </style>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="text-center p-5 bg-light border border-warning rounded">POST Form File Upload</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+   <form class="form row ms-5 mt-4" method="POST" enctype="multipart/form-data" action="/cgi-bin/CGI365Lib/v1_7/file_upload.cgi">
+    <div class="mb-4"><label class="form-control-label">file1<input type="file" name="file1" class="form-control"></label></div>
+    <div class="mb-4">
+      <button class="btn btn-primary me-2" type="submit">submit</button>
+      <button class="btn btn-secondary" type="button" onclick="javascript:location.reload()">reload</button>
+    </div>
+    <div class="mb-2">{{ message }}</div>
+   </form>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

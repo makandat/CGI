@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>POST Form</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+ </style>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="text-center p-5 bg-light border border-warning rounded">POST Form</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+   <form class="form row ms-5 mt-4" method="POST" action="/cgi-bin/CGI365Lib/v1_7/post_form.cgi">
+    <div class="mb-2"><label class="form-control-label">text1<input type="text" name="text1" class="form-control"></label></div>
+    <div class="mb-3"><label class="form-check-label"><input type="checkbox" name="check1" class="form-check-control" value="check1"> check1</label></div>
+    <div class="mb-3 border">
+        <div><label class="form-check-label"><input type="radio" name="radiogroup1" id="radio1" class="form-check-control" value="radio1" checked> radio1</label></div>
+        <div><label class="form-check-label"><input type="radio" name="radiogroup1" id="radio2" class="form-check-control" value="radio2"></label> radio2</div>
+    </div>
+    <div class="mb-4">
+      <label class="form-control-label">select1
+        <select name="select1" class="form-select">
+          <option value="120">Option 120</option>
+          <option value="80">Option 80</option>
+          <option value="710">Option 710</option>
+        </select>
+      </label>
+    </div>
+    <div class="mb-4"><button class="btn btn-primary" type="submit">submit</button></div>
+    <div class="mb-2">{{ result }}</div>
+   </form>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
