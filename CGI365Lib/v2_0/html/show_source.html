@@ -12,7 +12,7 @@
     if (path.startsWith('"') && path.endsWith('"'))
       path = path.substring(1, path.length - 1);
     const code = document.getElementById("code");
-    const res = await fetch("/cgi-bin/CGI365Lib/v1_7/get_text.cgi?path=" + path);
+    const res = await fetch("get_text.cgi?path=" + path);
     const text = await res.text();
     code.innerText = text;
   }
@@ -23,7 +23,7 @@
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">show_source.html</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->
@@ -33,7 +33,7 @@
     <div class="mb-4"><label class="label-form-control">path<input type="text" class="form-control" name="path" size="100"></label></div>
     <div class="mb-4"><button type="button" class="btn btn-primary" onclick="show_source();">show</button></div>
    </form>
-   <pre id="code" class="p-1" style="font-size:small;"></pre>
+   <pre id="code" class="p-1 border" style="font-size:small;"></pre>
   </section>
  </article>
 

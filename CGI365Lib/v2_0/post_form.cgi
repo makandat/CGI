@@ -2,8 +2,7 @@
 import CGI365Lib as CGI
 
 # POST mthod
-def onPost(req, res):
-  req.parseFormBody()
+def on_POST(req, res):
   text1 = req.getParam("text1")
   check1 = req.getParam("check1")
   radiogroup1 = req.getParam("radiogroup1")
@@ -15,15 +14,17 @@ def onPost(req, res):
   res.sendHtml("./templates/post_form.html", embed={"result":message})
 
 # GET mthod
-def onGet(req, res):
+def on_GET(req, res):
   res.sendHtml("./templates/post_form.html", embed={"result":""})
   return
 
 # Start
-req, res = (CGI.Request(), CGI.Response())
+if __name__ == "__main__":
+  req, res = (CGI.Request(), CGI.Response())
 
-if req.Method == "POST":
-  onPost(req, res)
-else:
-  onGet(req, res)
-
+  if req.method == "POST":
+    on_POST(req, res)
+  elif req.method == "GET":
+    on_GET(req, res)
+  else:
+    CGI.Response.status(405, CGI.METHOD_NOT_ALLOWED)

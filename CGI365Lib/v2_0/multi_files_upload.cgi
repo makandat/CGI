@@ -3,19 +3,15 @@ import os
 import CGI365Lib as CGI
 
 if os.name == "nt":
-  LOG = "D:/temp/CGI365Lib.log"
   SAVEDIR = "D:/temp"
 else:
-  LOG = "/var/www/data/CGI365Lib.log"
   SAVEDIR = "/var/www/data"
 
-#LOG = "" # Disable to output log.
 
 # POST mthod
-def onPOST(req, res):
+def on_POST(req, res):
   filenames = ""
-  req.parseFormBody()
-  for fp in req.Files:
+  for fp in req.files:
     name, filename, chunk = fp
     filenames += f"{filename}, "
     if chunk is None:
@@ -28,17 +24,17 @@ def onPOST(req, res):
   return
 
 # GET mthod
-def onGET(req, res):
+def on_GET(req, res):
   res.sendHtml("./templates/multi_files_upload.html", embed={"message":""})
   return
 
 # Start
 if __name__ == '__main__':
   req, res = (CGI.Request(), CGI.Response())
-  if req.Method == "GET":
-    onGET(req, res)
-  elif req.Method == "POST":
-    onPOST(req, res)
+  if req.method == "GET":
+    on_GET(req, res)
+  elif req.method == "POST":
+    on_POST(req, res)
   else:
-    CGI.status(405, METHOD_NOT_ALLOWED)
+    CGI.status(405, CGI.Response.METHOD_NOT_ALLOWED)
 

@@ -20,7 +20,7 @@ HTML = '''<!doctype html>
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">Show Source</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v1_7/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->

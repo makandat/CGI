@@ -11,7 +11,7 @@
   onPageLoad(async () => {
     const path = getStorageValue("sqlite3_db");
     setValue("db", path);
-    const url = "/cgi-bin/CGI365Lib/v1_7/post_formdata.cgi";
+    const url = "post_formdata.cgi";
     // button clicked
     clickEvent("submitButton", async () => {
        const data = await fetchFormData(url, form1);
@@ -28,7 +28,7 @@
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">POST FormData Web service</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->

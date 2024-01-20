@@ -1,27 +1,29 @@
 #!D:/python312/python.exe
+# file_download.cgi
 import CGI365Lib as CGI
+import os
 
-# POST method
-def on_POST(req, res):
-  bindata = req.body
-  s = ""
-  for b in bindata:
-    s += "{:02x}".format(b)
-    s += " "
-  result = {"message":"OK", "data":s[0:len(s)-1]}
-  res.sendJSON(result)
-  return
+HTML = "./templates/file_download.html"
 
 # GET method
 def on_GET(req, res):
-  htmlfile = "./html/post_arraybuffer.html"
-  res.sendHtml(htmlfile)
+  res.sendHtml(HTML)
+  return
+  
+# POST method
+def on_POST(req, res):
+  path = req.getParam("path")
+  if path == "":
+    CGI.Response.status(400, CGI.BAD_REQUEST)
+  else:
+    name = os.path.basename(path)
+    res.sendFile(path, filename=name)
   return
 
-
-# Start
+# Main
 if __name__ == "__main__":
   req, res = (CGI.Request(), CGI.Response())
+  
   if req.method == "GET":
     on_GET(req, res)
   elif req.method == "POST":

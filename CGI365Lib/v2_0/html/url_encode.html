@@ -11,7 +11,7 @@
   onPageLoad(() => {
     clickEvent("button1", async () => {
       const url = getValue("input");
-      const text = await fetchGET("/cgi-bin/CGI365Lib/v1_7/url_encode.cgi?url=" + encodeURIComponent(url));
+      const text = await fetchGET("url_encode.cgi?url=" + encodeURIComponent(url));
       setValue("result", text);
     });
   });
@@ -22,7 +22,7 @@
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">URL Encode</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->

@@ -11,7 +11,7 @@
  <script>
   onPageLoad(() => {
     clickEvent("buttonQuery", async () => {
-      const url = "/cgi-bin/CGI365Lib/v1_7/query_pictures.cgi";
+      const url = "query_pictures.cgi";
       const id = getValue("id");
       if (id == "") {
         alert("Error: id is empty.");
@@ -31,7 +31,7 @@
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="text-center p-5 border border-warning rounded bg-light">Query Pictures</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->

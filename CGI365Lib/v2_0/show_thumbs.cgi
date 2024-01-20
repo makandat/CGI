@@ -16,7 +16,7 @@ HTML = '''<!doctype html>
  <!-- ヘッダー -->
  <header class="container">
   <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">Show Thumbnailes</h1>
-  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v1_7/index.cgi">HOME</a></p>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
  </header>
 
  <!-- 本文 -->
@@ -39,8 +39,8 @@ HTML = '''<!doctype html>
 
 # 指定したディレクトリ内の JPEG / PNG 画像一覧を文字列として返す。
 def getContents(dirpath):
-  SHOW_PICTURE = "/cgi-bin/CGI365Lib/v1_7/show_picture.cgi"
-  GET_IMAGE = "/cgi-bin/CGI365Lib/v1_7/get_image.cgi"
+  SHOW_PICTURE = "show_picture.cgi"
+  GET_IMAGE = "get_image.cgi"
   s = ""
   for item in os.scandir(dirpath):
     parts = os.path.splitext(item.path)
@@ -48,7 +48,7 @@ def getContents(dirpath):
     if len(parts) == 2:
       ext = parts[1].lower()
     if item.is_file() and (ext == ".jpg" or ext == ".png"):
-      s += f"<figure class=\"col\"><a href=\"{SHOW_PICTURE}?path={item.path}\" target=\"_blank\"><img src=\"{GET_IMAGE}?path={item.path}\" style=\"padding:2px;\" width=\"240px\" /></a></figure>\n"
+      s += f"<figure class=\"col\"><a href=\"{SHOW_PICTURE}?path={item.path}\" target=\"_blank\"><img src=\"{GET_IMAGE}?path={item.path}\" style=\"padding:2px;\" width=\"80px\" /></a></figure>\n"
   return s
 
 # Start

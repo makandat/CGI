@@ -3,23 +3,24 @@ import CGI365Lib as CGI
 import SQLite3
 
 # POST method
-def onPOST(req, res):
-  # req.parseFormBody()
+def on_POST(req, res):
   db = req.getParam("db")
+  CGI.info(db)
   command = req.getParam("command")
+  CGI.info(command)
   if db == "" or command == "":
     res.sendSimple(CGI.BAD_REQUEST)
     return
   try:
     SQLite3.execute(db, command)
-  except:
-    res.sendSimple(CGI.INTERNAL_SERVER_ERROR)
+  except Exception as e:
+    res.sendSimple(str(e))
     return
   res.sendSimple("OK")
   return
 
 # GET method
-def onGET(req, res):
+def on_GET(req, res):
   htmlfile = "./html/post_wwwdata.html"
   res.sendHtml(htmlfile)
   return
@@ -27,7 +28,9 @@ def onGET(req, res):
 # Start
 req, res = (CGI.Request(True), CGI.Response())
 
-if req.Method == "POST":
-  onPOST(req, res)
+if req.method == "GET":
+  on_GET(req, res)
+elif req.method == "POST":
+  on_POST(req, res)
 else:
-  onGET(req, res)
+  CGI.Response.status(405, CGI.METHOD_NOT_ALLOWED)

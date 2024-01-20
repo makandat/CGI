@@ -15,4 +15,4 @@ if __name__ == "__main__":
   if req.method == "GET":
     on_GET(req, res)
   else:
-    CGI.Response.status(405, METHOD_NOT_ALLOWED)
+    CGI.Response.status(405, CGI.METHOD_NOT_ALLOWED)

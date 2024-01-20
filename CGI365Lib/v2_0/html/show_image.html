@@ -14,7 +14,7 @@
     let path = form1.path.value;
     if (path.startsWith('"') && path.endsWith('"'))
       path = path.substring(1, path.length - 1);
-    const url = "/cgi-bin/CGI365Lib/v1_7/get_image.cgi?path=" + path;
+    const url = "get_image.cgi?path=" + path;
     pic.setAttribute("src", url);
   }
  </script>
