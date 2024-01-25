@@ -1,4 +1,4 @@
-# CGI356Lib.py v2.0.4  2024-01-20
+# CGI356Lib.py v2.0.5  2024-01-25
 import os, sys, datetime, io
 import subprocess
 from subprocess import PIPE
@@ -179,7 +179,6 @@ class Request:
         filepath = s[1:]
         with open(filepath, "rb") as f:
           buffer = f.read()
-          info(buffer, "182 buffer")
       else:
         buffer = s.encode()  
     else: # ノーマルの場合は標準入力を読む。
@@ -208,7 +207,7 @@ class Request:
       
   # リクエストデータが BLOB (application/octed-stream etc.) かどうかを返す。
   def _isBLOB(self) -> bool:
-    if self.content_type == "":
+    if self.content_type == "" or self.content_type == "application/x-www-form-urlencoded":
       return False
     mimes = [r"^application/.+", r"^x-application/.+", r"^image/.+", r"^video/.+", r"^audio/.+"]
     b = False
