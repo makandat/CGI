@@ -1,4 +1,4 @@
-# CGI356Lib.py v2.0.5  2024-01-25
+# CGI356Lib.py v2.0.6  2024-05-20
 import os, sys, datetime, io
 import subprocess
 from subprocess import PIPE
@@ -430,6 +430,10 @@ class Request:
   # HTTP Method (str)
   @property
   def method(self) -> str:
+    return self.__Method
+
+  @property
+  def Method(self) -> str:
     return self.__Method
 
   # Request Headers (dict of (key:str, value:str))
