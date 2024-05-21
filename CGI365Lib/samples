@@ -1,1 +1,65 @@
 
+#!C:/Apps/Python3/python.exe
+#!/usr/bin/python3
+# Hello, world!
+import CGI365Lib as CGI
+res = CGI.Response()
+res.sendSimple("Hello World!")
+
+
+#!C:/Apps/Python3/python.exe
+#!/usr/bin/env python3
+#
+#  complex.cgi
+#    呼び出し方： curl http://localhost/cgi-bin/API/complex.cgi?value=1,2
+#
+import CGI365Lib as CGI
+import cmath, math, json, pprint
+
+# 各種の複素数を得る。
+#  json は complex の形式に対応していないので str() で文字列に変換する。
+def complex_values(cvalue) :
+  result = dict()
+  result["conj"] = str(cvalue.conjugate())
+  result["cabs"] = str(abs(cvalue))
+  result["carg"] = str(cmath.phase(cvalue))
+  result["cpolar"] = str(cmath.polar(cvalue))
+  result["cinv"] = str(1.0 / cvalue)
+  result["csqr"] = str(cvalue * cvalue)
+  result["csqrt"] = str(cmath.sqrt(cvalue))
+  return result
+
+
+# プログラム開始
+req, res = (CGI.Request(), CGI.Response())
+value = req.getParam("value")
+p = value.split(',')
+cvalue = complex(float(p[0]), float(p[1]))
+result = complex_values(cvalue)
+res.sendJSON(result)
+#pprint.pprint(result)
+
+
+
+#!C:/Apps/Python3/python.exe
+#!/usr/bin/env python3
+#
+#  echo_form.cgi
+#    呼び出し方： curl -X POST -H "Content-Type: application/json" -d '{"text1":"Hello,World!", "check1":"true", "radio1":"true", "radio2":false, "select1":"option1"}' http://localhost/cgi-bin/API/echo_form.cgi
+#
+import CGI365Lib as CGI
+
+req, res = (CGI.Request(), CGI.Response())
+
+if req.method == "POST":
+  text1 = req.getParam("text1")
+  check1 = req.getParam("check1")
+  radio1 = req.getParam("radio1")
+  radio2 = req.getParam("radio2")
+  select1 = req.getParam("select1")
+  result = text1 + "," + check1 + "," + radio1 + "," + radio2 + "," + select1
+  res.sendSimple(result)
+else:
+  res.status(405, CGI.METHOD_NOT_ALLOWED)
+
+
