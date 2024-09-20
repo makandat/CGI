@@ -1,4 +1,4 @@
-# https://github.com/makandat/tomato-ramen
+# https://github.com/makandat/CGI
 #   CGI 関連の置き場
 
 ## CGI365Lib
