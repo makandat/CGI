@@ -1,11 +1,10 @@
-# CGI356Lib.py v2.0.6  2024-05-20
+# CGI356Lib.py v2.0.5  2024-09-22
 import os, sys, datetime, io
 import subprocess
 from subprocess import PIPE
 import urllib.parse as urlp
 import pathlib
 import json
-import re
 from pprint import pprint
 
 # ---------------- 定数 ----------------------
@@ -13,11 +12,11 @@ from pprint import pprint
 ENC = 'utf-8'
 
 # デバッグ用ログファイル Debug log file def to be modified
-#LOG = ""
 if os.name == 'nt':
-  LOG = "D:/temp/CGI365Lib.log"
+  LOG = "C:/temp/CGI365Lib.log"
+  #LOG = ""
 else:
-  LOG = "/var/www/data/CGI365Lib.log"
+  LOG = ""
 
 # ステータスコード
 OK = "200 OK"
@@ -64,7 +63,10 @@ def info(obj, name=""):
   with open(LOG, mode="at") as f:
     f.write(f"{strnow} {name}: {stobj}\n")
   return
-  
+
+def log(obj, name=""):
+  info(obj, name)
+  return
 
 # ---------------- HTML タグ作成 -----------------------
 # タグで囲む。
@@ -154,7 +156,7 @@ class Request:
     cookies = dict()
     http_cookie = ""
     if _isDebug():
-      print("Enter Request Cookie > ", end="")
+      print("Enter request Cookie > ", end="")
       http_cookie = input()
     else:
       http_cookie = os.getenv("HTTP_COOKIE", "")
@@ -177,7 +179,7 @@ class Request:
       s = input()
       if s.startswith("@"):  # ファイルから読む。
         filepath = s[1:]
-        with open(filepath, "rb") as f:
+        with open(filepath, "r") as f:
           buffer = f.read()
       else:
         buffer = s.encode()  
@@ -186,7 +188,7 @@ class Request:
     return buffer
 
   # マルチパートボディか判別する。
-  def _isMultipart(self) -> bool:
+  def _isMultipart(self):
     b = self.content_type.find("multipart") >= 0
     return b
 
@@ -202,26 +204,16 @@ class Request:
     return blocks
 
   # リクエストデータが JSON かどうかを返す。
-  def _isJSON(self) -> bool:
+  def _isJSON(self):
     return self.content_type.startswith("application/json")
       
-  # リクエストデータが BLOB (application/octed-stream etc.) かどうかを返す。
-  def _isBLOB(self) -> bool:
-    if self.content_type == "" or self.content_type == "application/x-www-form-urlencoded":
-      return False
-    mimes = [r"^application/.+", r"^x-application/.+", r"^image/.+", r"^video/.+", r"^audio/.+"]
-    b = False
-    for rm in mimes:
-      m = re.match(rm, self.content_type)
-      if m is None:
-        continue
-      b = b or m.group(0) == self.content_type
-      if b:
-        break
-    return b
+  # リクエストデータが BLOB (octed-stream) かどうかを返す。
+  def _isBLOB(self):
+    return self.content_type.startswith("application/octed-stream")
+  
 
   # x-www-urlencoded 形式のデータを辞書化する。_parseQuery で使用。
-  def _getQuery(self, src=None) ->dict:
+  def _getQuery(self, src=None):
     if src is None:
       src = self.__QueryString
     data = dict()
@@ -231,7 +223,10 @@ class Request:
       if len(kv) == 2:
         key = kv[0]
         val = urlp.unquote_plus(kv[1])
-        data[key] = val
+        if key in data:
+          data[key] += f",{val}"
+        else:
+          data[key] = val
     return data
 
   # クエリーデータ (x-www-urlencoded) を辞書に変換して self.__Query と self.__Form に格納する。(POSTの場合も可能)
@@ -340,7 +335,7 @@ class Request:
     return
 
   # POST された body からパラメータの辞書を作成する。
-  def _parser(self):
+  def _parser(self) -> dict:
     if self._isBLOB():
       return
     if self._isMultipart():
@@ -419,7 +414,7 @@ class Request:
     return val
 
   # パラメータがあるかどうか？
-  def isPostback(self) -> bool:
+  def isPostback(self):
     if self.method == "GET":
       return len(self.queryString) > 0
     elif self.method == "POST":
@@ -429,11 +424,7 @@ class Request:
     
   # HTTP Method (str)
   @property
-  def method(self) -> str:
-    return self.__Method
-
-  @property
-  def Method(self) -> str:
+  def method(self):
     return self.__Method
 
   # Request Headers (dict of (key:str, value:str))
@@ -502,35 +493,37 @@ class Response:
     # Windows の場合はデフォルトの文字コードが Shift JIS なので、これがないと文字化けする。
     if os.name == 'nt':
       sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding=ENC)
-    self.__Cookies = list()
-    self.__Headers = list()
+    self.Cookies = list()
+    self.Headers = list()
     return
 
   # クッキーをセットする。cookies は辞書オブジェクト。
   def setCookie(self, cookies:dict):
     for key, value in cookies.items():
-      self.__Cookies.append(f"{key}={value}")
+      self.Cookies.append(f"{key}={value}")
     return
 
   # Set-Cookie: を作成する。
   def makeCookie(self):
-    if len(self.__Cookies) == 0:
+    if len(self.Cookies) == 0:
       return ""
     buff = ""
-    for s in self.__Cookies:
+    for s in self.Cookies:
       buff += f"Set-Cookie: {s}\n"
     return buff
 
   # 文字列を応答として返す。s はその文字列。
   def sendString(self, s:str, content_type="text/html", charset="utf-8", cookie=True, headers=True, embed=None, crlf=""):
+    if type(s) is not str:
+      s = str(s)
     if isinstance(embed, dict):
       for k, v in embed.items():
          s = s.replace("{{ " + k + " }}", str(v))
     buff = ""
     if cookie:
       buff = self.makeCookie()
-    if headers and len(self.__Headers) > 0:
-      for h in self.__Headers:
+    if headers and len(self.Headers) > 0:
+      for h in self.Headers:
         buff += h + "\n"
     if charset == "":
       buff += f"Content-Type: {content_type}\n\n{s}"
@@ -586,8 +579,8 @@ class Response:
   # HTMLファイルを応答として返す。path はそのパス名。
   def sendHtml(self, path:str, charset="", cookie=True, headers=True, embed=None):
     buff = ""
-    if headers and len(self.__Headers) > 0:
-      for h in self.__Headers:
+    if headers and len(self.Headers) > 0:
+      for h in self.Headers:
         buff += h + "\n"
     if charset == "":
       buff += f"Content-Type: text/html\n"
