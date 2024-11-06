@@ -48,7 +48,7 @@ if __name__ == '__main__':
     CGI.Response.status(405, CGI.METHOD_NOT_ALLOWED)
 ```
 
-## sample 3 
+## sample 3 file_upload.cgi
 ```
 #!C:/Python3/python.exe
 import os
