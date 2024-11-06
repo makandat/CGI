@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>show_image.html</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+ </style>
+ <script>
+  function show_image() {
+    const pic = document.getElementById("picture");
+    let path = form1.path.value;
+    if (path.startsWith('"') && path.endsWith('"'))
+      path = path.substring(1, path.length - 1);
+    const url = "get_image.cgi?path=" + path;
+    pic.setAttribute("src", url);
+  }
+ </script>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="header-1 text-center p-5 bg-light border rounded border-warning">show_image</h1>
+  <p class="text-center"><a href="/cgi-bin/CGI365Lib/v2_0/index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+  <section class="row mt-5">
+   <form method="GET" name="form1">
+    <div class="mb-2"><label class="label-form-control">image path<input type="text" class="form-control" name="path" size="100"></label></div>
+    <div class="mb-4"><button type="button" class="btn btn-primary" onclick="show_image();">show</button></div>
+    <figure class="text-center p-1"><img id="picture" src=""></figure>
+   </form>
+  </section>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

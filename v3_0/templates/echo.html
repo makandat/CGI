@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>echo.cgi</title>
+ <!-- BootstrapのCSS読み込み -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+.bgcolor {
+    background-color: whitesmoke;
+    border-radius:6px;
+  }
+ </style>
+</head>
+
+<body>
+ <!-- ヘッダー -->
+ <header class="container">
+  <h1 class="header-1 bgcolor text-center p-5"><img src="/img/PythonOld.png"> echo.cgi</h1>
+  <p class="text-center"><a href="index.cgi">HOME</a></p>
+ </header>
+
+ <!-- 本文 -->
+ <article class="container">
+   <form class="row mt-4" method="GET">
+    <div class="mb-4"><label class="form-control-label">Message<input type="text" class="form-control" name="message" size="80"></label></div>
+    <div class="mb-4"><button type="submit" class="btn btn-primary">send</button></div>
+   </form>
+   <p class="fs-2 text-danger">{{ message }}</p>
+ </article>
+
+ <!-- フッター -->
+ <footer class="container">
+  <p class="text-center mt-4"><a href="#top">TOP</a></p>
+  <p>&nbsp;</p>
+ </footer>
+ <!-- BootstrapのJS読み込み -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

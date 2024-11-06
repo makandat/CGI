@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8" />
+ <title>$title</title>
+ <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<h1>$title</h1>
+<hr />
+<ul style="margin-top:30px; font-size:larger;">
+#for $item in $data
+ <li>$item</li>
+#end for
+</ul>
+</body>
+</html>
