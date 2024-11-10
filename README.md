@@ -205,7 +205,7 @@ This template is available from version 3.0.
 
 
 ## Sample 1 echo.cgi
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 ```
 
 ## sample 2 Cheetah template
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 ```
 
 ## sample 3 file_upload.cgi
-```
+```python
 #!C:/Python3/python.exe
 import os
 import CGI365Lib as CGI
@@ -287,7 +287,7 @@ if __name__ == "__main__":
 ```
 
 ## sample 4 post_form.cgi
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 
@@ -355,7 +355,7 @@ else:
 ```
 
 ## sample 6 get_video.cgi
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 
@@ -366,7 +366,7 @@ res.sendVideo(path)
 ```
 
 ## sample 7 get_image.cgi
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 
@@ -378,7 +378,7 @@ res.sendImage(path)
 ```
 
 ## sample 8 get_pictures.cgi
-```
+```python
 #!C:/Python3/python.exe
 import CGI365Lib as CGI
 import MariaDB as maria
@@ -407,7 +407,7 @@ res.sendString(table)
 * Not support multipart/form-data.
 
 ## sample 1 hello.cgi
-```
+```python
 #!C:/Python3/python.exe
 
 print('Content-Type: text/html; encoding=utf-8\n')
@@ -442,7 +442,7 @@ print(HTML)
 ```
 
 ## sample 2 get_form.cgi
-```
+```python
 #!C:/Python3/python.exe
 # get_form.cgi
 import for_cgi as cgi, os
@@ -481,7 +481,7 @@ cgi.send_html(cgi.HTML_HEAD.format('get_form') + body + cgi.HTML_TAIL)
 ```
 
 ## sample 3 post_form.cgi
-```
+```python
 #!C:/Python3/python.exe
 # post_form.cgi
 import for_cgi as cgi, os
